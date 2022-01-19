@@ -1,5 +1,6 @@
 import re
 from pyrr import matrix44, matrix33, vector4, vector3
+import numpy as np
 
 import OpenGL.GL as gl
 
@@ -134,5 +135,9 @@ class Shader:
         self.use()
         gl.glUniform1i(var_location, slot)
 
-    
+    def upload_int_array(self, var_name: str, array: np.ndarray):
+        var_location: int = gl.glGetUniformLocation(self._shader_program_id, var_name)
+        self.use()
+        gl.glUniform1iv(var_location, len(array), array)
+
     

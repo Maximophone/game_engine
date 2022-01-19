@@ -23,7 +23,7 @@ class Texture:
         gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_NEAREST)
 
         with Image.open(self._filepath) as image:
-            img_data = np.array(list(image.convert("RGBA").getdata()), np.uint8)
+            img_data = np.array(list(image.transpose(Image.FLIP_TOP_BOTTOM).convert("RGBA").getdata()), np.uint8)
 
             gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA, image.width, image.height, 0, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, img_data)
 

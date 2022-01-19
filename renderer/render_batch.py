@@ -7,29 +7,37 @@ from pyrr import vector4
 
 from typing import List
 import OpenGL.GL as gl
+from renderer.texture import Texture
+
+from util.asset_pool import AssetPool
 
 class RenderBatch:
     # Vertex
     # ======
-    # Pos                   Color
-    # float, float,         float, float, float, float
+    # Pos                   Color                           Tex Coords      Tex id
+    # float, float,         float, float, float, float,     float, float,   float
     def __init__(self, max_batch_size: int):
         self.POS_SIZE = 2
         self.COLOR_SIZE = 4
+        self.TEX_COORDS_SIZE = 2
+        self.TEX_ID_SIZE = 1
         self.POS_OFFSET = 0
         self.COLOR_OFFSET = self.POS_OFFSET + self.POS_SIZE * np.float32().itemsize
-        self.VERTEX_SIZE = 6
+        self.TEX_COORDS_OFFSET = self.COLOR_OFFSET + self.COLOR_SIZE * np.float32().itemsize
+        self.TEX_ID_OFFSET = self.TEX_COORDS_OFFSET + self.TEX_COORDS_SIZE * np.float32().itemsize
+        self.VERTEX_SIZE = 9
         self.VERTEX_SIZE_BYTES = self.VERTEX_SIZE * np.float32().itemsize
 
         self.sprites: List[SpriteRenderer] = [None for _ in range(max_batch_size)]
         self.num_sprites: int = 0
         self.has_room: bool = True
         
-
+        self._tex_slots = np.array([0,1,2,3,4,5,6,7], dtype=np.uint32)
+        self._textures: List[Texture] = []
         self.vao_id: int = -1
         self.vbo_id: int = -1
         self.max_batch_size: int = max_batch_size
-        self.shader: Shader = Shader("assets/shaders/default.glsl")
+        self.shader: Shader = AssetPool.get_shader("assets/shaders/default.glsl")
         self.shader.compile()
 
         # 4 vertices quads
@@ -59,7 +67,12 @@ class RenderBatch:
         
         gl.glEnableVertexAttribArray(1)
         gl.glVertexAttribPointer(1, self.COLOR_SIZE, gl.GL_FLOAT, gl.GL_FALSE, self.VERTEX_SIZE_BYTES, ctypes.c_void_p(self.COLOR_OFFSET))
-        
+
+        gl.glEnableVertexAttribArray(2)
+        gl.glVertexAttribPointer(2, self.TEX_COORDS_SIZE, gl.GL_FLOAT, gl.GL_FALSE, self.VERTEX_SIZE_BYTES, ctypes.c_void_p(self.TEX_COORDS_OFFSET))
+
+        gl.glEnableVertexAttribArray(3)
+        gl.glVertexAttribPointer(3, self.TEX_ID_SIZE, gl.GL_FLOAT, gl.GL_FALSE, self.VERTEX_SIZE_BYTES, ctypes.c_void_p(self.TEX_ID_OFFSET))
 
     def generate_indices(self) -> List[int]:
         # 6 indices per quad (3 per triangle)
@@ -89,6 +102,10 @@ class RenderBatch:
         self.sprites[index] = spr
         self.num_sprites += 1
 
+        if spr.get_texture() is not None:
+            if spr.get_texture() not in self._textures:
+                self._textures.append(spr.get_texture())
+
         # Add properties to local vertices array
         self.load_vertex_properties(index)
         if self.num_sprites >= self.max_batch_size:
@@ -105,15 +122,27 @@ class RenderBatch:
         self.shader.upload_mat4f("uProj", Window.get_scene().camera().get_projection_matrix())
         self.shader.upload_mat4f("uView", Window.get_scene().camera().get_view_matrix())
 
+        for i in range(len(self._textures)):
+            gl.glActiveTexture(gl.GL_TEXTURE0 + i + 1)
+            self._textures[i].bind()
+        self.shader.upload_int_array("uTextures", self._tex_slots)
+
         gl.glBindVertexArray(self.vao_id)
         gl.glEnableVertexAttribArray(0)
         gl.glEnableVertexAttribArray(1)
+        gl.glEnableVertexAttribArray(2)
+        gl.glEnableVertexAttribArray(3)
 
         gl.glDrawElements(gl.GL_TRIANGLES, self.num_sprites * 6, gl.GL_UNSIGNED_INT, ctypes.c_void_p(0))
 
         gl.glDisableVertexAttribArray(0)
         gl.glDisableVertexAttribArray(1)
+        gl.glDisableVertexAttribArray(2)
+        gl.glDisableVertexAttribArray(3)
         gl.glBindVertexArray(0)
+
+        for i in range(len(self._textures)):
+            self._textures[i].unbind()
 
         self.shader.detach()
 
@@ -124,6 +153,15 @@ class RenderBatch:
         offset: int = index * 4 * self.VERTEX_SIZE
 
         color: vector4 = sprite.get_color()
+        tex_coords = sprite.get_tex_coords()
+
+        tex_id = 0
+        if sprite.get_texture() is not None:
+            print("found texture")
+            for i, texture in enumerate(self._textures):
+                if texture == sprite.get_texture():
+                    tex_id = i + 1
+                    break
 
         # Add vertices with the appropriate properties
         x_add: float = 1.
@@ -145,5 +183,12 @@ class RenderBatch:
             self.vertices[offset + 3] = color[1]
             self.vertices[offset + 4] = color[2]
             self.vertices[offset + 5] = color[3]
+
+            # Load texture coordinates
+            self.vertices[offset + 6] = tex_coords[i][0]
+            self.vertices[offset + 7] = tex_coords[i][1]
+
+            # Load texture id
+            self.vertices[offset + 8] = tex_id
 
             offset += self.VERTEX_SIZE

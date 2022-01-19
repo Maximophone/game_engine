@@ -1,11 +1,13 @@
 from mxeng.component import Component
+from mxeng.transform import Transform
 from typing import List, Optional
 
 
 class GameObject:
-    def __init__(self, name: str):
+    def __init__(self, name: str, transform: Transform = None):
         self._name: str = name
         self._components: List[Component] = []
+        self.transform = transform or Transform()
 
     def get_component(self, component_class: type) -> Optional[Component]:
         for c in self._components:

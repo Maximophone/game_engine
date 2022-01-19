@@ -1,16 +1,19 @@
 from mxeng.component import Component
+from pyrr import vector4
 
 
 class SpriteRenderer(Component):
-    def __init__(self):
+    def __init__(self, color: vector4):
+        self._color: vector4 = color
         super().__init__()
-        self.first_time = True
+
     def start(self):
-        print("I am starting")
+        pass
 
     def update(self, dt):
-        if self.first_time:
-            print("I am updating")
-        self.first_time = False
+        pass
+
+    def get_color(self) -> vector4:
+        return self._color
 
     

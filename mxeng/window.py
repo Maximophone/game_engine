@@ -33,6 +33,10 @@ class Window:
         Window.get().current_scene.start()
 
     @staticmethod
+    def get_scene() -> Scene:
+        return Window.get().current_scene
+
+    @staticmethod
     def get():
         if Window._window is None:
             Window._window = Window()

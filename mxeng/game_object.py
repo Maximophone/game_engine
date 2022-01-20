@@ -4,10 +4,15 @@ from typing import List, Optional
 
 
 class GameObject:
-    def __init__(self, name: str, transform: Transform = None):
+    def __init__(self, name: str, transform: Transform = None, z_index: int = 0):
         self._name: str = name
         self._components: List[Component] = []
         self.transform = transform or Transform()
+        self._z_index: int = z_index
+        
+    @property
+    def z_index(self):
+        return self._z_index
 
     def get_component(self, component_class: type) -> Optional[Component]:
         for c in self._components:

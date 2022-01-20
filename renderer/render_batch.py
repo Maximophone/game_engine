@@ -16,7 +16,7 @@ class RenderBatch:
     # ======
     # Pos                   Color                           Tex Coords      Tex id
     # float, float,         float, float, float, float,     float, float,   float
-    def __init__(self, max_batch_size: int):
+    def __init__(self, max_batch_size: int, z_index: int):
         self.POS_SIZE = 2
         self.COLOR_SIZE = 4
         self.TEX_COORDS_SIZE = 2
@@ -37,12 +37,17 @@ class RenderBatch:
         self.vao_id: int = -1
         self.vbo_id: int = -1
         self.max_batch_size: int = max_batch_size
+        self._z_index: int = z_index
         self.shader: Shader = AssetPool.get_shader("assets/shaders/default.glsl")
         self.shader.compile()
 
         # 4 vertices quads
         self.vertices: np.ndarray = np.array([0.] * max_batch_size * 4 * self.VERTEX_SIZE, dtype=np.float32)
 
+    @property
+    def z_index(self) -> int:
+        return self._z_index
+        
     @property
     def has_texture_room(self) -> bool:
         return len(self._textures) < 8

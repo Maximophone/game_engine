@@ -82,6 +82,10 @@ class Window:
 
         # TODO: Missing GL.createCapabilities()
 
+        gl.glEnable(gl.GL_BLEND)
+        gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA)
+        
+
         Window.change_scene(0)
 
     def loop(self):

@@ -36,12 +36,14 @@ class LevelEditorScene(Scene):
 
         self.sprites = AssetPool.get_spritesheet("assets/images/spritesheet.png")
 
-        self.obj1 = GameObject("object 1", Transform(np.array([100., 100.]), np.array([256., 256.])))
-        self.obj1.add_component(SpriteRenderer(sprite=self.sprites.get_sprite(0)))
+        self.obj1 = GameObject("object 1", Transform(np.array([200., 100.]), np.array([256., 256.])), z_index=2)
+        #self.obj1.add_component(SpriteRenderer(sprite=self.sprites.get_sprite(0)))
+        self.obj1.add_component(SpriteRenderer(sprite=Sprite(AssetPool.get_texture("assets/images/blendImage1.png"))))
         self.add_game_object_to_scene(self.obj1)
         
-        obj2 = GameObject("object 2", Transform(np.array([400., 100.]), np.array([256., 256.])))
-        obj2.add_component(SpriteRenderer(sprite=self.sprites.get_sprite(15)))
+        obj2 = GameObject("object 2", Transform(np.array([400., 100.]), np.array([256., 256.])), z_index=2)
+        #obj2.add_component(SpriteRenderer(sprite=self.sprites.get_sprite(15)))
+        obj2.add_component(SpriteRenderer(sprite=Sprite(AssetPool.get_texture("assets/images/blendImage2.png"))))
         self.add_game_object_to_scene(obj2)
     
     def load_resources(self):
@@ -53,13 +55,13 @@ class LevelEditorScene(Scene):
 
     def update(self, dt: float):
 
-        self.sprite_flip_time_left -= dt
-        if self.sprite_flip_time_left <= 0:
-            self.sprite_flip_time_left = self.sprite_flip_time
-            self.sprite_index = (self.sprite_index + 1) % 4
-            self.obj1.get_component(SpriteRenderer).set_sprite(self.sprites.get_sprite(self.sprite_index))
+        # self.sprite_flip_time_left -= dt
+        # if self.sprite_flip_time_left <= 0:
+        #     self.sprite_flip_time_left = self.sprite_flip_time
+        #     self.sprite_index = (self.sprite_index + 1) % 4
+        #     self.obj1.get_component(SpriteRenderer).set_sprite(self.sprites.get_sprite(self.sprite_index))
 
-        self.obj1.transform.position[0] += 10*dt
+        # self.obj1.transform.position[0] += 10*dt
         for go in self._game_objects:
             go.update(dt)
 

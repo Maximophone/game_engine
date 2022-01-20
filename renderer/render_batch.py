@@ -120,9 +120,18 @@ class RenderBatch:
 
     def render(self):
         from mxeng.window import Window
-        # For now we will rebuffer all data every frame
-        gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo_id)
-        gl.glBufferSubData(gl.GL_ARRAY_BUFFER, 0, self.vertices.nbytes, self.vertices)
+
+        rebuffer_data = False
+        for i in range(self.num_sprites):
+            spr = self.sprites[i]
+            if spr.is_dirty():
+                self.load_vertex_properties(i)
+                spr.set_clean()
+                rebuffer_data = True
+
+        if rebuffer_data:
+            gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo_id)
+            gl.glBufferSubData(gl.GL_ARRAY_BUFFER, 0, self.vertices.nbytes, self.vertices)
 
         # Use shader
         self.shader.use()

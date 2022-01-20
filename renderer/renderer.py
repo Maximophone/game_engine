@@ -3,6 +3,7 @@ from components.sprite_renderer import SpriteRenderer
 
 from renderer.render_batch import RenderBatch
 from mxeng.game_object import GameObject
+from renderer.texture import Texture
 
 
 class Renderer:
@@ -19,9 +20,11 @@ class Renderer:
         added = False
         for batch in self.batches:
             if batch.has_room:
-                batch.add_sprite(sprite)
-                added = True
-                break
+                tex: Texture = sprite.get_texture()
+                if tex is None or batch.has_texture(tex) or batch.has_texture_room:
+                    batch.add_sprite(sprite)
+                    added = True
+                    break
         if not added:
             new_batch = RenderBatch(self.max_batch_size)
             new_batch.start()

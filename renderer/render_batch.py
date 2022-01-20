@@ -43,6 +43,13 @@ class RenderBatch:
         # 4 vertices quads
         self.vertices: np.ndarray = np.array([0.] * max_batch_size * 4 * self.VERTEX_SIZE, dtype=np.float32)
 
+    @property
+    def has_texture_room(self) -> bool:
+        return len(self._textures) < 8
+
+    def has_texture(self, texture: Texture) -> bool:
+        return texture in self._textures
+
     def start(self):
         # Generate and bind a vertex array object
         self.vao_id = gl.glGenVertexArrays(1)

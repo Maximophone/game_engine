@@ -1,5 +1,6 @@
 import glfw
 import OpenGL.GL as gl
+from mxeng.imgui_layer import ImGUILayer
 from mxeng.key_listener import KeyListener
 from mxeng.mouse_listener import MouseListener
 from mxeng.scene import Scene
@@ -50,6 +51,7 @@ class Window:
         self.loop()
 
         # Free the memory
+        ImGUILayer.shutdown()
         glfw.destroy_window(self.glfw_window)
 
         glfw.terminate()
@@ -84,6 +86,8 @@ class Window:
 
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA)
+
+        ImGUILayer.init_imgui(self.glfw_window)
         
 
         Window.change_scene(0)
@@ -103,6 +107,7 @@ class Window:
             if dt >= 0:
                 self.current_scene.update(dt)
 
+            ImGUILayer.update(dt)
             glfw.swap_buffers(self.glfw_window)
 
             end_time = Time.get_time()

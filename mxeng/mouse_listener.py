@@ -1,5 +1,7 @@
 from typing import List
 import glfw
+from pyrr import Vector4
+
 
 class MouseListener:
     _instance: "MouseListener" = None
@@ -63,6 +65,22 @@ class MouseListener:
     @staticmethod
     def get_y() -> float:
         return MouseListener.get()._y_pos
+
+    @staticmethod
+    def get_ortho_x() -> float:
+        from mxeng.window import Window
+        current_x = MouseListener.get_x()
+        current_x = current_x / Window.get_width() * 2 - 1
+        current_x = (Window.get_scene().camera().get_inverse_view() * Window.get_scene().camera().get_inverse_projection() * Vector4([current_x, 0, 0, 1])).x
+        return current_x
+
+    @staticmethod
+    def get_ortho_y() -> float:
+        from mxeng.window import Window
+        current_y = MouseListener.get_y()
+        current_y = current_y / Window.get_height() * 2 - 1
+        current_y = (Window.get_scene().camera().get_inverse_view() * Window.get_scene().camera().get_inverse_projection() * Vector4([0, current_y, 0, 1])).y
+        return current_y
 
     @staticmethod
     def get_dx() -> float:

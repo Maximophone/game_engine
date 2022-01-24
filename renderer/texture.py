@@ -1,3 +1,4 @@
+from typing import Optional
 import OpenGL.GL as gl
 from PIL import Image
 import numpy as np
@@ -8,6 +9,7 @@ from util.serialization import serializable, sproperty
 class Texture:
     def __init__(self, filepath: str = None):
         self._filepath = filepath
+        self._tex_id: Optional[int] = None
         if filepath is not None:
             self.init()
 
@@ -20,8 +22,12 @@ class Texture:
         self._filepath = value
         self.init()
 
+    @property
+    def tex_id(self) -> Optional[int]:
+        return self._tex_id
+
     def init(self):
-        self._tex_id: int = -1
+        self._tex_id = -1
         self.width: int = 0
         self.height: int = 0
 

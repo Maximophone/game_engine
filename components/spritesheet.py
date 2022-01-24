@@ -24,6 +24,8 @@ class Spritesheet:
                 np.array([left_x, top_y]),
             ]
             sprite = Sprite(self._texture, tex_coords)
+            sprite.width = sprite_width
+            sprite.height = sprite_height
             self.sprites.append(sprite)
     
             current_x += sprite_width + spacing
@@ -33,3 +35,6 @@ class Spritesheet:
 
     def get_sprite(self, index: int) -> Sprite:
         return self.sprites[index]
+
+    def size(self) -> int:
+        return len(self.sprites)

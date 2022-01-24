@@ -45,6 +45,14 @@ class Window:
 
         return Window._window
 
+    @staticmethod
+    def get_width():
+        return Window.get()._width
+
+    @staticmethod
+    def get_height():
+        return Window.get()._height
+
     def run(self):
         print("Hello")
 
@@ -71,6 +79,11 @@ class Window:
         if not self.glfw_window:
             glfw.terminate()
             assert False, "Window failed to create"
+        
+        glfw.make_context_current(self.glfw_window)
+
+        # Important: this initialisation needs to happen before the mouse callbacks are added
+        ImGUILayer.init_imgui(self.glfw_window)
 
         # Register Mouse callbacks
         glfw.set_cursor_pos_callback(self.glfw_window, MouseListener.mouse_pos_callback)
@@ -78,7 +91,6 @@ class Window:
         glfw.set_scroll_callback(self.glfw_window, MouseListener.mouse_scroll_callback)
         glfw.set_key_callback(self.glfw_window, KeyListener.key_callback)
         
-        glfw.make_context_current(self.glfw_window)
         # Enable v-sync
         glfw.swap_interval(1)
         glfw.show_window(self.glfw_window)
@@ -87,9 +99,6 @@ class Window:
 
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA)
-
-        ImGUILayer.init_imgui(self.glfw_window)
-        
 
         Window.change_scene(0)
 

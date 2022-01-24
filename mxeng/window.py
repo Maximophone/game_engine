@@ -97,6 +97,7 @@ class Window:
         end_time: float = Time.get_time()
         dt: float = -1
 
+        self.current_scene.load()
         while not glfw.window_should_close(self.glfw_window):
             # glfw.swap_buffers(self.glfw_window)
             glfw.poll_events()
@@ -116,3 +117,5 @@ class Window:
 
             fps = 1/dt
             # print(f"Running at {fps:.2f} FPS")
+
+        self.current_scene.save_exit()

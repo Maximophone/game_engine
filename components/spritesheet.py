@@ -3,11 +3,9 @@ import numpy as np
 
 from renderer.texture import Texture
 from components.sprite import Sprite
-from util.serialization import serializable
 
-@serializable("_texture", "sprites")
 class Spritesheet:
-    def __init__(self, texture: Texture, sprite_width: int, sprite_height: int, num_sprites: int, spacing: int):
+    def __init__(self, texture: Texture = None, sprite_width: int = None, sprite_height: int = None, num_sprites: int = None, spacing: int = None):
         self._texture: Texture = texture
         self.sprites: List[Sprite] = []
 
@@ -26,7 +24,7 @@ class Spritesheet:
                 np.array([left_x, top_y]),
             ]
             sprite = Sprite(self._texture, tex_coords)
-            self.sprites.append(sprite)        
+            self.sprites.append(sprite)
     
             current_x += sprite_width + spacing
             if current_x >= texture.width:

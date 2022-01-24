@@ -9,7 +9,7 @@ import imgui.core
 from renderer.texture import Texture
 from util.serialization import serializable, sproperty
 
-@serializable("_color", "_sprite", "_is_dirty")
+@serializable("_color", "_sprite")
 class SpriteRenderer(Component):
     def __init__(self, color: vector4 = None, sprite: Sprite = None):
         self._color: vector4 = color if color is not None else vector4.create(1., 1., 1., 1.)

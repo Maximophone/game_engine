@@ -4,9 +4,9 @@ from typing import List, Optional
 
 from util.serialization import serializable, sproperty
 
-@serializable("_name", "_components", "transform")
+@serializable("_name", "transform")
 class GameObject:
-    def __init__(self, name: str, transform: Transform = None, z_index: int = 0):
+    def __init__(self, name: str = None, transform: Transform = None, z_index: int = 0):
         self._name: str = name
         self._components: List[Component] = []
         self.transform = transform or Transform()
@@ -15,6 +15,15 @@ class GameObject:
     @sproperty
     def z_index(self):
         return self._z_index
+
+    @sproperty
+    def components(self) -> List[Component]:
+        return self._components
+
+    @components.setter
+    def components(self, value: List[Component]):
+        for c in value:
+            self.add_component(c)
 
     def get_component(self, component_class: type) -> Optional[Component]:
         for c in self._components:

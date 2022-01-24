@@ -1,10 +1,7 @@
 from pyrr import matrix44, vector3
 
-from util.serialization import serializable
-
-@serializable("_projection_matrix", "_view_matrix", "_position")
 class Camera:
-    def __init__(self, position: vector3):
+    def __init__(self, position: vector3 = None):
         self._projection_matrix = matrix44.create_identity()
         self._view_matrix = matrix44.create_identity()
         self._position = position

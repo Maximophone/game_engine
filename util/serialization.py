@@ -1,5 +1,6 @@
 import numpy as np
 import pickle
+import codecs
 
 CLASS_REGISTER = {}
 
@@ -109,7 +110,7 @@ def serialize(o: object) -> dict:
             ret["val"].append(serialize(value))
         return ret
     elif isinstance(o, np.ndarray):
-        return {"__type": "np.ndarray", "val": pickle.dumps(o)}
+        return {"__type": "np.ndarray", "val": codecs.encode(pickle.dumps(o), 'base64').decode("utf-8")}
     else:
         raise SerializeException(f"Object {o} is not serializable")
         
@@ -130,7 +131,7 @@ def deserialize(d: dict):
     elif typ == "set":
         return {deserialize(v) for v in val}
     elif typ == "np.ndarray":
-        return pickle.loads(val)
+        return pickle.loads(codecs.decode(val.encode("utf-8"), 'base64'))
     elif typ in CLASS_REGISTER:
         cls = CLASS_REGISTER[typ]
         try:

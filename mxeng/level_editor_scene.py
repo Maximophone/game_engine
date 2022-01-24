@@ -3,6 +3,7 @@
 # from mxeng.game_object import GameObject
 # from renderer.texture import Texture
 # from util.timer import Time
+import pickle
 from components.sprite import Sprite
 from components.sprite_renderer import SpriteRenderer
 from components.spritesheet import Spritesheet
@@ -19,7 +20,7 @@ import imgui
 
 from mxeng.transform import Transform
 from util.asset_pool import AssetPool
-from util.serialization import serializable, serialize
+from util.serialization import deserialize, serializable, serialize
 
 @serializable("obj1", "sprite_index", "sprite_flip_time", "sprite_flip_time_left", "sprites")
 class LevelEditorScene(Scene):
@@ -34,8 +35,10 @@ class LevelEditorScene(Scene):
 
     def init(self):
         self.load_resources()
-
         self._camera = Camera(vector3.create())
+
+        if self._level_loaded:
+            return
 
         self.sprites = AssetPool.get_spritesheet("assets/images/spritesheet.png")
 
@@ -50,8 +53,6 @@ class LevelEditorScene(Scene):
         self.add_game_object_to_scene(obj2)
 
         self._active_game_object = self.obj1
-
-        print(serialize(self))
     
     def load_resources(self):
         AssetPool.get_shader("assets/shaders/default.glsl")

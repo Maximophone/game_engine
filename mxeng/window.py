@@ -107,7 +107,7 @@ class Window:
             if dt >= 0:
                 self.current_scene.update(dt)
 
-            ImGUILayer.update(dt)
+            ImGUILayer.update(dt, self.current_scene)
             glfw.swap_buffers(self.glfw_window)
 
             end_time = Time.get_time()

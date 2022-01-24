@@ -2,7 +2,9 @@ import numpy as np
 from typing import List
 
 from renderer.texture import Texture
+from util.serialization import serializable
 
+@serializable("_texture", "_tex_coords")
 class Sprite:
     def __init__(self, texture: Texture = None, tex_coords: List[np.ndarray] = None):
         self._texture = texture

@@ -1,6 +1,9 @@
 from typing import Optional
 import numpy as np
 
+from util.serialization import serializable
+
+@serializable("position", "scale")
 class Transform:
     def __init__(self, position = None, scale = None):
         self.position = position if position is not None else np.array([0.,0.])

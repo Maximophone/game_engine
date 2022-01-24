@@ -4,10 +4,12 @@ from mxeng.component import Component
 from mxeng.transform import Transform
 from pyrr import vector4
 import numpy as np
+import imgui.core
 
 from renderer.texture import Texture
+from util.serialization import serializable, sproperty
 
-
+@serializable("_color", "_sprite", "_is_dirty")
 class SpriteRenderer(Component):
     def __init__(self, color: vector4 = None, sprite: Sprite = None):
         self._color: vector4 = color if color is not None else vector4.create(1., 1., 1., 1.)
@@ -24,6 +26,11 @@ class SpriteRenderer(Component):
         if not self._last_transform == self.game_object.transform:
             self.game_object.transform.copy(to=self._last_transform)
             self._is_dirty = True
+
+    def imgui(self):
+        changed, new_color = imgui.color_edit4("Color picker", *self.get_color())
+        if changed:
+            self.set_color(np.array(new_color))
 
     def get_color(self) -> vector4:
         return self._color

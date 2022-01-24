@@ -15,10 +15,13 @@ from mxeng.scene import Scene
 import numpy as np
 # import ctypes
 from pyrr import vector3, vector4
+import imgui
 
 from mxeng.transform import Transform
 from util.asset_pool import AssetPool
+from util.serialization import serializable, serialize
 
+@serializable("obj1", "sprite_index", "sprite_flip_time", "sprite_flip_time_left", "sprites")
 class LevelEditorScene(Scene):
 
     def __init__(self):
@@ -38,13 +41,17 @@ class LevelEditorScene(Scene):
 
         self.obj1 = GameObject("object 1", Transform(np.array([200., 100.]), np.array([256., 256.])), z_index=2)
         #self.obj1.add_component(SpriteRenderer(sprite=self.sprites.get_sprite(0)))
-        self.obj1.add_component(SpriteRenderer(sprite=Sprite(AssetPool.get_texture("assets/images/blendImage1.png"))))
+        self.obj1.add_component(SpriteRenderer(color=np.array([1., 0., 0., 1.])))#sprite=Sprite(AssetPool.get_texture("assets/images/blendImage1.png"))))
         self.add_game_object_to_scene(self.obj1)
         
         obj2 = GameObject("object 2", Transform(np.array([400., 100.]), np.array([256., 256.])), z_index=2)
         #obj2.add_component(SpriteRenderer(sprite=self.sprites.get_sprite(15)))
         obj2.add_component(SpriteRenderer(sprite=Sprite(AssetPool.get_texture("assets/images/blendImage2.png"))))
         self.add_game_object_to_scene(obj2)
+
+        self._active_game_object = self.obj1
+
+        print(serialize(self))
     
     def load_resources(self):
         AssetPool.get_shader("assets/shaders/default.glsl")
@@ -67,3 +74,7 @@ class LevelEditorScene(Scene):
 
         self._renderer.render()
 
+    def imgui(self):
+        imgui.begin("Test window")
+        imgui.text("Some random text")
+        imgui.end()

@@ -2,9 +2,25 @@ import OpenGL.GL as gl
 from PIL import Image
 import numpy as np
 
+from util.serialization import serializable, sproperty
+
+@serializable()
 class Texture:
-    def __init__(self, filepath: str):
+    def __init__(self, filepath: str = None):
         self._filepath = filepath
+        if filepath is not None:
+            self.init()
+
+    @sproperty
+    def filepath(self) -> str:
+        return self._filepath
+
+    @filepath.setter
+    def filepath(self, value: str):
+        self._filepath = value
+        self.init()
+
+    def init(self):
         self._tex_id: int = -1
         self.width: int = 0
         self.height: int = 0

@@ -6,9 +6,11 @@ class Component:
         self.game_object: "GameObject" = None
 
 
-    @abstractmethod
     def update(self, dt: float):
         pass
 
     def start(self):
+        pass
+
+    def imgui(self):
         pass

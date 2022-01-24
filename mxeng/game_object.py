@@ -2,7 +2,9 @@ from mxeng.component import Component
 from mxeng.transform import Transform
 from typing import List, Optional
 
+from util.serialization import serializable, sproperty
 
+@serializable("_name", "_components", "transform")
 class GameObject:
     def __init__(self, name: str, transform: Transform = None, z_index: int = 0):
         self._name: str = name
@@ -10,7 +12,7 @@ class GameObject:
         self.transform = transform or Transform()
         self._z_index: int = z_index
         
-    @property
+    @sproperty
     def z_index(self):
         return self._z_index
 
@@ -38,3 +40,7 @@ class GameObject:
     def start(self):
         for c in self._components:
             c.start()
+
+    def imgui(self):
+        for c in self._components:
+            c.imgui()

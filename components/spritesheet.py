@@ -3,7 +3,9 @@ import numpy as np
 
 from renderer.texture import Texture
 from components.sprite import Sprite
+from util.serialization import serializable
 
+@serializable("_texture", "sprites")
 class Spritesheet:
     def __init__(self, texture: Texture, sprite_width: int, sprite_height: int, num_sprites: int, spacing: int):
         self._texture: Texture = texture

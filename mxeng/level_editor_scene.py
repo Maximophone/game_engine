@@ -4,6 +4,7 @@
 # from renderer.texture import Texture
 # from util.timer import Time
 import pickle
+from components.rigid_body import RigidBody
 from components.sprite import Sprite
 from components.sprite_renderer import SpriteRenderer
 from components.spritesheet import Spritesheet
@@ -38,6 +39,7 @@ class LevelEditorScene(Scene):
         self._camera = Camera(vector3.create())
 
         if self._level_loaded:
+            self._active_game_object = self._game_objects[0]
             return
 
         self.sprites = AssetPool.get_spritesheet("assets/images/spritesheet.png")
@@ -45,6 +47,7 @@ class LevelEditorScene(Scene):
         self.obj1 = GameObject("object 1", Transform(np.array([200., 100.]), np.array([256., 256.])), z_index=2)
         #self.obj1.add_component(SpriteRenderer(sprite=self.sprites.get_sprite(0)))
         self.obj1.add_component(SpriteRenderer(color=np.array([1., 0., 0., 1.])))#sprite=Sprite(AssetPool.get_texture("assets/images/blendImage1.png"))))
+        self.obj1.add_component(RigidBody())
         self.add_game_object_to_scene(self.obj1)
         
         obj2 = GameObject("object 2", Transform(np.array([400., 100.]), np.array([256., 256.])), z_index=2)

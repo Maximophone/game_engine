@@ -2,6 +2,8 @@ import numpy as np
 import pickle
 import codecs
 
+from pyrr import Vector3
+
 CLASS_REGISTER = {}
 
 

@@ -30,6 +30,7 @@ class Window:
             Window.get().current_scene = LevelScene()
         else:
             assert False, f"Unknown scene: {new_scene}"
+        Window.get().current_scene.load()
         Window.get().current_scene.init()
         Window.get().current_scene.start()
 
@@ -97,7 +98,6 @@ class Window:
         end_time: float = Time.get_time()
         dt: float = -1
 
-        self.current_scene.load()
         while not glfw.window_should_close(self.glfw_window):
             # glfw.swap_buffers(self.glfw_window)
             glfw.poll_events()

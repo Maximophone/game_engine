@@ -1,10 +1,11 @@
 import ctypes
 from typing import List
 
-from pyrr import Vector3, Vector4
+from pyrr import Matrix33
 from renderer.line_2d import Line2D
 from renderer.shader import Shader
 from util.asset_pool import AssetPool
+from util.vectors import Vector2, Color3
 from mxeng.window import Window
 
 import numpy as np
@@ -15,7 +16,7 @@ class DebugDraw:
     MAX_LINES: int = 500
     lines: List[Line2D] = []
     # 6 floats per vertex, 2 vertices per line
-    vertex_array: np.ndarray = np.zeros(MAX_LINES*6*2, dtype=np.float32)
+    vertex_array: Vector2 = np.zeros(MAX_LINES*6*2, dtype=np.float32)
     shader: Shader = AssetPool.get_shader("assets/shaders/debug_line_2d.glsl")
 
     vao_id: int = -1
@@ -59,6 +60,7 @@ class DebugDraw:
 
     @staticmethod
     def draw():
+
         if len(DebugDraw.lines) <= 0:
             return
 
@@ -102,14 +104,67 @@ class DebugDraw:
 
         DebugDraw.shader.detach()
 
+    @staticmethod
+    def rotate(v: Vector2, rotation: float, center: Vector2 = None) -> Vector2:
+        center = center if center is not None else Vector2([0, 0])
+        return Vector2.from_vector3(Matrix33.from_z_rotation(-rotation/360.*2.*np.pi) * (v - center) + center)
+
     # ====================
     # Add line2D methods
     # ====================
     @staticmethod
-    def add_line_2D(from_: np.ndarray, to: np.ndarray, color: Vector3 = None, lifetime: int = 1):
+    def add_line_2D(from_: Vector2, to: Vector2, color: Color3 = None, lifetime: int = 1):
         # TODO: add constants for common colors
-        color = color if color is not None else Vector3([0., 1., 0.])
+        color = color if color is not None else Color3([0., 1., 0.])
         if len(DebugDraw.lines) >= DebugDraw.MAX_LINES:
             return
         DebugDraw.lines.append(Line2D(from_, to, color, lifetime))
 
+    # ===================
+    # Add Box2D methods
+    # ===================
+    @staticmethod
+    def add_box_2D(center: Vector2, dimensions: Vector2, rotation: float = 0, color: Color3=None, lifetime: int = 1):
+        color = color if color is not None else Color3([0., 1., 0.])
+        min_ = center - dimensions/2.
+        max_ = center + dimensions/2.
+
+        vertices = [
+            min_,
+            Vector2([min_[0], max_[1]]),
+            max_,
+            Vector2([max_[0], min_[1]]),
+        ]
+
+        if rotation != 0:
+            for vert in vertices:
+                vert[:] = DebugDraw.rotate(vert, rotation, center)
+
+        DebugDraw.add_line_2D(vertices[0], vertices[1], color, lifetime)
+        DebugDraw.add_line_2D(vertices[1], vertices[2], color, lifetime)
+        DebugDraw.add_line_2D(vertices[2], vertices[3], color, lifetime)
+        DebugDraw.add_line_2D(vertices[3], vertices[0], color, lifetime)
+
+
+    # ===================
+    # Add Circle methods
+    # ===================
+    @staticmethod
+    def add_circle(center: Vector2, radius: float, color: Color3=None, lifetime: int = 1, n_points: int = 16):
+        color = color if color is not None else Color3([0., 1., 0.])
+        points = []
+        increment = 360 / n_points
+        current_angle = 0
+        for i in range(n_points):
+            tmp = DebugDraw.rotate(Vector2([radius, 0]), current_angle)
+            points.append((tmp + center)[:2])
+
+            if i > 0:
+                DebugDraw.add_line_2D(points[i-1], points[i], color, lifetime)
+            
+            current_angle += increment
+
+        DebugDraw.add_line_2D(points[-1], points[0], color, lifetime)
+        
+
+    

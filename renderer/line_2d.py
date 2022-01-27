@@ -1,23 +1,22 @@
-from pyrr import Vector3
-import numpy as np
+from util.vectors import Color3, Vector2
 
 class Line2D:
-    def __init__(self, from_: np.ndarray, to: np.ndarray, color: Vector3, lifetime: int):
-        self._from: np.ndarray = from_
-        self._to: np.ndarray = to
-        self._color: Vector3 = color
+    def __init__(self, from_: Vector2, to: Vector2, color: Color3, lifetime: int):
+        self._from: Vector2 = from_
+        self._to: Vector2 = to
+        self._color: Color3 = color
         self._lifetime: int = lifetime
 
     @property
-    def from_(self) -> np.ndarray:
+    def from_(self) -> Vector2:
         return self._from
 
     @property
-    def to(self) -> np.ndarray:
+    def to(self) -> Vector2:
         return self._to
 
     @property
-    def color(self) -> Vector3:
+    def color(self) -> Color3:
         return self._color
 
     @property

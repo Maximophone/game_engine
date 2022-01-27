@@ -2,17 +2,17 @@ from typing import List
 from components.sprite import Sprite
 from components.component import Component
 from mxeng.transform import Transform
-from pyrr import Vector4
 import numpy as np
 import imgui.core
 
 from renderer.texture import Texture
 from util.serialization import serializable, sproperty
+from util.vectors import Color4
 
 @serializable("_color", "_sprite")
 class SpriteRenderer(Component):
-    def __init__(self, color: Vector4 = None, sprite: Sprite = None):
-        self._color: Vector4 = color if color is not None else Vector4([1., 1., 1., 1.])
+    def __init__(self, color: Color4 = None, sprite: Sprite = None):
+        self._color: Color4 = color if color is not None else Color4([1., 1., 1., 1.])
         self._sprite: Sprite = sprite if sprite is not None else Sprite()
         self._last_transform: Transform = None
         self._is_dirty = True
@@ -29,9 +29,9 @@ class SpriteRenderer(Component):
     def imgui(self):
         changed, new_color = imgui.color_edit4("Color picker", *self.get_color())
         if changed:
-            self.set_color(np.array(new_color))
+            self.set_color(Color4(new_color))
 
-    def get_color(self) -> Vector4:
+    def get_color(self) -> Color4:
         return self._color
 
     def get_texture(self) -> Texture:
@@ -44,8 +44,8 @@ class SpriteRenderer(Component):
         self._sprite = sprite
         self._is_dirty = True
 
-    def set_color(self, color: Vector4):
-        if all(self._color == color):
+    def set_color(self, color: Color4):
+        if self._color == color:
             return
         self._color[:] = color.copy()
         self._is_dirty = True

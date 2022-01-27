@@ -3,7 +3,7 @@ from components.sprite_renderer import SpriteRenderer
 from mxeng.game_object import GameObject
 from mxeng.transform import Transform
 
-import numpy as np
+from util.vectors import Vector2
 
 class Prefabs:
     @staticmethod
@@ -11,8 +11,8 @@ class Prefabs:
         block = GameObject(
             "Sprite_Object_Gen",
             Transform(
-                np.array([0, 0]),
-                np.array([size_x, size_y])
+                Vector2([0, 0]),
+                Vector2([size_x, size_y])
             )
         )
         renderer = SpriteRenderer(sprite=sprite)

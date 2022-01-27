@@ -3,13 +3,12 @@ import numpy as np
 from components.sprite_renderer import SpriteRenderer
 from renderer.shader import Shader
 
-from pyrr import vector4
-
 from typing import List
 import OpenGL.GL as gl
 from renderer.texture import Texture
 
 from util.asset_pool import AssetPool
+from util.vectors import Color4
 
 class RenderBatch:
     # Vertex
@@ -173,7 +172,7 @@ class RenderBatch:
         # Find offset within array (4 vertices per sprite)
         offset: int = index * 4 * self.VERTEX_SIZE
 
-        color: vector4 = sprite.get_color()
+        color: Color4 = sprite.get_color()
         tex_coords = sprite.get_tex_coords()
 
         tex_id = 0
@@ -195,8 +194,8 @@ class RenderBatch:
                 y_add = 1.
             
             # Load position
-            self.vertices[offset] = sprite.game_object.transform.position[0] + (x_add * sprite.game_object.transform.scale[0])
-            self.vertices[offset + 1] = sprite.game_object.transform.position[1] + (y_add * sprite.game_object.transform.scale[1])
+            self.vertices[offset] = sprite.game_object.transform.position.x + (x_add * sprite.game_object.transform.scale.x)
+            self.vertices[offset + 1] = sprite.game_object.transform.position.y + (y_add * sprite.game_object.transform.scale.y)
 
             # Load color
             self.vertices[offset + 2] = color[0]

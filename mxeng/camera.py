@@ -1,4 +1,5 @@
 from pyrr import Vector3, Matrix44
+import numpy as np
 
 class Camera:
     def __init__(self, position: Vector3 = None):
@@ -6,11 +7,16 @@ class Camera:
         self._view_matrix: Matrix44 = Matrix44.identity()
         self._inverse_projection: Matrix44 = Matrix44.identity()
         self._inverse_view: Matrix44 = Matrix44.identity()
-        self._position = position
+        self.position = position
+        self._projection_size: np.ndarray = np.array([32.*40., 32.*21.])
         self.adjust_projection()
 
+    @property
+    def projection_size(self) -> np.ndarray:
+        return self._projection_size
+
     def adjust_projection(self):
-        self._projection_matrix = Matrix44.orthogonal_projection(0., 32.*40, 0., 32.*21, 0., 100.)
+        self._projection_matrix = Matrix44.orthogonal_projection(0., self._projection_size[0], 0., self._projection_size[1], 0., 100.)
         self._inverse_projection = self._projection_matrix.inverse
 
 
@@ -18,8 +24,8 @@ class Camera:
         camera_front = Vector3([0., 0., -1.])
         camera_up = Vector3([0., 1., 0.])
         self._view_matrix = Matrix44.look_at(
-            Vector3([self._position[0], self._position[1], 20.]),
-            camera_front + Vector3([self._position[0], self._position[1], 0.]),
+            Vector3([self.position[0], self.position[1], 20.]),
+            camera_front + Vector3([self.position[0], self.position[1], 0.]),
             camera_up
         )
         self._inverse_view = self._view_matrix.inverse

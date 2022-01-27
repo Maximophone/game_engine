@@ -3,6 +3,7 @@ from mxeng.transform import Transform
 from typing import List, Optional
 
 from util.serialization import serializable, sproperty
+import imgui
 
 @serializable("_name", "transform")
 class GameObject:
@@ -66,5 +67,9 @@ class GameObject:
             c.start()
 
     def imgui(self):
+        imgui.core.text(self._name)
         for c in self._components:
+            imgui.core.begin_group()
+            imgui.core.text(str(c.__class__))
             c.imgui()
+            imgui.core.end_group()

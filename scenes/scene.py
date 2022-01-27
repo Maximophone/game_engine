@@ -75,8 +75,8 @@ class Scene:
                         if c.uid > max_comp_id:
                             max_comp_id = c.uid
 
-                if go.uid > max_go_id:
-                    max_go_id = go.uid
+                    if go.uid > max_go_id:
+                        max_go_id = go.uid
             max_go_id += 1
             max_comp_id += 1
             GameObject.init(max_go_id)

@@ -1,4 +1,4 @@
-from mxeng.component import Component
+from components.component import Component
 from mxeng.transform import Transform
 from typing import List, Optional
 
@@ -6,11 +6,17 @@ from util.serialization import serializable, sproperty
 
 @serializable("_name", "transform")
 class GameObject:
+    ID_COUNTER: int = 0
+
     def __init__(self, name: str = None, transform: Transform = None, z_index: int = 0):
         self._name: str = name
         self._components: List[Component] = []
         self.transform = transform or Transform()
         self._z_index: int = z_index
+
+        self._uid: int = GameObject.ID_COUNTER
+        GameObject.ID_COUNTER += 1
+
         
     @sproperty
     def z_index(self):
@@ -24,6 +30,14 @@ class GameObject:
     def components(self, value: List[Component]):
         for c in value:
             self.add_component(c)
+
+    @sproperty
+    def uid(self):
+        return self._uid
+
+    @staticmethod
+    def init(max_id: int):
+        GameObject.ID_COUNTER = max_id
 
     def get_component(self, component_class: type) -> Optional[Component]:
         for c in self._components:
@@ -39,6 +53,7 @@ class GameObject:
                 return
 
     def add_component(self, component: Component):
+        component.generate_id()
         self._components.append(component)
         component.game_object = self
 

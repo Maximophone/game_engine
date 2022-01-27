@@ -68,6 +68,9 @@ def serializable(*args):
     def inner(cls):
         if not hasattr(cls, "__serial"):
             cls.__serial = []
+        else:
+            # Inherited, we need to define a new one
+            cls.__serial = cls.__serial[:]
         CLASS_REGISTER[repr(cls)] = cls
         for arg in args:
             cls.__serial.append(arg)

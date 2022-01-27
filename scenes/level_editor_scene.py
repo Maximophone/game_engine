@@ -4,6 +4,7 @@
 # from renderer.texture import Texture
 # from util.timer import Time
 import pickle
+from components.mouse_controls import MouseControls
 from components.rigid_body import RigidBody
 from components.sprite import Sprite
 from components.sprite_renderer import SpriteRenderer
@@ -11,7 +12,8 @@ from components.spritesheet import Spritesheet
 from mxeng.camera import Camera
 from mxeng.game_object import GameObject
 from mxeng.mouse_listener import MouseListener
-from mxeng.scene import Scene
+from mxeng.prefabs import Prefabs
+from scenes.scene import Scene
 # from renderer.shader import Shader
 
 # import OpenGL.GL as gl
@@ -22,9 +24,7 @@ import imgui
 
 from mxeng.transform import Transform
 from util.asset_pool import AssetPool
-from util.serialization import deserialize, serializable, serialize
 
-@serializable("obj1", "sprite_index", "sprite_flip_time", "sprite_flip_time_left", "sprites")
 class LevelEditorScene(Scene):
 
     def __init__(self):
@@ -34,6 +34,7 @@ class LevelEditorScene(Scene):
         self.sprite_flip_time = 0.2
         self.sprite_flip_time_left = 0.
         self.sprites = None
+        self.mouse_controls = MouseControls()
 
     def init(self):
         self.load_resources()
@@ -45,13 +46,11 @@ class LevelEditorScene(Scene):
             return
 
         self.obj1 = GameObject("object 1", Transform(np.array([200., 100.]), np.array([256., 256.])), z_index=2)
-        #self.obj1.add_component(SpriteRenderer(sprite=self.sprites.get_sprite(0)))
-        self.obj1.add_component(SpriteRenderer(color=np.array([1., 0., 0., 1.])))#sprite=Sprite(AssetPool.get_texture("assets/images/blendImage1.png"))))
+        self.obj1.add_component(SpriteRenderer(color=np.array([1., 0., 0., 1.])))
         self.obj1.add_component(RigidBody())
         self.add_game_object_to_scene(self.obj1)
         
         obj2 = GameObject("object 2", Transform(np.array([400., 100.]), np.array([256., 256.])), z_index=2)
-        #obj2.add_component(SpriteRenderer(sprite=self.sprites.get_sprite(15)))
         obj2.add_component(SpriteRenderer(sprite=Sprite(AssetPool.get_texture("assets/images/blendImage2.png"))))
         self.add_game_object_to_scene(obj2)
 
@@ -65,14 +64,8 @@ class LevelEditorScene(Scene):
         )
 
     def update(self, dt: float):
-        MouseListener.get_ortho_x()
-        # self.sprite_flip_time_left -= dt
-        # if self.sprite_flip_time_left <= 0:
-        #     self.sprite_flip_time_left = self.sprite_flip_time
-        #     self.sprite_index = (self.sprite_index + 1) % 4
-        #     self.obj1.get_component(SpriteRenderer).set_sprite(self.sprites.get_sprite(self.sprite_index))
+        self.mouse_controls.update(dt)
 
-        # self.obj1.transform.position[0] += 10*dt
         for go in self._game_objects:
             go.update(dt)
 
@@ -96,7 +89,8 @@ class LevelEditorScene(Scene):
             imgui.core.push_id(str(i))
             changed = imgui.core.image_button(id, sprite_width, sprite_height, (tex_coords[0][0], tex_coords[0][1]), (tex_coords[2][0], tex_coords[2][1]))
             if changed:
-                print(f"Button {i} clicked")
+                obj = Prefabs.generate_sprite_object(sprite, sprite_width, sprite_height)
+                self.mouse_controls.pickup_object(obj)
             imgui.core.pop_id()
 
             last_button_pos = imgui.core.get_item_rect_max()

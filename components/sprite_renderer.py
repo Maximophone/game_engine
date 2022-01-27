@@ -1,6 +1,6 @@
 from typing import List
 from components.sprite import Sprite
-from mxeng.component import Component
+from components.component import Component
 from mxeng.transform import Transform
 from pyrr import Vector4
 import numpy as np

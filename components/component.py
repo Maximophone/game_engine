@@ -3,11 +3,14 @@ import imgui.core
 from pyrr import Vector3, Vector4
 import numpy as np
 
-from util.serialization import serializable
+from util.serialization import serializable, sproperty
 
-
+@serializable()
 class Component:
+    ID_COUNTER: int = 0
+
     def __init__(self):
+        self._uid: int = -1
         self.game_object: "GameObject" = None
 
     def update(self, dt: float):
@@ -43,3 +46,16 @@ class Component:
                 changed, new_value = imgui.core.drag_float4(f"{name}: ", value[0], value[1], value[2], value[3])
                 if changed:
                     setattr(self, name, Vector4(new_value))
+
+    def generate_id(self):
+        if self._uid == -1:
+            self._uid = Component.ID_COUNTER
+            Component.ID_COUNTER += 1
+
+    @sproperty
+    def uid(self):
+        return self._uid
+
+    @staticmethod
+    def init(max_id: int):
+        Component.ID_COUNTER = max_id

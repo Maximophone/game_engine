@@ -13,7 +13,7 @@ class MouseListener:
         self._y_pos = _y_pos
         self._last_y = _last_y
         self._last_x = _last_x
-        self._mouse_button_pressed = _mouse_button_pressed or [False]*3
+        self._mouse_button_pressed = _mouse_button_pressed or [False]*9
         self._is_dragging = _is_dragging
 
 
@@ -77,7 +77,7 @@ class MouseListener:
     @staticmethod
     def get_ortho_y() -> float:
         from mxeng.window import Window
-        current_y = MouseListener.get_y()
+        current_y = Window.get_height() - MouseListener.get_y()
         current_y = current_y / Window.get_height() * 2 - 1
         current_y = (Window.get_scene().camera().get_inverse_view() * Window.get_scene().camera().get_inverse_projection() * Vector4([0, current_y, 0, 1])).y
         return current_y
@@ -104,8 +104,8 @@ class MouseListener:
 
     @staticmethod
     def mouse_button_down(button: int) -> bool:
-        if button < len(MouseListener.get().mouse_button_pressed):
-            return MouseListener.get().mouse_button_pressed[button]
+        if button < len(MouseListener.get()._mouse_button_pressed):
+            return MouseListener.get()._mouse_button_pressed[button]
         else:
             print(f"Querying mouse button down on out of bounds button: {button}")
             return False

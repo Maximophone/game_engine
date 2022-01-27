@@ -1,5 +1,5 @@
 from pyrr import Vector3, Vector4
-from mxeng.component import Component
+from components.component import Component
 
 from util.serialization import serializable
 
@@ -10,3 +10,4 @@ class RigidBody(Component):
         self._friction: float = 0.8
         self._velocity: Vector3 = Vector3([0, 0.5, 0])
         self._tmp: Vector4 = Vector4([0, 0, 0, 0])
+        super().__init__()

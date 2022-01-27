@@ -1,4 +1,4 @@
-from mxeng.scene import Scene
+from scenes.scene import Scene
 
 class LevelScene(Scene):
     def __init__(self):

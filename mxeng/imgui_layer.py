@@ -1,7 +1,7 @@
 import imgui
 from imgui.integrations.glfw import GlfwRenderer
 
-from mxeng.scene import Scene
+from scenes.scene import Scene
 
 class ImGUILayer:
     impl = None

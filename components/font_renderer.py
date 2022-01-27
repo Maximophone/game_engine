@@ -1,4 +1,4 @@
-from mxeng.component import Component
+from components.component import Component
 from components.sprite_renderer import SpriteRenderer
 from util.serialization import serializable
 

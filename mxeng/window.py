@@ -3,9 +3,9 @@ import OpenGL.GL as gl
 from mxeng.imgui_layer import ImGUILayer
 from mxeng.key_listener import KeyListener
 from mxeng.mouse_listener import MouseListener
-from mxeng.scene import Scene
-from mxeng.level_editor_scene import LevelEditorScene
-from mxeng.level_scene import LevelScene
+from scenes.scene import Scene
+from scenes.level_editor_scene import LevelEditorScene
+from scenes.level_scene import LevelScene
 from util.timer import Time
 
 class Window:
@@ -46,16 +46,21 @@ class Window:
         return Window._window
 
     @staticmethod
-    def get_width():
-        return Window.get()._width
+    def get_width() -> int:
+        #return Window.get()._width
+        return glfw.get_window_size(Window.get().glfw_window)[0]
 
     @staticmethod
-    def get_height():
-        return Window.get()._height
+    def get_height() -> int:
+        #return Window.get()._height
+        return glfw.get_window_size(Window.get().glfw_window)[1]
+
+    @staticmethod
+    def resize_callback(window, w: int, h: int):
+        Window.get()._width = w
+        Window.get()._height = h
 
     def run(self):
-        print("Hello")
-
         self.init()
         self.loop()
 
@@ -90,6 +95,7 @@ class Window:
         glfw.set_mouse_button_callback(self.glfw_window, MouseListener.mouse_button_callback)
         glfw.set_scroll_callback(self.glfw_window, MouseListener.mouse_scroll_callback)
         glfw.set_key_callback(self.glfw_window, KeyListener.key_callback)
+        glfw.set_window_size_callback(self.glfw_window, Window.resize_callback)
         
         # Enable v-sync
         glfw.swap_interval(1)

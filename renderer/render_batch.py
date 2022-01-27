@@ -178,7 +178,6 @@ class RenderBatch:
 
         tex_id = 0
         if sprite.get_texture() is not None:
-            print("found texture")
             for i, texture in enumerate(self._textures):
                 if texture == sprite.get_texture():
                     tex_id = i + 1

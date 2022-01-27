@@ -109,20 +109,23 @@ class Window:
         Window.change_scene(0)
 
     def loop(self):
+        from renderer.debug_draw import DebugDraw
         begin_time: float = Time.get_time()
         end_time: float = Time.get_time()
         dt: float = -1
 
         while not glfw.window_should_close(self.glfw_window):
-            # glfw.swap_buffers(self.glfw_window)
             glfw.poll_events()
+
+            DebugDraw.begin_frame()
 
             gl.glClearColor(self.r, self.g, self.b, self.a)
             gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
             if dt >= 0:
+                DebugDraw.draw()
                 self.current_scene.update(dt)
-
+                
             ImGUILayer.update(dt, self.current_scene)
             glfw.swap_buffers(self.glfw_window)
 

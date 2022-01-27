@@ -4,6 +4,8 @@
 # from renderer.texture import Texture
 # from util.timer import Time
 import pickle
+
+import math
 from components.mouse_controls import MouseControls
 from components.rigid_body import RigidBody
 from components.sprite import Sprite
@@ -35,12 +37,14 @@ class LevelEditorScene(Scene):
         self.sprite_flip_time_left = 0.
         self.sprites = None
         self.mouse_controls = MouseControls()
+        self.t = 0.
 
     def init(self):
+        from renderer.debug_draw import DebugDraw
         self.load_resources()
-        self._camera = Camera(Vector3([-250, 0., 0.]))
+        self._camera = Camera(Vector3([0., 0., 0.]))
         self.sprites = AssetPool.get_spritesheet("assets/images/spritesheets/decorationsAndBlocks.png")
-
+        #DebugDraw.add_line_2D(np.array([600., 400.]), np.array([800, 800]), Vector3([1., 0., 0.]), 1)
         if self._level_loaded:
             self._active_game_object = self._game_objects[0]
             return
@@ -64,7 +68,13 @@ class LevelEditorScene(Scene):
         )
 
     def update(self, dt: float):
+        from renderer.debug_draw import DebugDraw
         self.mouse_controls.update(dt)
+
+        x = (math.sin(self.t) * 200.) + 600.
+        y = (math.cos(self.t)* 200.) + 400.
+        self.t += 0.05
+        DebugDraw.add_line_2D(np.array([600., 400.]), np.array([x, y]), Vector3([1., 0., 0.]), 10)
 
         for go in self._game_objects:
             go.update(dt)

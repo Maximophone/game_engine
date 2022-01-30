@@ -10,6 +10,8 @@ class Texture:
     def __init__(self, filepath: str = None):
         self._filepath = filepath
         self._tex_id: Optional[int] = None
+        self.width: int = None
+        self.height: int = None
         if filepath is not None:
             self.init()
 
@@ -58,3 +60,10 @@ class Texture:
 
     def unbind(self):
         gl.glBindTexture(gl.GL_TEXTURE_2D, 0)
+
+    def __eq__(self, o: "Texture") -> bool:
+        if o is None:
+            return False
+        if not isinstance(o, Texture):
+            return False
+        return (self.width == o.width) and (self.height == o.height) and (self.tex_id == o.tex_id) and (self.filepath == o.filepath)

@@ -71,6 +71,23 @@ class MouseListener:
         return MouseListener.get()._y_pos
 
     @staticmethod
+    def get_screen_x() -> float:
+        from mxeng.window import Window
+        current_x = MouseListener.get_x() - MouseListener.get()._game_viewport_pos.x
+        current_x = current_x / MouseListener.get()._game_viewport_size.x * 2560
+
+        return current_x
+
+    @staticmethod
+    def get_screen_y() -> float:
+        from mxeng.window import Window
+        current_y = MouseListener.get_y() - MouseListener.get()._game_viewport_pos.y
+        current_y = 1440 - (current_y / MouseListener.get()._game_viewport_size.y) * 1440
+
+        return current_y
+
+
+    @staticmethod
     def get_ortho_x() -> float:
         from mxeng.window import Window
         current_x = MouseListener.get_x() - MouseListener.get()._game_viewport_pos.x

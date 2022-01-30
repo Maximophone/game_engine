@@ -20,11 +20,13 @@ class RenderBatch:
         self.COLOR_SIZE = 4
         self.TEX_COORDS_SIZE = 2
         self.TEX_ID_SIZE = 1
+        self.ENTITY_ID_SIZE = 1
         self.POS_OFFSET = 0
         self.COLOR_OFFSET = self.POS_OFFSET + self.POS_SIZE * np.float32().itemsize
         self.TEX_COORDS_OFFSET = self.COLOR_OFFSET + self.COLOR_SIZE * np.float32().itemsize
         self.TEX_ID_OFFSET = self.TEX_COORDS_OFFSET + self.TEX_COORDS_SIZE * np.float32().itemsize
-        self.VERTEX_SIZE = 9
+        self.ENTITY_ID_OFFSET = self.TEX_ID_OFFSET + self.TEX_ID_SIZE * np.float32().itemsize 
+        self.VERTEX_SIZE = 10
         self.VERTEX_SIZE_BYTES = self.VERTEX_SIZE * np.float32().itemsize
 
         self.sprites: List[SpriteRenderer] = [None for _ in range(max_batch_size)]
@@ -37,8 +39,6 @@ class RenderBatch:
         self.vbo_id: int = -1
         self.max_batch_size: int = max_batch_size
         self._z_index: int = z_index
-        self.shader: Shader = AssetPool.get_shader("assets/shaders/default.glsl")
-        self.shader.compile()
 
         # 4 vertices quads
         self.vertices: np.ndarray = np.array([0.] * max_batch_size * 4 * self.VERTEX_SIZE, dtype=np.float32)
@@ -85,6 +85,9 @@ class RenderBatch:
         gl.glEnableVertexAttribArray(3)
         gl.glVertexAttribPointer(3, self.TEX_ID_SIZE, gl.GL_FLOAT, gl.GL_FALSE, self.VERTEX_SIZE_BYTES, ctypes.c_void_p(self.TEX_ID_OFFSET))
 
+        gl.glEnableVertexAttribArray(4)
+        gl.glVertexAttribPointer(4, self.ENTITY_ID_SIZE, gl.GL_FLOAT, gl.GL_FALSE, self.VERTEX_SIZE_BYTES, ctypes.c_void_p(self.ENTITY_ID_OFFSET))
+
     def generate_indices(self) -> List[int]:
         # 6 indices per quad (3 per triangle)
         elements = [0] * 6 * self.max_batch_size
@@ -123,6 +126,7 @@ class RenderBatch:
             self.has_room = False
 
     def render(self):
+        from renderer.renderer import Renderer
         from mxeng.window import Window
 
         rebuffer_data = False
@@ -138,20 +142,22 @@ class RenderBatch:
             gl.glBufferSubData(gl.GL_ARRAY_BUFFER, 0, self.vertices.nbytes, self.vertices)
 
         # Use shader
-        self.shader.use()
-        self.shader.upload_mat4f("uProj", Window.get_scene().camera().get_projection_matrix())
-        self.shader.upload_mat4f("uView", Window.get_scene().camera().get_view_matrix())
+        shader = Renderer.get_bound_shader()
+        shader.use()
+        shader.upload_mat4f("uProj", Window.get_scene().camera().get_projection_matrix())
+        shader.upload_mat4f("uView", Window.get_scene().camera().get_view_matrix())
 
         for i in range(len(self._textures)):
             gl.glActiveTexture(gl.GL_TEXTURE0 + i + 1)
             self._textures[i].bind()
-        self.shader.upload_int_array("uTextures", self._tex_slots)
+        shader.upload_int_array("uTextures", self._tex_slots)
 
         gl.glBindVertexArray(self.vao_id)
         gl.glEnableVertexAttribArray(0)
         gl.glEnableVertexAttribArray(1)
         gl.glEnableVertexAttribArray(2)
         gl.glEnableVertexAttribArray(3)
+        gl.glEnableVertexAttribArray(4)
 
         gl.glDrawElements(gl.GL_TRIANGLES, self.num_sprites * 6, gl.GL_UNSIGNED_INT, ctypes.c_void_p(0))
 
@@ -159,12 +165,13 @@ class RenderBatch:
         gl.glDisableVertexAttribArray(1)
         gl.glDisableVertexAttribArray(2)
         gl.glDisableVertexAttribArray(3)
+        gl.glDisableVertexAttribArray(4)
         gl.glBindVertexArray(0)
 
         for i in range(len(self._textures)):
             self._textures[i].unbind()
 
-        self.shader.detach()
+        shader.detach()
 
     def load_vertex_properties(self, index: int):
         sprite: SpriteRenderer = self.sprites[index]
@@ -209,5 +216,8 @@ class RenderBatch:
 
             # Load texture id
             self.vertices[offset + 8] = tex_id
+
+            # Load entity id
+            self.vertices[offset + 9] = sprite.game_object.uid + 1
 
             offset += self.VERTEX_SIZE

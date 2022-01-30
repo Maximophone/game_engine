@@ -16,6 +16,7 @@ from mxeng.camera import Camera
 from mxeng.game_object import GameObject
 from mxeng.mouse_listener import MouseListener
 from mxeng.prefabs import Prefabs
+from renderer.renderer import Renderer
 from scenes.scene import Scene
 # from renderer.shader import Shader
 
@@ -56,7 +57,6 @@ class LevelEditorScene(Scene):
                 self._active_game_object = self._game_objects[-1]
             return
 
-    
     def load_resources(self):
         AssetPool.get_shader("assets/shaders/default.glsl")
         AssetPool.add_spritesheet(
@@ -65,16 +65,18 @@ class LevelEditorScene(Scene):
         )
 
     def update(self, dt: float):
-        from renderer.debug_draw import DebugDraw
         self.level_editor_stuff.update(dt)
         
-        DebugDraw.add_circle(Vector2([50, 50]), 64)
-        DebugDraw.add_box_2D(Vector2([100, 100]), Vector2([50, 100]), 60, Color3([0.5, 0.2, 0]))
-
         for go in self._game_objects:
             go.update(dt)
 
-        self._renderer.render()
+    def render(self):
+        from renderer.debug_draw import DebugDraw
+
+        DebugDraw.add_circle(Vector2([50, 50]), 64)
+        DebugDraw.add_box_2D(Vector2([100, 100]), Vector2([50, 100]), 60, Color3([0.5, 0.2, 0]))
+
+        Renderer.render()
 
     def imgui(self):
         imgui.begin("Test window")

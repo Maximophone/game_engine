@@ -4,9 +4,12 @@ from mxeng.imgui_layer import ImGUILayer
 from mxeng.key_listener import KeyListener
 from mxeng.mouse_listener import MouseListener
 from renderer.framebuffer import Framebuffer
+from renderer.picking_texture import PickingTexture
+from renderer.renderer import Renderer
 from scenes.scene import Scene
 from scenes.level_editor_scene import LevelEditorScene
 from scenes.level_scene import LevelScene
+from util.asset_pool import AssetPool
 from util.timer import Time
 
 class Window:
@@ -17,6 +20,7 @@ class Window:
         self._title = title
         self.glfw_window = None
         self.framebuffer: Framebuffer = None
+        self.picking_texture: PickingTexture = None
         self.r = 1
         self.b = 1
         self.g = 1
@@ -117,6 +121,8 @@ class Window:
         gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA)
 
         self.framebuffer = Framebuffer(2560, 1440)
+        self.picking_texture = PickingTexture(2560, 1440)
+
         gl.glViewport(0, 0, 2560, 1440)
 
         Window.change_scene(0)
@@ -127,9 +133,33 @@ class Window:
         end_time: float = Time.get_time()
         dt: float = -1
 
+        default_shader = AssetPool.get_shader("assets/shaders/default.glsl")
+        picking_shader = AssetPool.get_shader("assets/shaders/picking_shader.glsl")
+
         while not glfw.window_should_close(self.glfw_window):
             glfw.poll_events()
 
+            # Render pass 1: render to picking texture
+            gl.glDisable(gl.GL_BLEND)
+            self.picking_texture.enable_writing()
+
+            gl.glViewport(0, 0, 2560, 1440)
+            gl.glClearColor(0., 0., 0., 0.)
+            gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
+
+            Renderer.bind_shader(picking_shader)
+            self.current_scene.render()
+
+            if MouseListener.mouse_button_down(glfw.MOUSE_BUTTON_LEFT):
+                x = MouseListener.get_screen_x()
+                y = MouseListener.get_screen_y()
+
+                print(self.picking_texture.read_pixel(x, y))
+
+            self.picking_texture.disable_writing()
+            gl.glEnable(gl.GL_BLEND)
+
+            # Render pass 2: render actual game
             DebugDraw.begin_frame()
 
             gl.glClearColor(self.r, self.g, self.b, self.a)
@@ -143,6 +173,8 @@ class Window:
             if dt >= 0:
                 DebugDraw.draw()
                 self.current_scene.update(dt)
+                Renderer.bind_shader(default_shader)
+                self.current_scene.render()
             self.framebuffer.unbind()
                 
             ImGUILayer.update(dt, self.current_scene)

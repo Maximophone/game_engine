@@ -16,12 +16,15 @@ class Scene:
         self._is_running = False
         self._game_objects: List[GameObject] = []
         self._camera: Camera = None
-        self._renderer: Renderer = Renderer()
         self._active_game_object: GameObject = None
         self._level_loaded: bool = False
  
     @abstractmethod
     def update(self, dt: float):
+        pass
+
+    @abstractmethod
+    def render(self):
         pass
 
     @abstractmethod
@@ -31,7 +34,7 @@ class Scene:
     def start(self):
         for go in self._game_objects:
             go.start()
-            self._renderer.add(go)
+            Renderer.add(go)
         self._is_running = True
 
     def add_game_object_to_scene(self, go: GameObject):
@@ -40,7 +43,7 @@ class Scene:
         else:
             self._game_objects.append(go)
             go.start()
-            self._renderer.add(go)
+            Renderer.add(go)
 
     def camera(self):
         return self._camera

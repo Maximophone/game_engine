@@ -1,4 +1,5 @@
 import imgui
+from mxeng.mouse_listener import MouseListener
 from util.vectors import Vector2
 from mxeng.window import Window
 
@@ -10,8 +11,16 @@ class GameViewWindow:
         window_pos = GameViewWindow.get_centered_position_for_viewport(window_size)
 
         imgui.core.set_cursor_pos([window_pos.x, window_pos.y])
+
+        top_left = Vector2(imgui.core.get_cursor_screen_pos())
+        top_left.x -= imgui.core.get_scroll_x()
+        top_left.y -= imgui.core.get_scroll_y()
+
         texture_id = Window.get_framebuffer().texture_id
         imgui.core.image(texture_id, window_size.x, window_size.y, (0, 1), (1, 0))
+
+        MouseListener.set_game_viewport_pos(top_left.copy())
+        MouseListener.set_game_viewport_size(window_size.copy())
 
         imgui.end()
 

@@ -1,5 +1,6 @@
 from typing import List
 import glfw
+from util.vectors import Vector2
 from pyrr import Vector4
 
 
@@ -15,6 +16,9 @@ class MouseListener:
         self._last_x = _last_x
         self._mouse_button_pressed = _mouse_button_pressed or [False]*9
         self._is_dragging = _is_dragging
+        
+        self._game_viewport_pos = Vector2([0, 0])
+        self._game_viewport_size = Vector2([0, 0])
 
 
     @staticmethod
@@ -69,16 +73,16 @@ class MouseListener:
     @staticmethod
     def get_ortho_x() -> float:
         from mxeng.window import Window
-        current_x = MouseListener.get_x()
-        current_x = current_x / Window.get_width() * 2 - 1
+        current_x = MouseListener.get_x() - MouseListener.get()._game_viewport_pos.x
+        current_x = current_x / MouseListener.get()._game_viewport_size.x * 2 - 1
         current_x = (Window.get_scene().camera().get_inverse_view() * Window.get_scene().camera().get_inverse_projection() * Vector4([current_x, 0, 0, 1])).x
         return current_x
 
     @staticmethod
     def get_ortho_y() -> float:
         from mxeng.window import Window
-        current_y = Window.get_height() - MouseListener.get_y()
-        current_y = current_y / Window.get_height() * 2 - 1
+        current_y = MouseListener.get_y() - MouseListener.get()._game_viewport_pos.y
+        current_y = - (current_y / MouseListener.get()._game_viewport_size.y * 2 - 1)
         current_y = (Window.get_scene().camera().get_inverse_view() * Window.get_scene().camera().get_inverse_projection() * Vector4([0, current_y, 0, 1])).y
         return current_y
 
@@ -109,6 +113,14 @@ class MouseListener:
         else:
             print(f"Querying mouse button down on out of bounds button: {button}")
             return False
+
+    @staticmethod
+    def set_game_viewport_pos(pos: Vector2):
+        MouseListener.get()._game_viewport_pos = pos
+
+    @staticmethod
+    def set_game_viewport_size(size: Vector2):
+        MouseListener.get()._game_viewport_size = size
 
 
     

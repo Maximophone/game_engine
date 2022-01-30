@@ -58,6 +58,14 @@ class Window:
         return glfw.get_window_size(Window.get().glfw_window)[1]
 
     @staticmethod
+    def get_framebuffer() -> Framebuffer:
+        return Window.get().framebuffer
+
+    @staticmethod
+    def get_target_aspect_ratio() -> float:
+        return 16./9.
+
+    @staticmethod
     def resize_callback(window, w: int, h: int):
         Window.get()._width = w
         Window.get()._height = h
@@ -109,6 +117,7 @@ class Window:
         gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA)
 
         self.framebuffer = Framebuffer(2560, 1440)
+        gl.glViewport(0, 0, 2560, 1440)
 
         Window.change_scene(0)
 
@@ -127,6 +136,10 @@ class Window:
             gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
             self.framebuffer.bind()
+
+            gl.glClearColor(self.r, self.g, self.b, self.a)
+            gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+
             if dt >= 0:
                 DebugDraw.draw()
                 self.current_scene.update(dt)

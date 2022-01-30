@@ -31,7 +31,7 @@ class Framebuffer:
 
     @property
     def texture_id(self) -> int:
-        return self._texture.id
+        return self._texture.tex_id
 
     @property
     def fbo_id(self) -> int:

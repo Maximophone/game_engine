@@ -22,9 +22,11 @@ class ImGUILayer:
 
     @staticmethod
     def update(dt: float, scene: Scene):
+        from editor.game_view_window import GameViewWindow
         ImGUILayer.impl.process_inputs()
 
         imgui.new_frame()
+        # ImGUILayer.setup_dock_space()
         scene.scene_imgui()
         with imgui.font(ImGUILayer.font):
             if imgui.begin_main_menu_bar():
@@ -44,8 +46,16 @@ class ImGUILayer:
             imgui.text("Hello world!")
             imgui.end()
         
+        GameViewWindow.imgui()
         imgui.render()
         ImGUILayer.impl.render(imgui.get_draw_data())
+
+    @staticmethod
+    def setup_dock_space():
+        # Can't implement for now because docking is not ported to pyimgui
+        from mxeng.window import Window
+        imgui.core.set_next_window_position(0., 0.)
+        imgui.core.set_next_window_size(Window.get_width(), Window.get_height)
 
     @staticmethod
     def shutdown():

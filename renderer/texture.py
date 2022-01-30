@@ -64,6 +64,9 @@ class Texture:
         self._tex_id = gl.glGenTextures(1)
         gl.glBindTexture(gl.GL_TEXTURE_2D, self._tex_id)
 
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MIN_FILTER, gl.GL_LINEAR)
+        gl.glTexParameteri(gl.GL_TEXTURE_2D, gl.GL_TEXTURE_MAG_FILTER, gl.GL_LINEAR)
+
         gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGB, self.width, self.height, 0, gl.GL_RGB, gl.GL_UNSIGNED_BYTE, None) # WARNING: is the last argument 0 or None or a pointer
 
 

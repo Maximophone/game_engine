@@ -10,6 +10,7 @@ from components.grid_lines import GridLines
 from components.mouse_controls import MouseControls
 from components.rigid_body import RigidBody
 from components.sprite import Sprite
+
 from components.sprite_renderer import SpriteRenderer
 from components.spritesheet import Spritesheet
 from mxeng.camera import Camera
@@ -52,10 +53,6 @@ class LevelEditorScene(Scene):
         
         DebugDraw.add_line_2D(Vector2([600., 400.]), Vector2([800, 800]), Vector3([1., 0., 0.]), 1000)
         
-        if self._level_loaded:
-            if len(self._game_objects):
-                self._active_game_object = self._game_objects[-1]
-            return
 
     def load_resources(self):
         AssetPool.get_shader("assets/shaders/default.glsl")

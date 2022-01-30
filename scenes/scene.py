@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import List
+from typing import List, Optional
 import json
 from components.component import Component
 
@@ -16,7 +16,6 @@ class Scene:
         self._is_running = False
         self._game_objects: List[GameObject] = []
         self._camera: Camera = None
-        self._active_game_object: GameObject = None
         self._level_loaded: bool = False
  
     @abstractmethod
@@ -45,21 +44,15 @@ class Scene:
             go.start()
             Renderer.add(go)
 
+    def get_game_object(self, game_object_id: int) -> Optional[GameObject]:
+        return next((go for go in self._game_objects if go.uid == game_object_id), None)
+
     def camera(self):
         return self._camera
-
-    def scene_imgui(self):
-        if self._active_game_object is not None:
-            imgui.begin("Inspector", True)
-            self._active_game_object.imgui()
-            imgui.end()
-
-        self.imgui()
 
     def imgui(self):
         pass
     
-
     def save_exit(self):
         with open("level.txt", "w") as f:
             json.dump(serialize(self._game_objects), f, indent=4)

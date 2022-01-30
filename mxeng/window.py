@@ -27,6 +27,7 @@ class Window:
         self.a = 1
 
         self.current_scene: Scene = None
+        self.imgui_layer = None
 
     @staticmethod
     def change_scene(new_scene: int):
@@ -79,7 +80,7 @@ class Window:
         self.loop()
 
         # Free the memory
-        ImGUILayer.shutdown()
+        self.imgui_layer.shutdown()
         glfw.destroy_window(self.glfw_window)
 
         glfw.terminate()
@@ -101,15 +102,6 @@ class Window:
         
         glfw.make_context_current(self.glfw_window)
 
-        # Important: this initialisation needs to happen before the mouse callbacks are added
-        ImGUILayer.init_imgui(self.glfw_window)
-
-        # Register Mouse callbacks
-        glfw.set_cursor_pos_callback(self.glfw_window, MouseListener.mouse_pos_callback)
-        glfw.set_mouse_button_callback(self.glfw_window, MouseListener.mouse_button_callback)
-        glfw.set_scroll_callback(self.glfw_window, MouseListener.mouse_scroll_callback)
-        glfw.set_key_callback(self.glfw_window, KeyListener.key_callback)
-        glfw.set_window_size_callback(self.glfw_window, Window.resize_callback)
         
         # Enable v-sync
         glfw.swap_interval(1)
@@ -122,7 +114,17 @@ class Window:
 
         self.framebuffer = Framebuffer(2560, 1440)
         self.picking_texture = PickingTexture(2560, 1440)
+        self.imgui_layer = ImGUILayer(self.picking_texture)
+        # Important: this initialisation needs to happen before the mouse callbacks are added
+        self.imgui_layer.init_imgui(self.glfw_window)
 
+        # Register Mouse callbacks
+        glfw.set_cursor_pos_callback(self.glfw_window, MouseListener.mouse_pos_callback)
+        glfw.set_mouse_button_callback(self.glfw_window, MouseListener.mouse_button_callback)
+        glfw.set_scroll_callback(self.glfw_window, MouseListener.mouse_scroll_callback)
+        glfw.set_key_callback(self.glfw_window, KeyListener.key_callback)
+        glfw.set_window_size_callback(self.glfw_window, Window.resize_callback)
+        
         gl.glViewport(0, 0, 2560, 1440)
 
         Window.change_scene(0)
@@ -150,12 +152,6 @@ class Window:
             Renderer.bind_shader(picking_shader)
             self.current_scene.render()
 
-            if MouseListener.mouse_button_down(glfw.MOUSE_BUTTON_LEFT):
-                x = MouseListener.get_screen_x()
-                y = MouseListener.get_screen_y()
-
-                print(self.picking_texture.read_pixel(x, y))
-
             self.picking_texture.disable_writing()
             gl.glEnable(gl.GL_BLEND)
 
@@ -177,7 +173,7 @@ class Window:
                 self.current_scene.render()
             self.framebuffer.unbind()
                 
-            ImGUILayer.update(dt, self.current_scene)
+            self.imgui_layer.update(dt, self.current_scene)
             glfw.swap_buffers(self.glfw_window)
 
             end_time = Time.get_time()

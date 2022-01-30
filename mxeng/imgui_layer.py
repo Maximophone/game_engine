@@ -1,34 +1,36 @@
 import imgui
 from imgui.integrations.glfw import GlfwRenderer
+from editor.properties_window import PropertiesWindow
+from renderer.picking_texture import PickingTexture
 
 from scenes.scene import Scene
 
 class ImGUILayer:
-    impl = None
-    font = None
+    def __init__(self, picking_texture: PickingTexture):
+        self.impl = None
+        self.font = None
+        self.properties_window: PropertiesWindow = PropertiesWindow(picking_texture)
 
-    @staticmethod
-    def init_imgui(glfw_window):
+    def init_imgui(self, glfw_window):
         imgui.create_context()
-        ImGUILayer.impl = GlfwRenderer(glfw_window)
+        self.impl = GlfwRenderer(glfw_window)
 
         io = imgui.get_io()
         # io.fonts.clear_fonts()
-        ImGUILayer.font = io.fonts.add_font_from_file_ttf(
+        self.font = io.fonts.add_font_from_file_ttf(
             "assets/fonts/consola.ttf", 32
         )
 
-        ImGUILayer.impl.refresh_font_texture()
+        self.impl.refresh_font_texture()
 
-    @staticmethod
-    def update(dt: float, scene: Scene):
+    def update(self, dt: float, scene: Scene):
         from editor.game_view_window import GameViewWindow
-        ImGUILayer.impl.process_inputs()
+        self.impl.process_inputs()
 
         imgui.new_frame()
         # ImGUILayer.setup_dock_space()
-        scene.scene_imgui()
-        with imgui.font(ImGUILayer.font):
+        scene.imgui()
+        with imgui.font(self.font):
             if imgui.begin_main_menu_bar():
                 if imgui.begin_menu("File", True):
 
@@ -47,18 +49,18 @@ class ImGUILayer:
             imgui.end()
         
         GameViewWindow.imgui()
+        self.properties_window.update(dt, scene)
+        self.properties_window.imgui()
         imgui.render()
-        ImGUILayer.impl.render(imgui.get_draw_data())
+        self.impl.render(imgui.get_draw_data())
 
-    @staticmethod
-    def setup_dock_space():
+    def setup_dock_space(self):
         # Can't implement for now because docking is not ported to pyimgui
         from mxeng.window import Window
         imgui.core.set_next_window_position(0., 0.)
         imgui.core.set_next_window_size(Window.get_width(), Window.get_height)
 
-    @staticmethod
-    def shutdown():
-        ImGUILayer.impl.shutdown()
+    def shutdown(self):
+        self.impl.shutdown()
 
 

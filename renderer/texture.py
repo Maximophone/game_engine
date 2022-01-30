@@ -7,13 +7,15 @@ from util.serialization import serializable, sproperty
 
 @serializable()
 class Texture:
-    def __init__(self, filepath: str = None):
+    def __init__(self, filepath: str = None, width: int = None, height: int = None):
         self._filepath = filepath
         self._tex_id: Optional[int] = None
-        self.width: int = None
-        self.height: int = None
+        self.width: int = width
+        self.height: int = height
         if filepath is not None:
             self.init()
+        elif (width is not None) and (height is not None):
+            self.init_generated()
 
     @sproperty
     def filepath(self) -> str:
@@ -54,6 +56,17 @@ class Texture:
             img_data = np.array(list(image.transpose(Image.FLIP_TOP_BOTTOM).convert("RGBA").getdata()), np.uint8)
 
             gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGBA, image.width, image.height, 0, gl.GL_RGBA, gl.GL_UNSIGNED_BYTE, img_data)
+
+    def init_generated(self):
+        self._filepath = "Generated"
+
+        # Generate texture on GPU
+        self._tex_id = gl.glGenTextures(1)
+        gl.glBindTexture(gl.GL_TEXTURE_2D, self._tex_id)
+
+        gl.glTexImage2D(gl.GL_TEXTURE_2D, 0, gl.GL_RGB, self.width, self.height, 0, gl.GL_RGB, gl.GL_UNSIGNED_BYTE, None) # WARNING: is the last argument 0 or None or a pointer
+
+
 
     def bind(self):
         gl.glBindTexture(gl.GL_TEXTURE_2D, self._tex_id)

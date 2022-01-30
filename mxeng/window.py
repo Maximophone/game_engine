@@ -3,6 +3,7 @@ import OpenGL.GL as gl
 from mxeng.imgui_layer import ImGUILayer
 from mxeng.key_listener import KeyListener
 from mxeng.mouse_listener import MouseListener
+from renderer.framebuffer import Framebuffer
 from scenes.scene import Scene
 from scenes.level_editor_scene import LevelEditorScene
 from scenes.level_scene import LevelScene
@@ -15,6 +16,7 @@ class Window:
         self._height = height
         self._title = title
         self.glfw_window = None
+        self.framebuffer: Framebuffer = None
         self.r = 1
         self.b = 1
         self.g = 1
@@ -106,6 +108,8 @@ class Window:
         gl.glEnable(gl.GL_BLEND)
         gl.glBlendFunc(gl.GL_ONE, gl.GL_ONE_MINUS_SRC_ALPHA)
 
+        self.framebuffer = Framebuffer(2560, 1440)
+
         Window.change_scene(0)
 
     def loop(self):
@@ -122,9 +126,11 @@ class Window:
             gl.glClearColor(self.r, self.g, self.b, self.a)
             gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
+            self.framebuffer.bind()
             if dt >= 0:
                 DebugDraw.draw()
                 self.current_scene.update(dt)
+            self.framebuffer.unbind()
                 
             ImGUILayer.update(dt, self.current_scene)
             glfw.swap_buffers(self.glfw_window)

@@ -9,17 +9,18 @@ class GridLines(Component):
         from mxeng.window import Window
         from renderer.debug_draw import DebugDraw
 
-        camera_pos = Window.get_scene().camera().position
-        projection_size = Window.get_scene().camera().projection_size
+        camera = Window.get_scene().camera()
+        camera_pos = camera.position
+        projection_size = camera.projection_size
 
         first_x = (camera_pos[0] // Settings.GRID_WIDTH - 1) * Settings.GRID_WIDTH
         first_y = (camera_pos[1] // Settings.GRID_HEIGHT - 1) * Settings.GRID_HEIGHT
 
-        num_vert_lines = int(projection_size[0] / Settings.GRID_WIDTH) + 2
-        num_horiz_lines = int(projection_size[1] / Settings.GRID_HEIGHT) + 2
+        num_vert_lines = int(projection_size[0] * camera.zoom / Settings.GRID_WIDTH) + 2
+        num_horiz_lines = int(projection_size[1] * camera.zoom / Settings.GRID_HEIGHT) + 2
         
-        width = int(projection_size[0]) + Settings.GRID_WIDTH * 2
-        height = int(projection_size[1]) + Settings.GRID_HEIGHT * 2
+        width = int(projection_size[0] * camera.zoom) + Settings.GRID_WIDTH * 2
+        height = int(projection_size[1] * camera.zoom) + Settings.GRID_HEIGHT * 2
 
         max_lines = max(num_vert_lines, num_horiz_lines)
         color = Vector3([0.2, 0.2, 0.2])

@@ -6,6 +6,7 @@
 import pickle
 
 import math
+from components.editor_camera import EditorCamera
 from components.grid_lines import GridLines
 from components.mouse_controls import MouseControls
 from components.rigid_body import RigidBody
@@ -45,10 +46,12 @@ class LevelEditorScene(Scene):
 
     def init(self):
         from renderer.debug_draw import DebugDraw
+        self._camera = Camera(Vector3([0., 0., 0.]))
         self.level_editor_stuff.add_component(MouseControls())
         self.level_editor_stuff.add_component(GridLines())
+        self.level_editor_stuff.add_component(EditorCamera(self._camera))
         self.load_resources()
-        self._camera = Camera(Vector3([0., 0., 0.]))
+
         self.sprites = AssetPool.get_spritesheet("assets/images/spritesheets/decorationsAndBlocks.png")
         
         DebugDraw.add_line_2D(Vector2([600., 400.]), Vector2([800, 800]), Vector3([1., 0., 0.]), 1000)
@@ -63,6 +66,7 @@ class LevelEditorScene(Scene):
 
     def update(self, dt: float):
         self.level_editor_stuff.update(dt)
+        self._camera.adjust_projection()
         
         for go in self._game_objects:
             go.update(dt)

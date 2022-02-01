@@ -8,6 +8,7 @@ class Camera:
         self._inverse_projection: Matrix44 = Matrix44.identity()
         self._inverse_view: Matrix44 = Matrix44.identity()
         self.position = position
+        self.zoom = 1.
         self._projection_size: np.ndarray = np.array([32.*40., 32.*21.])
         self.adjust_projection()
 
@@ -16,7 +17,7 @@ class Camera:
         return self._projection_size
 
     def adjust_projection(self):
-        self._projection_matrix = Matrix44.orthogonal_projection(0., self._projection_size[0], 0., self._projection_size[1], 0., 100.)
+        self._projection_matrix = Matrix44.orthogonal_projection(0., self._projection_size[0] * self.zoom, 0., self._projection_size[1] * self.zoom, 0., 100.)
         self._inverse_projection = self._projection_matrix.inverse
 
 
@@ -39,3 +40,6 @@ class Camera:
 
     def get_inverse_view(self) -> Matrix44:
         return self._inverse_view
+
+    def add_zoom(self, value: float):
+        self.zoom += value

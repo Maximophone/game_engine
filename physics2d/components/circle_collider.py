@@ -1,6 +1,8 @@
-from components.component import Component
+from physics2d.components.collider import Collider
+from util.serialization import serializable
 
-class CircleCollider(Component):
+@serializable("radius")
+class CircleCollider(Collider):
     def __init__(self):
         self.radius: float = 1.
         super().__init__()

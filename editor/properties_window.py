@@ -1,5 +1,8 @@
 from components.non_pickable import NonPickable
 from mxeng.game_object import GameObject
+from physics2d.components.box_2d_collider import Box2DCollider
+from physics2d.components.circle_collider import CircleCollider
+from physics2d.components.rigid_body_2d import RigidBody2D
 from scenes.scene import Scene
 from renderer.picking_texture import PickingTexture
 from mxeng.mouse_listener import MouseListener
@@ -36,6 +39,19 @@ class PropertiesWindow:
     def imgui(self):
         if self._active_game_object is not None:
             imgui.begin("Properties", True)
+
+            if imgui.begin_popup_context_window("ComponentAdder"):
+                if imgui.menu_item("Add Rigid Body")[0]:
+                    if self.active_game_object.get_component(RigidBody2D) is None:
+                        self.active_game_object.add_component(RigidBody2D())
+                if imgui.menu_item("Add Box Collider")[0]:
+                    if self.active_game_object.get_component(Box2DCollider) is None:
+                        self.active_game_object.add_component(Box2DCollider())
+                if imgui.menu_item("Add Circle Collider")[0]:
+                    if self.active_game_object.get_component(CircleCollider) is None:
+                        self.active_game_object.add_component(CircleCollider())
+                imgui.end_popup()
+            
             self._active_game_object.imgui()
             imgui.end()
 

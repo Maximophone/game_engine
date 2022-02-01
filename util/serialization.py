@@ -1,3 +1,4 @@
+from enum import Enum
 import numpy as np
 import pickle
 import codecs
@@ -5,6 +6,7 @@ import codecs
 from pyrr import Vector3
 
 CLASS_REGISTER = {}
+ENUM_REGISTER = {}
 
 
 class DeserializeException(Exception):
@@ -82,6 +84,14 @@ def serializable(*args):
     return inner
 
 
+def senum(cls):
+    """Registers an enum for serialization"""
+    ENUM_REGISTER[repr(cls)] = cls
+    if not hasattr(cls, "__senum"):
+        cls.__senum = True
+    return cls
+
+
 def serialize(o: object) -> dict:
     if hasattr(o, "__serial"):
         ret = {"__type": repr(o.__class__), "val": {}}
@@ -116,6 +126,8 @@ def serialize(o: object) -> dict:
         return ret
     elif isinstance(o, np.ndarray):
         return {"__type": "np.ndarray", "val": codecs.encode(pickle.dumps(o), 'base64').decode("utf-8")}
+    elif isinstance(o, Enum) and hasattr(o, "__senum"):
+        return {"__type": repr(o.__class__), "val": o.value}
     else:
         raise SerializeException(f"Object {o} is not serializable")
         
@@ -152,6 +164,9 @@ def deserialize(d: dict):
                 else:
                     raise DeserializeException(f"Error creating attribute {k} for class {typ}")
         return instance
+    elif typ in ENUM_REGISTER:
+        cls = ENUM_REGISTER[typ]
+        return cls(val)
     else:
         raise DeserializeException(f"Unknown type: {typ}")
         

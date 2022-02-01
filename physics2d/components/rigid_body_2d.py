@@ -1,11 +1,12 @@
 from cmath import pi
+from util.serialization import serializable
 from util.vectors import Vector2
 from components.component import Component
 from physics2d.enums.body_type import BodyType
 
 from Box2D import b2Body
 
-
+@serializable("velocity", "angular_damping", "linear_damping", "mass", "body_type", "fixed_rotation", "is_continuous_collision")
 class RigidBody2D(Component):
     def __init__(self):
         self.velocity: Vector2 = Vector2()
@@ -15,7 +16,7 @@ class RigidBody2D(Component):
         self.body_type: BodyType = BodyType.Dynamic
 
         self.fixed_rotation: bool = False
-        self.continuous_collision: bool = True
+        self.is_continuous_collision: bool = True
 
         self.raw_body: b2Body = None
         super().__init__()

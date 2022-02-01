@@ -1,42 +1,21 @@
-# from components.font_renderer import FontRenderer
-# from components.sprite_renderer import SpriteRenderer
-# from mxeng.game_object import GameObject
-# from renderer.texture import Texture
-# from util.timer import Time
-import pickle
-
-import math
 from components.editor_camera import EditorCamera
 from components.gizmo_system import GizmoSystem
 from components.grid_lines import GridLines
 from components.mouse_controls import MouseControls
 from components.rigid_body import RigidBody
-from components.sprite import Sprite
 
-from components.sprite_renderer import SpriteRenderer
 from components.spritesheet import Spritesheet
-from components.translate_gizmo import TranslateGizmo
-from components.scale_gizmo import ScaleGizmo
-from mxeng.camera import Camera
 from mxeng.game_object import GameObject
-from mxeng.mouse_listener import MouseListener
 from mxeng.prefabs import Prefabs
-from renderer.renderer import Renderer
 from scenes.scene import Scene
-# from renderer.shader import Shader
 
-# import OpenGL.GL as gl
-import numpy as np
-# import ctypes
-from pyrr import Vector3
 import imgui
 
-from components.transform import Transform
+from scenes.scene_initializer import SceneInitializer
 from util.asset_pool import AssetPool
-from util.vectors import Color3, Vector2
+from util.vectors import Vector2, Vector3
 
-class LevelEditorScene(Scene):
-
+class LevelEditorSceneInitializer(SceneInitializer):
     def __init__(self):
         super().__init__()
         self.obj1: GameObject = None
@@ -44,28 +23,28 @@ class LevelEditorScene(Scene):
         self.sprite_flip_time = 0.2
         self.sprite_flip_time_left = 0.
         self.sprites = None
-        self.level_editor_stuff = self.create_game_object("LevelEditor")
+        self.level_editor_stuff = None
         self.t = 0.
 
-    def init(self):
+    def init(self, scene: Scene):
         from renderer.debug_draw import DebugDraw
         from mxeng.window import Window
-        self.load_resources()
+        
         self.sprites = AssetPool.get_spritesheet("assets/images/spritesheets/decorationsAndBlocks.png")
         gizmos = AssetPool.get_spritesheet("assets/images/gizmos.png")
 
-
-        self._camera = Camera(Vector3([0., 0., 0.]))
+        self.level_editor_stuff = scene.create_game_object("LevelEditor")
+        self.level_editor_stuff.set_no_serialize()
         self.level_editor_stuff.add_component(MouseControls())
         self.level_editor_stuff.add_component(GridLines())
-        self.level_editor_stuff.add_component(EditorCamera(self._camera))
+        self.level_editor_stuff.add_component(EditorCamera(scene._camera))
         self.level_editor_stuff.add_component(GizmoSystem(gizmos))
-        self.level_editor_stuff.start()
+        scene.add_game_object_to_scene(self.level_editor_stuff)
         
         DebugDraw.add_line_2D(Vector2([600., 400.]), Vector2([800, 800]), Vector3([1., 0., 0.]), 1000)
         
 
-    def load_resources(self):
+    def load_resources(self, scene: Scene):
         AssetPool.get_shader("assets/shaders/default.glsl")
         AssetPool.add_spritesheet(
             "assets/images/spritesheets/decorationsAndBlocks.png",
@@ -75,21 +54,6 @@ class LevelEditorScene(Scene):
             "assets/images/gizmos.png",
             Spritesheet(AssetPool.get_texture("assets/images/gizmos.png"), 24, 48, 3, 0)
         )
-
-    def update(self, dt: float):
-        self.level_editor_stuff.update(dt)
-        self._camera.adjust_projection()
-        
-        for go in self._game_objects:
-            go.update(dt)
-
-    def render(self):
-        from renderer.debug_draw import DebugDraw
-
-        DebugDraw.add_circle(Vector2([50, 50]), 64)
-        DebugDraw.add_box_2D(Vector2([100, 100]), Vector2([50, 100]), 60, Color3([0.5, 0.2, 0]))
-
-        Renderer.render()
 
     def imgui(self):
         imgui.begin("Level Editor Stuff")

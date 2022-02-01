@@ -1,6 +1,7 @@
-from abc import abstractmethod
 from typing import List, Optional
 import json
+
+from util.vectors import Vector3
 from components.component import Component
 from components.transform import Transform
 
@@ -8,28 +9,31 @@ from mxeng.game_object import GameObject
 from mxeng.camera import Camera
 from renderer.renderer import Renderer
 
-import imgui
+from scenes.scene_initializer import SceneInitializer
 
-from util.serialization import deserialize, serializable, serialize
+from util.serialization import deserialize, serialize
 
 class Scene:
-    def __init__(self):
+    def __init__(self, scene_initializer: SceneInitializer):
         self._is_running = False
         self._game_objects: List[GameObject] = []
         self._camera: Camera = None
         self._level_loaded: bool = False
+        self._scene_initializer: SceneInitializer = scene_initializer
  
-    @abstractmethod
     def update(self, dt: float):
-        pass
+        self._camera.adjust_projection()
+        
+        for go in self._game_objects:
+            go.update(dt)
 
-    @abstractmethod
     def render(self):
-        pass
+        Renderer.render()
 
-    @abstractmethod
     def init(self):
-        pass
+        self._camera = Camera(Vector3())
+        self._scene_initializer.load_resources(self)
+        self._scene_initializer.init(self)
 
     def start(self):
         for go in self._game_objects:
@@ -59,7 +63,7 @@ class Scene:
         return self._camera
 
     def imgui(self):
-        pass
+        self._scene_initializer.imgui()
     
     def save_exit(self):
         with open("level.txt", "w") as f:

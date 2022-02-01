@@ -11,8 +11,8 @@ from renderer.framebuffer import Framebuffer
 from renderer.picking_texture import PickingTexture
 from renderer.renderer import Renderer
 from scenes.scene import Scene
-from scenes.level_editor_scene import LevelEditorScene
-from scenes.level_scene import LevelScene
+from scenes.level_editor_scene_initializer import LevelEditorSceneInitializer
+from scenes.scene_initializer import SceneInitializer
 from util.asset_pool import AssetPool
 from util.timer import Time
 
@@ -36,13 +36,12 @@ class Window:
         EventSystem.add_observer(self)
 
     @staticmethod
-    def change_scene(new_scene: int):
-        if new_scene == 0:
-            Window.get().current_scene = LevelEditorScene()
-        elif new_scene == 1:
-            Window.get().current_scene = LevelScene()
-        else:
-            assert False, f"Unknown scene: {new_scene}"
+    def change_scene(scene_initializer: SceneInitializer):
+        if Window.get().current_scene is not None:
+            # Destroy it
+            pass
+
+        Window.get().current_scene = Scene(scene_initializer)
         Window.get().current_scene.load()
         Window.get().current_scene.init()
         Window.get().current_scene.start()
@@ -137,7 +136,7 @@ class Window:
         
         gl.glViewport(0, 0, 2560, 1440)
 
-        Window.change_scene(0)
+        Window.change_scene(LevelEditorSceneInitializer())
 
     def loop(self):
         from renderer.debug_draw import DebugDraw

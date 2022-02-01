@@ -12,8 +12,9 @@ class Component:
     ID_COUNTER: int = 0
 
     def __init__(self):
+        from mxeng.game_object import GameObject
         self._uid: int = -1
-        self.game_object: "GameObject" = None
+        self.game_object: GameObject = None
 
     def update(self, dt: float):
         pass

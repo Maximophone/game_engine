@@ -2,6 +2,7 @@ from abc import abstractmethod
 import imgui.core
 from pyrr import Vector3, Vector4
 import numpy as np
+from editor.mx_imgui import MXImGUI
 
 from util.serialization import serializable, sproperty
 from util.vectors import Color3, Color4, Vector2
@@ -28,21 +29,26 @@ class Component:
             typ = type(value)
 
             if typ == int:
-                changed, new_value = imgui.core.drag_int(f"{name}: ", value)
-                if changed:
-                    setattr(self, name, new_value)
+                new_value = MXImGUI.drag_int(f"{name}: ", value)
+                setattr(self, name, new_value)
+                # changed, new_value = imgui.core.drag_int(f"{name}: ", value)
+                # if changed:
+                #     setattr(self, name, new_value)
             elif typ == float:
-                changed, new_value = imgui.core.drag_float(f"{name}: ", value)
-                if changed:
-                    setattr(self, name, new_value)
+                new_value = MXImGUI.drag_float(f"{name}: ", value)
+                setattr(self, name, new_value)
+                # changed, new_value = imgui.core.drag_float(f"{name}: ", value)
+                # if changed:
+                #     setattr(self, name, new_value)
             elif typ == bool:
-                changed, new_value = imgui.core.checkboc(f"{name}: ", value)
+                changed, new_value = imgui.core.checkbox(f"{name}: ", value)
                 if changed:
                     setattr(self, name, new_value)
             elif typ == Vector2:
-                changed, new_value = imgui.core.drag_float2(f"{name}: ", value[0], value[1])
-                if changed:
-                    setattr(self, name,  Vector2(new_value))
+                MXImGUI.draw_vec2_control(f"{name}: ", value)
+                # changed, new_value = imgui.core.drag_float2(f"{name}: ", value[0], value[1])
+                # if changed:
+                #    setattr(self, name,  Vector2(new_value))
             elif typ == Vector3:
                 changed, new_value = imgui.core.drag_float3(f"{name}: ", value[0], value[1], value[2])
                 if changed:
@@ -52,11 +58,11 @@ class Component:
                 if changed:
                     setattr(self, name, Vector4(new_value))
             elif typ == Color3:
-                changed, new_color = imgui.color_edit3(f"{name}: ", *value)
+                changed, new_color = imgui.color_edit3(f"{name}", *value)
                 if changed:
                     setattr(self, name, Color3(new_color))
             elif typ == Color4:
-                changed, new_color = imgui.color_edit4(f"{name}: ", *value)
+                changed, new_color = imgui.color_edit4(f"{name}", *value)
                 if changed:
                     setattr(self, name, Color4(new_color))
 

@@ -2,6 +2,7 @@ from abc import abstractmethod
 from typing import List, Optional
 import json
 from components.component import Component
+from components.transform import Transform
 
 from mxeng.game_object import GameObject
 from mxeng.camera import Camera
@@ -47,6 +48,13 @@ class Scene:
     def get_game_object(self, game_object_id: int) -> Optional[GameObject]:
         return next((go for go in self._game_objects if go.uid == game_object_id), None)
 
+    def create_game_object(self, name: str, transform: Transform = None) -> GameObject:
+        transform = transform or Transform()
+        go: GameObject = GameObject(name)
+        go.add_component(transform)
+        # self.add_game_object_to_scene(go)
+        return go
+
     def camera(self):
         return self._camera
 
@@ -55,7 +63,7 @@ class Scene:
     
     def save_exit(self):
         with open("level.txt", "w") as f:
-            json.dump(serialize(self._game_objects), f, indent=4)
+            json.dump(serialize([go for go in self._game_objects if go.do_serialize]), f, indent=4)
 
     def load(self):
         try:

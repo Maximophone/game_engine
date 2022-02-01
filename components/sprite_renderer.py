@@ -1,7 +1,7 @@
 from typing import List
 from components.sprite import Sprite
 from components.component import Component
-from mxeng.transform import Transform
+from components.transform import Transform
 import numpy as np
 import imgui.core
 
@@ -26,10 +26,10 @@ class SpriteRenderer(Component):
             self.game_object.transform.copy(to=self._last_transform)
             self._is_dirty = True
 
-    def imgui(self):
-        changed, new_color = imgui.color_edit4("Color picker", *self.get_color())
-        if changed:
-            self.set_color(Color4(new_color))
+    # def imgui(self):
+    #     changed, new_color = imgui.color_edit4("Color picker", *self.get_color())
+    #     if changed:
+    #         self.set_color(Color4(new_color))
 
     def get_color(self) -> Color4:
         return self._color

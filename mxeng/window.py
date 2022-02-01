@@ -71,6 +71,10 @@ class Window:
         return 16./9.
 
     @staticmethod
+    def get_imgui_layer() -> ImGUILayer:
+        return Window.get().imgui_layer
+
+    @staticmethod
     def resize_callback(window, w: int, h: int):
         Window.get()._width = w
         Window.get()._height = h

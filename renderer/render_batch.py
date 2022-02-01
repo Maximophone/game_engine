@@ -1,5 +1,6 @@
 import ctypes
 import numpy as np
+from pyrr import Matrix44, Vector4
 from components.sprite_renderer import SpriteRenderer
 from renderer.shader import Shader
 
@@ -188,7 +189,13 @@ class RenderBatch:
                 if texture == sprite.get_texture():
                     tex_id = i + 1
                     break
-
+        
+        is_rotated = sprite.game_object.transform.rotation != 0.
+        transform_matrix = Matrix44.identity()
+        if is_rotated:
+            transform_matrix *= Matrix44.from_translation(sprite.game_object.transform.position)
+            transform_matrix *= Matrix44.from_z_rotation(sprite.game_object.transform.rotation / 360 * np.pi * 2)
+            transform_matrix *= Matrix44.from_scale(sprite.game_object.transform.scale)
         # Add vertices with the appropriate properties
         x_add: float = 1.
         y_add: float = 1.
@@ -200,9 +207,19 @@ class RenderBatch:
             elif i == 3:
                 y_add = 1.
             
+            if not is_rotated:
+                current_pos = Vector4([
+                    sprite.game_object.transform.position.x + (x_add * sprite.game_object.transform.scale.x),
+                    sprite.game_object.transform.position.y + (y_add * sprite.game_object.transform.scale.y),
+                    0,
+                    1
+                ])
+            else:
+                current_pos = transform_matrix * Vector4([x_add, y_add, 0, 1])
+
             # Load position
-            self.vertices[offset] = sprite.game_object.transform.position.x + (x_add * sprite.game_object.transform.scale.x)
-            self.vertices[offset + 1] = sprite.game_object.transform.position.y + (y_add * sprite.game_object.transform.scale.y)
+            self.vertices[offset] = current_pos.x
+            self.vertices[offset + 1] = current_pos.y
 
             # Load color
             self.vertices[offset + 2] = color[0]
@@ -219,5 +236,6 @@ class RenderBatch:
 
             # Load entity id
             self.vertices[offset + 9] = sprite.game_object.uid + 1
+
 
             offset += self.VERTEX_SIZE

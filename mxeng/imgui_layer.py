@@ -9,7 +9,11 @@ class ImGUILayer:
     def __init__(self, picking_texture: PickingTexture):
         self.impl = None
         self.font = None
-        self.properties_window: PropertiesWindow = PropertiesWindow(picking_texture)
+        self._properties_window: PropertiesWindow = PropertiesWindow(picking_texture)
+
+    @property
+    def properties_window(self):
+        return self._properties_window
 
     def init_imgui(self, glfw_window):
         imgui.create_context()
@@ -49,8 +53,8 @@ class ImGUILayer:
             imgui.end()
         
         GameViewWindow.imgui()
-        self.properties_window.update(dt, scene)
-        self.properties_window.imgui()
+        self._properties_window.update(dt, scene)
+        self._properties_window.imgui()
         imgui.render()
         self.impl.render(imgui.get_draw_data())
 

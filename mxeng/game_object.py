@@ -1,27 +1,25 @@
 from components.component import Component
-from mxeng.transform import Transform
+from components.transform import Transform
 from typing import List, Optional
 
 from util.serialization import serializable, sproperty
 import imgui
 
-@serializable("_name", "transform")
+@serializable("_name")
 class GameObject:
     ID_COUNTER: int = 0
 
-    def __init__(self, name: str = None, transform: Transform = None, z_index: int = 0):
+    def __init__(self, name: str = None):
         self._name: str = name
         self._components: List[Component] = []
-        self.transform = transform or Transform()
-        self._z_index: int = z_index
+        self._do_serialize: bool = True
 
         self._uid: int = GameObject.ID_COUNTER
         GameObject.ID_COUNTER += 1
 
-        
-    @sproperty
-    def z_index(self):
-        return self._z_index
+    @property
+    def transform(self) -> Transform:
+        return self.get_component(Transform)
 
     @sproperty
     def components(self) -> List[Component]:
@@ -35,6 +33,10 @@ class GameObject:
     @sproperty
     def uid(self):
         return self._uid
+
+    @property
+    def do_serialize(self):
+        return self._do_serialize
 
     @staticmethod
     def init(max_id: int):
@@ -69,7 +71,9 @@ class GameObject:
     def imgui(self):
         imgui.core.text(self._name)
         for c in self._components:
-            imgui.core.begin_group()
-            imgui.core.text(str(c.__class__))
-            c.imgui()
-            imgui.core.end_group()
+            expanded, visible = imgui.collapsing_header(c.__class__.__name__)
+            if expanded:
+                c.imgui()
+
+    def set_no_serialize(self):
+        self._do_serialize = False

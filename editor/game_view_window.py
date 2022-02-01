@@ -6,7 +6,8 @@ from mxeng.window import Window
 class GameViewWindow:
     @staticmethod
     def imgui():
-        imgui.begin("Game Viewport", imgui.WINDOW_NO_SCROLLBAR | imgui.WINDOW_NO_SCROLL_WITH_MOUSE)
+        imgui.begin("Game Viewport", flags=imgui.WINDOW_NO_SCROLLBAR | imgui.WINDOW_NO_SCROLL_WITH_MOUSE | imgui.WINDOW_NO_MOVE)
+        
         window_size = GameViewWindow.get_largest_size_for_viewport()
         window_pos = GameViewWindow.get_centered_position_for_viewport(window_size)
 
@@ -15,9 +16,13 @@ class GameViewWindow:
         top_left = Vector2(imgui.core.get_cursor_screen_pos())
         top_left.x -= imgui.core.get_scroll_x()
         top_left.y -= imgui.core.get_scroll_y()
-
+        
         texture_id = Window.get_framebuffer().texture_id
         imgui.core.image(texture_id, window_size.x, window_size.y, (0, 1), (1, 0))
+
+        # imgui.core.set_cursor_pos([window_pos.x, window_pos.y])
+        # avail_x, avail_y = imgui.core.get_content_region_available()
+        # imgui.core.invisible_button("fake", avail_x, avail_y)
 
         MouseListener.set_game_viewport_pos(top_left.copy())
         MouseListener.set_game_viewport_size(window_size.copy())

@@ -1,7 +1,8 @@
 from pyrr import Vector3, Vector4
 
 class Vector2(Vector3):
-    def __new__(cls, values, *args, **kwargs):
+    def __new__(cls, values=None, *args, **kwargs):
+        values = values if values is not None else [0, 0]
         return super().__new__(cls, [*values, 0], *args, **kwargs)
 
     @classmethod

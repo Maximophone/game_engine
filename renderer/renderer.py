@@ -22,14 +22,14 @@ class Renderer:
     def add_sprite(sprite: SpriteRenderer):
         added = False
         for batch in Renderer.batches:
-            if batch.has_room and batch.z_index == sprite.game_object.z_index:
+            if batch.has_room and batch.z_index == sprite.game_object.transform.z_index:
                 tex: Texture = sprite.get_texture()
                 if tex is None or batch.has_texture(tex) or batch.has_texture_room:
                     batch.add_sprite(sprite)
                     added = True
                     break
         if not added:
-            new_batch = RenderBatch(Renderer.max_batch_size, sprite.game_object.z_index)
+            new_batch = RenderBatch(Renderer.max_batch_size, sprite.game_object.transform.z_index)
             new_batch.start()
             Renderer.batches.append(new_batch)
             new_batch.add_sprite(sprite)

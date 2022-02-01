@@ -3,10 +3,25 @@ from mxeng.mouse_listener import MouseListener
 from util.vectors import Vector2
 from mxeng.window import Window
 
+from observers.event_system import EventSystem
+from observers.events.event import Event
+from observers.events.event_type import EventType
+
 class GameViewWindow:
+    is_playing: bool = False
+
     @staticmethod
     def imgui():
-        imgui.begin("Game Viewport", flags=imgui.WINDOW_NO_SCROLLBAR | imgui.WINDOW_NO_SCROLL_WITH_MOUSE | imgui.WINDOW_NO_MOVE)
+        imgui.begin("Game Viewport", flags=imgui.WINDOW_NO_SCROLLBAR | imgui.WINDOW_NO_SCROLL_WITH_MOUSE | imgui.WINDOW_NO_MOVE | imgui.WINDOW_MENU_BAR)
+        
+        imgui.begin_menu_bar()
+        if imgui.menu_item("Play", None, GameViewWindow.is_playing, not GameViewWindow.is_playing)[0]:
+            GameViewWindow.is_playing = True
+            EventSystem.notify(None, Event(EventType.GameEngineStartPlay))
+        if imgui.menu_item("Stop", None, not GameViewWindow.is_playing, GameViewWindow.is_playing)[0]:
+            GameViewWindow.is_playing = False
+            EventSystem.notify(None, Event(EventType.GameEngineStopPlay))
+        imgui.end_menu_bar()
         
         window_size = GameViewWindow.get_largest_size_for_viewport()
         window_pos = GameViewWindow.get_centered_position_for_viewport(window_size)

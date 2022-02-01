@@ -1,8 +1,12 @@
 import glfw
 import OpenGL.GL as gl
+from mxeng.game_object import GameObject
 from mxeng.imgui_layer import ImGUILayer
 from mxeng.key_listener import KeyListener
 from mxeng.mouse_listener import MouseListener
+from observers.event_system import EventSystem
+from observers.events.event import Event
+from observers.events.event_type import EventType
 from renderer.framebuffer import Framebuffer
 from renderer.picking_texture import PickingTexture
 from renderer.renderer import Renderer
@@ -14,7 +18,7 @@ from util.timer import Time
 
 class Window:
     _window = None
-    def __init__(self, width: int = 1920, height: int = 1080, title: str = "Hello World"):
+    def __init__(self, width: int = 1920, height: int = 1080, title: str = "MxEng"):
         self._width = width
         self._height = height
         self._title = title
@@ -28,6 +32,8 @@ class Window:
 
         self.current_scene: Scene = None
         self.imgui_layer = None
+
+        EventSystem.add_observer(self)
 
     @staticmethod
     def change_scene(new_scene: int):
@@ -189,3 +195,9 @@ class Window:
             # print(f"Running at {fps:.2f} FPS")
 
         self.current_scene.save_exit()
+
+    def on_notify(self, go: GameObject, event: Event):
+        if event.type == EventType.GameEngineStartPlay:
+            print("Starting Play")
+        elif event.type == EventType.GameEngineStopPlay:
+            print("Ending Play")

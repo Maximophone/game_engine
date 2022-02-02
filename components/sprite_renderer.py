@@ -21,15 +21,15 @@ class SpriteRenderer(Component):
     def start(self):
         self._last_transform = self.game_object.transform.copy()
 
-    def update(self, dt):
+    def editor_update(self, dt: float):
         if not self._last_transform == self.game_object.transform:
             self.game_object.transform.copy(to=self._last_transform)
             self._is_dirty = True
 
-    # def imgui(self):
-    #     changed, new_color = imgui.color_edit4("Color picker", *self.get_color())
-    #     if changed:
-    #         self.set_color(Color4(new_color))
+    def update(self, dt: float):
+        if not self._last_transform == self.game_object.transform:
+            self.game_object.transform.copy(to=self._last_transform)
+            self._is_dirty = True
 
     def get_color(self) -> Color4:
         return self._color
@@ -52,6 +52,10 @@ class SpriteRenderer(Component):
 
     def is_dirty(self) -> bool:
         return self._is_dirty
+
+    def set_dirty(self):
+        self._is_dirty = True
+
 
     def set_clean(self):
         self._is_dirty = False

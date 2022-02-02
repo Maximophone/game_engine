@@ -5,7 +5,7 @@ from typing import List, Optional
 from util.serialization import serializable, sproperty
 import imgui
 
-@serializable("_name")
+@serializable("_name", "_is_dead")
 class GameObject:
     ID_COUNTER: int = 0
 
@@ -13,6 +13,7 @@ class GameObject:
         self._name: str = name
         self._components: List[Component] = []
         self._do_serialize: bool = True
+        self._is_dead: bool = False
 
         self._uid: int = GameObject.ID_COUNTER
         GameObject.ID_COUNTER += 1
@@ -20,6 +21,10 @@ class GameObject:
     @property
     def transform(self) -> Transform:
         return self.get_component(Transform)
+    
+    @property
+    def is_dead(self) -> bool:
+        return self._is_dead
 
     @sproperty
     def components(self) -> List[Component]:
@@ -37,6 +42,11 @@ class GameObject:
     @property
     def do_serialize(self):
         return self._do_serialize
+
+    def destroy(self):
+        self._is_dead = True
+        for component in self._components:
+            component.destroy()
 
     @staticmethod
     def init(max_id: int):
@@ -60,7 +70,11 @@ class GameObject:
         self._components.append(component)
         component.game_object = self
 
-    def update(self, dt):
+    def editor_update(self, dt: float):
+        for c in self._components:
+            c.editor_update(dt)
+
+    def update(self, dt: float):
         for c in self._components:
             c.update(dt)
 

@@ -19,7 +19,7 @@ class EditorCamera(Component):
         self.reset: bool = False
         super().__init__()
 
-    def update(self, dt: float):
+    def editor_update(self, dt: float):
         if MouseListener.mouse_button_down(glfw.MOUSE_BUTTON_MIDDLE) and self.drag_debounce > 0:
             # Waiting until drag debounce is negative
             self.click_origin = Vector2([MouseListener.get_ortho_x(), MouseListener.get_ortho_y()])

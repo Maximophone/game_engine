@@ -20,7 +20,7 @@ class MouseControls(Component):
     def place(self):
         self.holding_object = None
 
-    def update(self, dt: float):
+    def editor_update(self, dt: float):
         if self.holding_object is not None:
             self.holding_object.transform.position.x = MouseListener.get_ortho_x()
             self.holding_object.transform.position.y = MouseListener.get_ortho_y()

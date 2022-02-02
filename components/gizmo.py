@@ -53,7 +53,7 @@ class Gizmo(Component):
         self.x_axis_object.set_no_serialize()
         self.y_axis_object.set_no_serialize()
 
-    def update(self, dt: float):
+    def editor_update(self, dt: float):
         if not self._using:
             return
 
@@ -80,6 +80,9 @@ class Gizmo(Component):
         self.x_axis_object.transform.position = self.active_game_object.transform.position.copy() + self.x_axis_offset
         self.y_axis_object.transform.position = self.active_game_object.transform.position.copy() + self.y_axis_offset
 
+    def update(self, dt: float):
+        if self._using:
+            self.set_inactive()
 
     def set_active(self):
         self.x_axis_sprite.set_color(self.x_axis_color)

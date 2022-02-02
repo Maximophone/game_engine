@@ -1,5 +1,6 @@
 import imgui
 from imgui.integrations.glfw import GlfwRenderer
+from editor.menu_bar import MenuBar
 from editor.properties_window import PropertiesWindow
 from renderer.picking_texture import PickingTexture
 
@@ -10,6 +11,7 @@ class ImGUILayer:
         self.impl = None
         self.font = None
         self._properties_window: PropertiesWindow = PropertiesWindow(picking_texture)
+        self._menu_bar: MenuBar = MenuBar()
 
     @property
     def properties_window(self):
@@ -34,23 +36,9 @@ class ImGUILayer:
         imgui.new_frame()
         # ImGUILayer.setup_dock_space()
         scene.imgui()
-        with imgui.font(self.font):
-            if imgui.begin_main_menu_bar():
-                if imgui.begin_menu("File", True):
-
-                    clicked_quit, selected_quit = imgui.menu_item(
-                        "Quit", 'Cmd+Q', False, True
-                    )
-
-                    if clicked_quit:
-                        exit(1)
-
-                    imgui.end_menu()
-                imgui.end_main_menu_bar()
-
-            imgui.begin("First window", True)
-            imgui.text("Hello world!")
-            imgui.end()
+       # with imgui.font(self.font):
+        self._menu_bar.imgui()
+        # imgui.end()
         
         GameViewWindow.imgui()
         self._properties_window.update(dt, scene)

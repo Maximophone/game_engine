@@ -13,19 +13,55 @@ from scenes.scene_initializer import SceneInitializer
 
 from util.serialization import deserialize, serialize
 
+from physics2d.physics2d import Physics2D
+
 class Scene:
     def __init__(self, scene_initializer: SceneInitializer):
         self._is_running = False
         self._game_objects: List[GameObject] = []
         self._camera: Camera = None
-        self._level_loaded: bool = False
         self._scene_initializer: SceneInitializer = scene_initializer
- 
+        self._physics_2d: Physics2D = Physics2D()
+
+    def editor_update(self, dt: float):
+        self._camera.adjust_projection()
+
+        objects_to_remove = []
+        for i, go in enumerate(self._game_objects):
+            go.editor_update(dt)
+            if go.is_dead:
+                objects_to_remove.append(i)
+
+        for i in objects_to_remove[::-1]:
+            go = self._game_objects.pop(i)
+            Renderer.destroy_game_object(go)
+            self._physics_2d.destroy_game_object(go)
+
     def update(self, dt: float):
         self._camera.adjust_projection()
+        self._physics_2d.update(dt)
         
-        for go in self._game_objects:
+        objects_to_remove = []
+        for i, go in enumerate(self._game_objects):
             go.update(dt)
+            if go.is_dead:
+                objects_to_remove.append(i)
+
+        for i in objects_to_remove[::-1]:
+            go = self._game_objects.pop(i)
+            Renderer.destroy_game_object(go)
+            self._physics_2d.destroy_game_object(go)
+
+    def clean_objects(self):
+        objects_to_remove = []
+        for i, go in enumerate(self._game_objects):
+            if go.is_dead:
+                objects_to_remove.append(i)
+
+        for i in objects_to_remove[::-1]:
+            go = self._game_objects.pop(i)
+            Renderer.destroy_game_object(go)
+            self._physics_2d.destroy_game_object(go)
 
     def render(self):
         Renderer.render()
@@ -39,7 +75,13 @@ class Scene:
         for go in self._game_objects:
             go.start()
             Renderer.add(go)
+            self._physics_2d.add(go)
         self._is_running = True
+
+    def destroy(self):
+        for go in self._game_objects:
+            go.destroy()
+        self.clean_objects()
 
     def add_game_object_to_scene(self, go: GameObject):
         if not self._is_running:
@@ -48,6 +90,7 @@ class Scene:
             self._game_objects.append(go)
             go.start()
             Renderer.add(go)
+            self._physics_2d.add(go)
 
     def get_game_object(self, game_object_id: int) -> Optional[GameObject]:
         return next((go for go in self._game_objects if go.uid == game_object_id), None)
@@ -65,7 +108,7 @@ class Scene:
     def imgui(self):
         self._scene_initializer.imgui()
     
-    def save_exit(self):
+    def save(self):
         with open("level.txt", "w") as f:
             json.dump(serialize([go for go in self._game_objects if go.do_serialize]), f, indent=4)
 
@@ -90,6 +133,5 @@ class Scene:
             GameObject.init(max_go_id)
             Component.init(max_comp_id)
 
-            self._level_loaded = True
         except FileNotFoundError:
             pass

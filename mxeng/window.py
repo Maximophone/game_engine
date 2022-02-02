@@ -33,14 +33,16 @@ class Window:
         self.current_scene: Scene = None
         self.imgui_layer = None
 
+        self.runtime_play: bool = False
+
         EventSystem.add_observer(self)
 
     @staticmethod
     def change_scene(scene_initializer: SceneInitializer):
-        if Window.get().current_scene is not None:
-            # Destroy it
-            pass
+        if Window.get_scene() is not None:
+            Window.get_scene().destroy()
 
+        Window.get_imgui_layer().properties_window.active_game_object = None
         Window.get().current_scene = Scene(scene_initializer)
         Window.get().current_scene.load()
         Window.get().current_scene.init()
@@ -177,8 +179,11 @@ class Window:
 
             if dt >= 0:
                 DebugDraw.draw()
-                self.current_scene.update(dt)
                 Renderer.bind_shader(default_shader)
+                if self.runtime_play:
+                    self.current_scene.update(dt)
+                else:
+                    self.current_scene.editor_update(dt)
                 self.current_scene.render()
             self.framebuffer.unbind()
                 
@@ -193,10 +198,15 @@ class Window:
             fps = 1/dt
             # print(f"Running at {fps:.2f} FPS")
 
-        self.current_scene.save_exit()
-
     def on_notify(self, go: GameObject, event: Event):
         if event.type == EventType.GameEngineStartPlay:
-            print("Starting Play")
+            self.runtime_play = True
+            self.current_scene.save()
+            Window.change_scene(LevelEditorSceneInitializer())
         elif event.type == EventType.GameEngineStopPlay:
-            print("Ending Play")
+            self.runtime_play = False
+            Window.change_scene(LevelEditorSceneInitializer())
+        elif event.type == EventType.LoadLevel:
+            Window.change_scene(LevelEditorSceneInitializer())
+        elif event.type == EventType.SaveLevel:
+            self.current_scene.save()

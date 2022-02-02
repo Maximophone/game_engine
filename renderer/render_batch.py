@@ -2,6 +2,7 @@ import ctypes
 import numpy as np
 from pyrr import Matrix44, Vector4
 from components.sprite_renderer import SpriteRenderer
+from mxeng.game_object import GameObject
 from renderer.shader import Shader
 
 from typing import List
@@ -174,6 +175,17 @@ class RenderBatch:
 
         shader.detach()
 
+    def destroy_if_exists(self, go: GameObject) -> bool:
+        sprite: SpriteRenderer = go.get_component(SpriteRenderer)
+        for i in range(self.num_sprites):
+            if self.sprites[i] == sprite:
+                for j in range(i, self.num_sprites-1):
+                    self.sprites[j] = self.sprites[j+1]
+                    self.sprites[j].set_dirty()
+                self.num_sprites -= 1
+                return True
+        return False
+
     def load_vertex_properties(self, index: int):
         sprite: SpriteRenderer = self.sprites[index]
 
@@ -194,7 +206,8 @@ class RenderBatch:
         transform_matrix = Matrix44.identity()
         if is_rotated:
             transform_matrix *= Matrix44.from_translation(sprite.game_object.transform.position)
-            transform_matrix *= Matrix44.from_z_rotation(sprite.game_object.transform.rotation / 360 * np.pi * 2)
+            transform_matrix *= Matrix44.from_z_rotation(
+                sprite.game_object.transform.rotation / 360 * np.pi * 2)
             transform_matrix *= Matrix44.from_scale(sprite.game_object.transform.scale)
         # Add vertices with the appropriate properties
         x_add: float = 1.

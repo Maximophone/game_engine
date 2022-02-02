@@ -36,6 +36,14 @@ class Renderer:
             Renderer.batches = sorted(Renderer.batches, key=lambda x: x.z_index)
 
     @staticmethod
+    def destroy_game_object(go: GameObject):
+        if go.get_component(SpriteRenderer) is None:
+            return
+        for batch in Renderer.batches:
+            if batch.destroy_if_exists(go):
+                return
+
+    @staticmethod
     def bind_shader(shader: Shader):
         Renderer.current_shader = shader
 

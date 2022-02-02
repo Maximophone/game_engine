@@ -5,7 +5,7 @@ from util.settings import Settings
 import numpy as np
 
 class GridLines(Component):
-    def update(self, dt: float):
+    def editor_update(self, dt: float):
         from mxeng.window import Window
         from renderer.debug_draw import DebugDraw
 

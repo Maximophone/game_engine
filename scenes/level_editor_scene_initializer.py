@@ -2,7 +2,6 @@ from components.editor_camera import EditorCamera
 from components.gizmo_system import GizmoSystem
 from components.grid_lines import GridLines
 from components.mouse_controls import MouseControls
-from components.rigid_body import RigidBody
 
 from components.spritesheet import Spritesheet
 from mxeng.game_object import GameObject
@@ -18,13 +17,8 @@ from util.vectors import Vector2, Vector3
 class LevelEditorSceneInitializer(SceneInitializer):
     def __init__(self):
         super().__init__()
-        self.obj1: GameObject = None
-        self.sprite_index = 0
-        self.sprite_flip_time = 0.2
-        self.sprite_flip_time_left = 0.
         self.sprites = None
         self.level_editor_stuff = None
-        self.t = 0.
 
     def init(self, scene: Scene):
         from renderer.debug_draw import DebugDraw
@@ -41,7 +35,9 @@ class LevelEditorSceneInitializer(SceneInitializer):
         self.level_editor_stuff.add_component(GizmoSystem(gizmos))
         scene.add_game_object_to_scene(self.level_editor_stuff)
         
-        DebugDraw.add_line_2D(Vector2([600., 400.]), Vector2([800, 800]), Vector3([1., 0., 0.]), 1000)
+        # TODO: fix a bug, if I draw this debugdraw line with a lifetime of 1000, it creates a bug where
+        # the grid lines do not disappear when I hit play
+        #DebugDraw.add_line_2D(Vector2([600., 400.]), Vector2([800, 800]), Vector3([1., 0., 0.]), 1000)
         
 
     def load_resources(self, scene: Scene):
@@ -78,7 +74,6 @@ class LevelEditorSceneInitializer(SceneInitializer):
             changed = imgui.core.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
             if changed:
                 obj = Prefabs.generate_sprite_object(sprite, 32, 32)
-                obj.add_component(RigidBody())
                 self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
             imgui.core.pop_id()
 

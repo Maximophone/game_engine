@@ -16,10 +16,16 @@ class Component:
         self._uid: int = -1
         self.game_object: GameObject = None
 
+    def editor_update(self, dt: float):
+        pass
+
     def update(self, dt: float):
         pass
 
     def start(self):
+        pass
+
+    def destroy(self):
         pass
 
     def imgui(self):

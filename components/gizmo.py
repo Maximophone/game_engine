@@ -19,11 +19,11 @@ class Gizmo(Component):
         self.x_axis_color_hover: Color4 = Color4([1, 0, 0, 1])
         self.y_axis_color: Color4 = Color4([0.3, 1, 0.3, 1])
         self.y_axis_color_hover: Color4 = Color4([0, 1, 0, 1])
-        self.x_axis_offset: Vector2 = Vector2([64, -5])
-        self.y_axis_offset: Vector2 = Vector2([16, 61])
+        self.x_axis_offset: Vector2 = Vector2([24/80, -6/80])
+        self.y_axis_offset: Vector2 = Vector2([-7/80, 21/80])
 
-        self.gizmo_width: int = 16
-        self.gizmo_height: int = 48
+        self.gizmo_width: float = 16 / 80
+        self.gizmo_height: float = 48 / 80
 
         self.x_axis_active: bool = False
         self.y_axis_active: bool = False
@@ -32,8 +32,8 @@ class Gizmo(Component):
 
         self.properties_window: PropertiesWindow = properties_window
 
-        self.x_axis_object: GameObject = Prefabs.generate_sprite_object(arrow_sprite, 16, 48)
-        self.y_axis_object: GameObject = Prefabs.generate_sprite_object(arrow_sprite, 16, 48)
+        self.x_axis_object: GameObject = Prefabs.generate_sprite_object(arrow_sprite, self.gizmo_width, self.gizmo_height)
+        self.y_axis_object: GameObject = Prefabs.generate_sprite_object(arrow_sprite, self.gizmo_width, self.gizmo_height)
         self.x_axis_object.add_component(NonPickable())
         self.y_axis_object.add_component(NonPickable())
         self.x_axis_sprite: SpriteRenderer = self.x_axis_object.get_component(SpriteRenderer)
@@ -95,10 +95,10 @@ class Gizmo(Component):
     def check_x_hover_state(self) -> bool:
         mouse_pos = Vector2([MouseListener.get_ortho_x(), MouseListener.get_ortho_y()])
         if ( 
-            mouse_pos.x <= self.x_axis_object.transform.position.x and 
-            mouse_pos.x >= self.x_axis_object.transform.position.x - self.gizmo_height and
-            mouse_pos.y >= self.x_axis_object.transform.position.y and
-            mouse_pos.y <= self.x_axis_object.transform.position.y + self.gizmo_width
+            mouse_pos.x <= self.x_axis_object.transform.position.x + self.gizmo_height/2. and 
+            mouse_pos.x >= self.x_axis_object.transform.position.x - self.gizmo_width/2. and
+            mouse_pos.y >= self.x_axis_object.transform.position.y - self.gizmo_height/2. and
+            mouse_pos.y <= self.x_axis_object.transform.position.y + self.gizmo_width/2.
             ):
             self.x_axis_sprite.set_color(self.x_axis_color_hover)
             return True
@@ -109,10 +109,10 @@ class Gizmo(Component):
     def check_y_hover_state(self) -> bool:
         mouse_pos = Vector2([MouseListener.get_ortho_x(), MouseListener.get_ortho_y()])
         if ( 
-            mouse_pos.x <= self.y_axis_object.transform.position.x and 
-            mouse_pos.x >= self.y_axis_object.transform.position.x - self.gizmo_width and
-            mouse_pos.y <= self.y_axis_object.transform.position.y and
-            mouse_pos.y >= self.y_axis_object.transform.position.y - self.gizmo_height
+            mouse_pos.x <= self.y_axis_object.transform.position.x + self.gizmo_width/2. and 
+            mouse_pos.x >= self.y_axis_object.transform.position.x - self.gizmo_width/2. and
+            mouse_pos.y <= self.y_axis_object.transform.position.y + self.gizmo_height/2. and
+            mouse_pos.y >= self.y_axis_object.transform.position.y - self.gizmo_height/2.
             ):
             self.y_axis_sprite.set_color(self.y_axis_color_hover)
             return True

@@ -1,4 +1,4 @@
 class Settings:
-    GRID_WIDTH: int = 32
-    GRID_HEIGHT: int = 32
+    GRID_WIDTH: float = 0.25
+    GRID_HEIGHT: float = 0.25
     

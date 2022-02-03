@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from enum import Enum
 import imgui.core
 from pyrr import Vector3, Vector4
 import numpy as np
@@ -72,6 +73,14 @@ class Component:
                 changed, new_color = imgui.color_edit4(f"{name}", *value)
                 if changed:
                     setattr(self, name, Color4(new_color))
+            elif isinstance(value, Enum):
+                enum_values = list(typ)
+                current = enum_values.index(value)
+                enum_string = [x.name for x in enum_values]
+                clicked, current = imgui.combo(f"{name}", current, enum_string)
+                if clicked:
+                    setattr(self, name, enum_values[current])
+
 
     def generate_id(self):
         if self._uid == -1:

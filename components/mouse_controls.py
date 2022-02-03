@@ -24,8 +24,8 @@ class MouseControls(Component):
         if self.holding_object is not None:
             self.holding_object.transform.position.x = MouseListener.get_ortho_x()
             self.holding_object.transform.position.y = MouseListener.get_ortho_y()
-            self.holding_object.transform.position.x = self.holding_object.transform.position.x // Settings.GRID_WIDTH * Settings.GRID_WIDTH
-            self.holding_object.transform.position.y = self.holding_object.transform.position.y // Settings.GRID_HEIGHT * Settings.GRID_HEIGHT
+            self.holding_object.transform.position.x = (self.holding_object.transform.position.x // Settings.GRID_WIDTH) * Settings.GRID_WIDTH
+            self.holding_object.transform.position.y = (self.holding_object.transform.position.y // Settings.GRID_HEIGHT) * Settings.GRID_HEIGHT
 
             if MouseListener.mouse_button_down(glfw.MOUSE_BUTTON_LEFT):
                 self.place()

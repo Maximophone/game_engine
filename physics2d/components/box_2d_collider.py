@@ -5,7 +5,7 @@ from util.vectors import Vector2
 @serializable("half_size")
 class Box2DCollider(Collider):
     def __init__(self):
-        self.half_size: Vector2 = Vector2([1., 1.])
+        self.half_size: Vector2 = Vector2([.25, .25])
         super().__init__()
 
     def editor_update(self, dt: float):

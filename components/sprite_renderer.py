@@ -36,6 +36,9 @@ class SpriteRenderer(Component):
 
     def get_texture(self) -> Texture:
         return self._sprite.get_texture()
+
+    def set_texture(self, texture: Texture):
+        self._sprite._texture = texture
     
     def get_tex_coords(self) -> List[np.ndarray]:
         return self._sprite.get_tex_coords()

@@ -9,7 +9,9 @@ class Camera:
         self._inverse_view: Matrix44 = Matrix44.identity()
         self.position = position
         self.zoom = 1.
-        self._projection_size: np.ndarray = np.array([32.*40., 32.*21.])
+        self._projection_width: float = 6.
+        self._projection_height: float = 3.
+        self._projection_size: np.ndarray = np.array([self._projection_width, self._projection_height])
         self.adjust_projection()
 
     @property

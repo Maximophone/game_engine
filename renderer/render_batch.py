@@ -186,6 +186,7 @@ class RenderBatch:
                 return True
         return False
 
+
     def load_vertex_properties(self, index: int):
         sprite: SpriteRenderer = self.sprites[index]
 
@@ -210,15 +211,15 @@ class RenderBatch:
                 sprite.game_object.transform.rotation / 360 * np.pi * 2)
             transform_matrix *= Matrix44.from_scale(sprite.game_object.transform.scale)
         # Add vertices with the appropriate properties
-        x_add: float = 1.
-        y_add: float = 1.
+        x_add: float = 0.5
+        y_add: float = 0.5
         for i in range(4):
             if i == 1:
-                y_add = 0.
+                y_add = -0.5
             elif i == 2:
-                x_add = 0.
+                x_add = -0.5
             elif i == 3:
-                y_add = 1.
+                y_add = 0.5
             
             if not is_rotated:
                 current_pos = Vector4([

@@ -12,10 +12,10 @@ class Sprite:
         self._text_id: int = None
         self._texture = texture
         self._tex_coords: List[np.ndarray] = [
-            np.array([1,1]),
-            np.array([1,0]),
-            np.array([0,0]),
-            np.array([0,1])
+            np.array([1.,1]),
+            np.array([1.,0]),
+            np.array([0.,0]),
+            np.array([0.,1])
         ] if tex_coords is None else tex_coords
 
     def get_texture(self):

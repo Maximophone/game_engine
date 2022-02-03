@@ -2,6 +2,7 @@ from components.editor_camera import EditorCamera
 from components.gizmo_system import GizmoSystem
 from components.grid_lines import GridLines
 from components.mouse_controls import MouseControls
+from components.sprite_renderer import SpriteRenderer
 
 from components.spritesheet import Spritesheet
 from mxeng.game_object import GameObject
@@ -12,7 +13,7 @@ import imgui
 
 from scenes.scene_initializer import SceneInitializer
 from util.asset_pool import AssetPool
-from util.vectors import Vector2, Vector3
+from util.vectors import Vector2, Vector3, Color4
 
 class LevelEditorSceneInitializer(SceneInitializer):
     def __init__(self):
@@ -34,6 +35,10 @@ class LevelEditorSceneInitializer(SceneInitializer):
         self.level_editor_stuff.add_component(EditorCamera(scene._camera))
         self.level_editor_stuff.add_component(GizmoSystem(gizmos))
         scene.add_game_object_to_scene(self.level_editor_stuff)
+
+        obj_test = scene.create_game_object("test")
+        obj_test.add_component(SpriteRenderer(sprite=self.sprites.get_sprite(0)))
+        scene.add_game_object_to_scene(obj_test)
         
         # TODO: fix a bug, if I draw this debugdraw line with a lifetime of 1000, it creates a bug where
         # the grid lines do not disappear when I hit play
@@ -50,6 +55,12 @@ class LevelEditorSceneInitializer(SceneInitializer):
             "assets/images/gizmos.png",
             Spritesheet(AssetPool.get_texture("assets/images/gizmos.png"), 24, 48, 3, 0)
         )
+
+        for go in scene._game_objects:
+            if go.get_component(SpriteRenderer) is not None:
+                spr: SpriteRenderer = go.get_component(SpriteRenderer)
+                if spr.get_texture() is not None:
+                    spr.set_texture(AssetPool.get_texture(spr.get_texture().filepath))
 
     def imgui(self):
         imgui.begin("Level Editor Stuff")
@@ -73,7 +84,7 @@ class LevelEditorSceneInitializer(SceneInitializer):
             imgui.core.push_id(str(i))
             changed = imgui.core.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
             if changed:
-                obj = Prefabs.generate_sprite_object(sprite, 32, 32)
+                obj = Prefabs.generate_sprite_object(sprite, 0.25, 0.25)
                 self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
             imgui.core.pop_id()
 

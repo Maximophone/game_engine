@@ -57,7 +57,7 @@ class Physics2D:
 
             body: b2Body = self.world.CreateBody(body_def)
             rb.raw_body = body
-            body.CreateFixture(shape=shape, restitution=rb.mass)
+            body.CreateFixture(shape=shape, density=rb.mass)
 
     def destroy_game_object(self, go: GameObject):
         rb: RigidBody2D = go.get_component(RigidBody2D)

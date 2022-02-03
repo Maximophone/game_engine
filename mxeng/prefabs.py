@@ -12,7 +12,7 @@ class Prefabs:
         block = Window.get_scene().create_game_object(
             "Sprite_Object_Gen", 
             Transform(
-                Vector2([0, 0]),
+                Vector2([0., 0.]),
                 Vector2([size_x, size_y])
             ))
         renderer = SpriteRenderer(sprite=sprite)

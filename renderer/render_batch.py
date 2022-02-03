@@ -208,7 +208,7 @@ class RenderBatch:
         if is_rotated:
             transform_matrix *= Matrix44.from_translation(sprite.game_object.transform.position)
             transform_matrix *= Matrix44.from_z_rotation(
-                sprite.game_object.transform.rotation / 360 * np.pi * 2)
+                -sprite.game_object.transform.rotation / 360 * np.pi * 2)
             transform_matrix *= Matrix44.from_scale(sprite.game_object.transform.scale)
         # Add vertices with the appropriate properties
         x_add: float = 0.5

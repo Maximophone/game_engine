@@ -24,5 +24,5 @@ class RigidBody2D(Component):
     def update(self, dt: float):
         if self.raw_body is not None:
             self.game_object.transform.position = Vector2(self.raw_body.position)
-            self.game_object.transform.rotation = -self.raw_body.angle/2./pi*360.
+            self.game_object.transform.rotation = self.raw_body.angle/2./pi*360.
 

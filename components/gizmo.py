@@ -46,7 +46,7 @@ class Gizmo(Component):
         super().__init__()
         
     def start(self):
-        self.x_axis_object.transform.rotation = 270
+        self.x_axis_object.transform.rotation = 90
         self.y_axis_object.transform.rotation = 180
         self.x_axis_object.transform.z_index = 100
         self.y_axis_object.transform.z_index = 100

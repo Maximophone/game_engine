@@ -107,7 +107,7 @@ class Gizmo(Component):
         self.y_axis_sprite.set_color(Color4([0, 0, 0, 0]))
         
     def check_x_hover_state(self) -> bool:
-        mouse_pos = Vector2([MouseListener.get_ortho_x(), MouseListener.get_ortho_y()])
+        mouse_pos = MouseListener.get_world()
         if ( 
             mouse_pos.x <= self.x_axis_object.transform.position.x + self.gizmo_height/2. and 
             mouse_pos.x >= self.x_axis_object.transform.position.x - self.gizmo_width/2. and
@@ -121,7 +121,7 @@ class Gizmo(Component):
             return False
 
     def check_y_hover_state(self) -> bool:
-        mouse_pos = Vector2([MouseListener.get_ortho_x(), MouseListener.get_ortho_y()])
+        mouse_pos = MouseListener.get_world()
         if ( 
             mouse_pos.x <= self.y_axis_object.transform.position.x + self.gizmo_width/2. and 
             mouse_pos.x >= self.y_axis_object.transform.position.x - self.gizmo_width/2. and

@@ -7,12 +7,12 @@ from util.asset_pool import AssetPool
 from util.serialization import deserialize, serializable, serialize, sproperty
 import imgui
 
-@serializable("_name", "_is_dead")
+@serializable("name", "_is_dead")
 class GameObject:
     ID_COUNTER: int = 0
 
     def __init__(self, name: str = None):
-        self._name: str = name
+        self.name: str = name
         self._components: List[Component] = []
         self._do_serialize: bool = True
         self._is_dead: bool = False
@@ -101,7 +101,7 @@ class GameObject:
             c.start()
 
     def imgui(self):
-        imgui.core.text(self._name)
+        imgui.core.text(self.name)
         for c in self._components:
             expanded, visible = imgui.collapsing_header(c.__class__.__name__)
             if expanded:

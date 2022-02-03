@@ -77,3 +77,18 @@ class MXImGUI:
         imgui.pop_id()
 
         return new_value
+
+    @staticmethod
+    def input_text(label: str, text: str) -> str:
+        imgui.push_id(label)
+        imgui.columns(2)
+        imgui.set_column_width(0, MXImGUI.DEFAULT_COLUMN_WIDTH)
+        imgui.text(label)
+        imgui.next_column()
+
+        _, out_string = imgui.input_text("##text_input", text, 256)
+
+        imgui.columns(1)
+        imgui.pop_id()
+
+        return out_string

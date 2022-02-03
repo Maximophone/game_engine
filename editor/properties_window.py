@@ -25,12 +25,12 @@ class PropertiesWindow:
 
     def update(self, dt: float, current_scene: Scene):
         self.debounce -= dt
-        if MouseListener.mouse_button_down(glfw.MOUSE_BUTTON_LEFT) and self.debounce < 0:
+        if not MouseListener.is_dragging() and MouseListener.mouse_button_down(glfw.MOUSE_BUTTON_LEFT) and self.debounce < 0:
             x = MouseListener.get_screen_x()
             y = MouseListener.get_screen_y()
-            if x<0 or x>2560 or y<0 or y>1440:
+            if x<-1 or x>1 or y<-1 or y>1:
                 return
-            game_object_id = self.picking_texture.read_pixel(x, y)
+            game_object_id = self.picking_texture.read_pixel((x+1)/2.*2560, (y+1)/2.*1440) # HACK
             picked_object = current_scene.get_game_object(game_object_id)
             if picked_object is not None and picked_object.get_component(NonPickable) is None:
                 self._active_game_object = picked_object

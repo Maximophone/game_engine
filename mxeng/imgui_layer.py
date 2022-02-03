@@ -2,6 +2,7 @@ import imgui
 from imgui.integrations.glfw import GlfwRenderer
 from editor.menu_bar import MenuBar
 from editor.properties_window import PropertiesWindow
+from editor.scene_hierarchy_window import SceneHierarchyWindow
 from renderer.picking_texture import PickingTexture
 
 from scenes.scene import Scene
@@ -11,6 +12,7 @@ class ImGUILayer:
         self.impl = None
         self.font = None
         self._properties_window: PropertiesWindow = PropertiesWindow(picking_texture)
+        self._scene_hierarchy_window: SceneHierarchyWindow = SceneHierarchyWindow()
         self._menu_bar: MenuBar = MenuBar()
 
     @property
@@ -43,6 +45,7 @@ class ImGUILayer:
         GameViewWindow.imgui()
         self._properties_window.update(dt, scene)
         self._properties_window.imgui()
+        self._scene_hierarchy_window.imgui()
         imgui.render()
         self.impl.render(imgui.get_draw_data())
 

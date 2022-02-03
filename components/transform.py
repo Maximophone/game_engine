@@ -22,6 +22,11 @@ class Transform(Component):
             to.position[:] = self.position.copy()
             to.scale[:] = self.scale.copy()
 
+    def imgui(self):
+        from mxeng.game_object import GameObject
+        self.game_object.name = MXImGUI.input_text("Name: ", self.game_object.name)
+        super().imgui()
+
     def __eq__(self, o: object):
         if o is None or not isinstance(o, Transform):
             return False

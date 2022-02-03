@@ -95,6 +95,9 @@ class Scene:
     def get_game_object(self, game_object_id: int) -> Optional[GameObject]:
         return next((go for go in self._game_objects if go.uid == game_object_id), None)
 
+    def get_game_objects(self) -> List[GameObject]:
+        return self._game_objects
+
     def create_game_object(self, name: str, transform: Transform = None) -> GameObject:
         transform = transform or Transform()
         go: GameObject = GameObject(name)

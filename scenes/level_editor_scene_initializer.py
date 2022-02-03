@@ -6,6 +6,7 @@ from components.sprite_renderer import SpriteRenderer
 
 from components.spritesheet import Spritesheet
 from mxeng.game_object import GameObject
+from mxeng.mouse_listener import MouseListener
 from mxeng.prefabs import Prefabs
 from scenes.scene import Scene
 
@@ -60,6 +61,8 @@ class LevelEditorSceneInitializer(SceneInitializer):
                     spr.set_texture(AssetPool.get_texture(spr.get_texture().filepath))
 
     def imgui(self):
+        #print("X: ", MouseListener.get_screen_x())
+        #print("Y: ", MouseListener.get_screen_y())
         imgui.begin("Level Editor Stuff")
         self.level_editor_stuff.imgui()
         imgui.end()

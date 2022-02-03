@@ -22,11 +22,11 @@ class EditorCamera(Component):
     def editor_update(self, dt: float):
         if MouseListener.mouse_button_down(glfw.MOUSE_BUTTON_MIDDLE) and self.drag_debounce > 0:
             # Waiting until drag debounce is negative
-            self.click_origin = Vector2([MouseListener.get_ortho_x(), MouseListener.get_ortho_y()])
+            self.click_origin = MouseListener.get_world()#Vector2([MouseListener.get_ortho_x(), MouseListener.get_ortho_y()])
             self.drag_debounce -= dt
             return
         elif MouseListener.mouse_button_down(glfw.MOUSE_BUTTON_MIDDLE):
-            mouse_pos = Vector2([MouseListener.get_ortho_x(), MouseListener.get_ortho_y()])
+            mouse_pos = MouseListener.get_world()#Vector2([MouseListener.get_ortho_x(), MouseListener.get_ortho_y()])
             delta = mouse_pos - self.click_origin
             self.level_editor_camera.position -= delta * dt * self.drag_sensitivity
             self.click_origin = self.click_origin*(1-dt) + mouse_pos*dt
@@ -47,7 +47,7 @@ class EditorCamera(Component):
             self.level_editor_camera.zoom = self.level_editor_camera.zoom * (1 - self.lerp_time) + 1.* self.lerp_time
             self.lerp_time += 0.1 * dt
 
-            if abs(self.level_editor_camera.position.x) <= 5. and abs(self.level_editor_camera.position.y) <= 5:
+            if abs(self.level_editor_camera.position.x) <= 0.02 and abs(self.level_editor_camera.position.y) <= 0.02:
                 self.level_editor_camera.position = Vector2([0., 0.])
                 self.reset = False
                 self.lerp_time = 0.

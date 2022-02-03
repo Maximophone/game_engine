@@ -10,8 +10,8 @@ class TranslateGizmo(Gizmo):
     def editor_update(self, dt: float):
         if self.active_game_object is not None:
             if self.x_axis_active and not self.y_axis_active:
-                self.active_game_object.transform.position.x -= MouseListener.get_world_dx()
+                self.active_game_object.transform.position.x = MouseListener.get_world_x()
             if self.y_axis_active and not self.x_axis_active:
-                self.active_game_object.transform.position.y -= MouseListener.get_world_dy()
+                self.active_game_object.transform.position.y = MouseListener.get_world_y()
 
         super().editor_update(dt)

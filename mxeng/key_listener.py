@@ -6,6 +6,7 @@ class KeyListener:
 
     def __init__(self):
         self._key_pressed: List[bool] = [False]*350
+        self._key_begin_press: List[bool] = [False]*350
 
     @staticmethod
     def get() -> "KeyListener":
@@ -17,10 +18,19 @@ class KeyListener:
     def key_callback(window: int, key: int, scancode: int, action: int, mods: int):
         if action == glfw.PRESS:
             KeyListener.get()._key_pressed[key] = True
+            KeyListener.get()._key_begin_press[key] = True
         elif action == glfw.RELEASE:
             KeyListener.get()._key_pressed[key] = False
+            KeyListener.get()._key_begin_press[key] = False
 
     @staticmethod
     def is_key_pressed(key_code: int) -> bool:
         assert key_code < len(KeyListener.get()._key_pressed), f"Getting a out of bounds key code: {key_code}"
         return KeyListener.get()._key_pressed[key_code]
+
+    @staticmethod
+    def key_begin_press(key_code: int) -> bool:
+        result = KeyListener.get()._key_begin_press[key_code]
+        if result:
+            KeyListener.get()._key_begin_press[key_code] = False
+        return result

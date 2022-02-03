@@ -36,9 +36,6 @@ class LevelEditorSceneInitializer(SceneInitializer):
         self.level_editor_stuff.add_component(GizmoSystem(gizmos))
         scene.add_game_object_to_scene(self.level_editor_stuff)
 
-        obj_test = scene.create_game_object("test")
-        obj_test.add_component(SpriteRenderer(sprite=self.sprites.get_sprite(0)))
-        scene.add_game_object_to_scene(obj_test)
         
         # TODO: fix a bug, if I draw this debugdraw line with a lifetime of 1000, it creates a bug where
         # the grid lines do not disappear when I hit play

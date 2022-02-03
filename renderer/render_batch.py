@@ -139,6 +139,11 @@ class RenderBatch:
                 spr.set_clean()
                 rebuffer_data = True
 
+            # TODO: get better solution for this
+            if spr.game_object.transform.z_index != self.z_index:
+                self.destroy_if_exists(spr.game_object)
+                Renderer.add(spr.game_object)
+
         if rebuffer_data:
             gl.glBindBuffer(gl.GL_ARRAY_BUFFER, self.vbo_id)
             gl.glBufferSubData(gl.GL_ARRAY_BUFFER, 0, self.vertices.nbytes, self.vertices)

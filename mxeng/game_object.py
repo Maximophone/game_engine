@@ -1,8 +1,10 @@
 from components.component import Component
+from components.sprite_renderer import SpriteRenderer
 from components.transform import Transform
 from typing import List, Optional
+from util.asset_pool import AssetPool
 
-from util.serialization import serializable, sproperty
+from util.serialization import deserialize, serializable, serialize, sproperty
 import imgui
 
 @serializable("_name", "_is_dead")
@@ -47,6 +49,22 @@ class GameObject:
         self._is_dead = True
         for component in self._components:
             component.destroy()
+
+    def copy(self) -> "GameObject":
+        # TODO Come up with a better solution
+        new_obj: GameObject = deserialize(serialize(self))
+        new_obj.generate_uid()
+        for c in new_obj.components:
+            c.generate_id()
+
+        spr: SpriteRenderer = new_obj.get_component(SpriteRenderer)
+        if spr is not None and spr.get_texture() is not None:
+            spr.set_texture(AssetPool.get_texture(spr.get_texture().filepath))
+        return new_obj
+
+    def generate_uid(self):
+        self._uid = GameObject.ID_COUNTER
+        GameObject.ID_COUNTER += 1
 
     @staticmethod
     def init(max_id: int):

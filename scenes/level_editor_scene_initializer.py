@@ -5,6 +5,7 @@ from components.mouse_controls import MouseControls
 from components.sprite_renderer import SpriteRenderer
 
 from components.spritesheet import Spritesheet
+from components.state_machine import StateMachine
 from mxeng.game_object import GameObject
 from mxeng.mouse_listener import MouseListener
 from mxeng.prefabs import Prefabs
@@ -50,15 +51,28 @@ class LevelEditorSceneInitializer(SceneInitializer):
             Spritesheet(AssetPool.get_texture("assets/images/spritesheets/decorationsAndBlocks.png"), 16, 16, 81, 0)
         )
         AssetPool.add_spritesheet(
+            "assets/images/spritesheet.png",
+            Spritesheet(AssetPool.get_texture("assets/images/spritesheet.png"), 16, 16, 26, 0)
+        )
+        AssetPool.add_spritesheet(
+            "assets/images/items.png",
+            Spritesheet(AssetPool.get_texture("assets/images/items.png"), 16, 16, 35, 0)
+        )
+        AssetPool.add_spritesheet(
             "assets/images/gizmos.png",
             Spritesheet(AssetPool.get_texture("assets/images/gizmos.png"), 24, 48, 3, 0)
         )
 
         for go in scene._game_objects:
+
             if go.get_component(SpriteRenderer) is not None:
                 spr: SpriteRenderer = go.get_component(SpriteRenderer)
                 if spr.get_texture() is not None:
                     spr.set_texture(AssetPool.get_texture(spr.get_texture().filepath))
+
+            if go.get_component(StateMachine) is not None:
+                state_machine: StateMachine = go.get_component(StateMachine)
+                state_machine.refresh_textures()
 
     def imgui(self):
         #print("X: ", MouseListener.get_screen_x())
@@ -67,32 +81,58 @@ class LevelEditorSceneInitializer(SceneInitializer):
         self.level_editor_stuff.imgui()
         imgui.end()
 
-        imgui.begin("Test window")
-        
-        window_pos = imgui.core.get_window_position()
-        window_size = imgui.core.get_window_size()
-        item_spacing = imgui.core.get_style().item_spacing
+        imgui.begin("Objects")
 
-        window_x2: float = window_pos.x + window_size.x
-        for i in range(self.sprites.size()):
-            sprite = self.sprites.get_sprite(i)
+        if imgui.collapsing_header("Blocks", True)[0]:
+            window_pos = imgui.core.get_window_position()
+            window_size = imgui.core.get_window_size()
+            item_spacing = imgui.core.get_style().item_spacing
+
+            window_x2: float = window_pos.x + window_size.x
+            for i in range(self.sprites.size()):
+                sprite = self.sprites.get_sprite(i)
+                sprite_width = sprite.width * 4
+                sprite_height = sprite.height * 4
+                id = sprite.tex_id
+                tex_coords = sprite.get_tex_coords()
+
+                imgui.core.push_id(str(i))
+                changed = imgui.core.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
+                if changed:
+                    obj = Prefabs.generate_sprite_object(sprite, 0.25, 0.25)
+                    self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
+                imgui.core.pop_id()
+
+                last_button_pos = imgui.core.get_item_rect_max()
+                last_button_x2 = last_button_pos.x
+                next_button_x2 = last_button_x2 + item_spacing.x + sprite_width
+
+                if i + 1 < self.sprites.size() and next_button_x2 < window_x2:
+                    imgui.core.same_line()
+
+        if imgui.collapsing_header("Prefabs", True)[0]:
+            player_sprites = AssetPool.get_spritesheet("assets/images/spritesheet.png")
+            sprite = player_sprites.get_sprite(0)
             sprite_width = sprite.width * 4
             sprite_height = sprite.height * 4
             id = sprite.tex_id
             tex_coords = sprite.get_tex_coords()
 
-            imgui.core.push_id(str(i))
-            changed = imgui.core.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
+            changed = imgui.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
             if changed:
-                obj = Prefabs.generate_sprite_object(sprite, 0.25, 0.25)
+                obj = Prefabs.generate_mario()
                 self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
-            imgui.core.pop_id()
+            imgui.same_line()
 
-            last_button_pos = imgui.core.get_item_rect_max()
-            last_button_x2 = last_button_pos.x
-            next_button_x2 = last_button_x2 + item_spacing.x + sprite_width
+            item_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+            sprite = item_sprites.get_sprite(0)
+            id = sprite.tex_id
+            tex_coords = sprite.get_tex_coords()
 
-            if i + 1 < self.sprites.size() and next_button_x2 < window_x2:
-                imgui.core.same_line()
+            changed = imgui.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
+            if changed:
+                obj = Prefabs.generate_question_block()
+                self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
+            imgui.same_line()
 
         imgui.end()

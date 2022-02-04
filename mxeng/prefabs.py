@@ -1,7 +1,10 @@
+from components.animation_state import AnimationState
 from components.sprite import Sprite
 from components.sprite_renderer import SpriteRenderer
+from components.state_machine import StateMachine
 from mxeng.game_object import GameObject
 from components.transform import Transform
+from util.asset_pool import AssetPool
 
 from util.vectors import Vector2
 
@@ -19,4 +22,45 @@ class Prefabs:
         block.add_component(renderer)
         return block
 
+    @staticmethod
+    def generate_mario() -> GameObject:
+        from mxeng.window import Window
+        player_sprites = AssetPool.get_spritesheet("assets/images/spritesheet.png")
+        mario = Prefabs.generate_sprite_object(player_sprites.get_sprite(0), 0.25, 0.25)
+        
+        run: AnimationState = AnimationState("Run")
+        default_frame_time = 0.23
+        run.add_frame(player_sprites.get_sprite(0), default_frame_time)
+        run.add_frame(player_sprites.get_sprite(2), default_frame_time)
+        run.add_frame(player_sprites.get_sprite(3), default_frame_time)
+        run.add_frame(player_sprites.get_sprite(2), default_frame_time)
+        run.does_loop = True
 
+        state_machine = StateMachine()
+        state_machine.add_state(run)
+        state_machine.set_default_state(run.title)
+        
+        mario.add_component(state_machine)
+
+        return mario
+
+    @staticmethod
+    def generate_question_block() -> GameObject:
+        from mxeng.window import Window
+        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        question_block = Prefabs.generate_sprite_object(items_sprites.get_sprite(0), 0.25, 0.25)
+        
+        flicker: AnimationState = AnimationState("Flicker")
+        default_frame_time = 0.57
+        flicker.add_frame(items_sprites.get_sprite(0), default_frame_time)
+        flicker.add_frame(items_sprites.get_sprite(1), default_frame_time)
+        flicker.add_frame(items_sprites.get_sprite(2), default_frame_time)
+        flicker.does_loop = True
+
+        state_machine = StateMachine()
+        state_machine.add_state(flicker)
+        state_machine.set_default_state(flicker.title)
+        
+        question_block.add_component(state_machine)
+
+        return question_block

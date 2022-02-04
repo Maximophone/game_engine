@@ -1,6 +1,7 @@
 from components.component import Component
 from components.non_pickable import NonPickable
 from components.sprite_renderer import SpriteRenderer
+from components.state_machine import StateMachine
 from mxeng.game_object import GameObject
 from mxeng.key_listener import KeyListener
 from mxeng.mouse_listener import MouseListener
@@ -30,6 +31,8 @@ class MouseControls(Component):
     def place(self):
         from mxeng.window import Window
         new_obj = self.holding_object.copy()
+        if new_obj.get_component(StateMachine) is not None:
+            new_obj.get_component(StateMachine).refresh_textures()
         new_obj.get_component(SpriteRenderer).set_color(Color4([1., 1., 1., 1.]))
         new_obj.remove_component(NonPickable)
         Window.get_scene().add_game_object_to_scene(new_obj)

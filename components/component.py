@@ -39,24 +39,18 @@ class Component:
             if typ == int:
                 new_value = MXImGUI.drag_int(f"{name}: ", value)
                 setattr(self, name, new_value)
-                # changed, new_value = imgui.core.drag_int(f"{name}: ", value)
-                # if changed:
-                #     setattr(self, name, new_value)
             elif typ == float:
                 new_value = MXImGUI.drag_float(f"{name}: ", value)
                 setattr(self, name, new_value)
-                # changed, new_value = imgui.core.drag_float(f"{name}: ", value)
-                # if changed:
-                #     setattr(self, name, new_value)
             elif typ == bool:
                 changed, new_value = imgui.core.checkbox(f"{name}: ", value)
                 if changed:
                     setattr(self, name, new_value)
+            elif typ == str:
+                new_value = MXImGUI.input_text(f"{name}: ", value)
+                setattr(self, name, new_value)
             elif typ == Vector2:
                 MXImGUI.draw_vec2_control(f"{name}: ", value)
-                # changed, new_value = imgui.core.drag_float2(f"{name}: ", value[0], value[1])
-                # if changed:
-                #    setattr(self, name,  Vector2(new_value))
             elif typ == Vector3:
                 changed, new_value = imgui.core.drag_float3(f"{name}: ", value[0], value[1], value[2])
                 if changed:

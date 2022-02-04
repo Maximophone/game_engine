@@ -97,6 +97,8 @@ class Gizmo(Component):
     def update(self, dt: float):
         if self._using:
             self.set_inactive()
+        self.x_axis_object.get_component(SpriteRenderer).set_color(Color4([0., 0., 0., 0.]))
+        self.y_axis_object.get_component(SpriteRenderer).set_color(Color4([0., 0., 0., 0.]))
 
     def set_active(self):
         self.x_axis_sprite.set_color(self.x_axis_color)

@@ -62,18 +62,6 @@ class Gizmo(Component):
         self.active_game_object = self.properties_window.active_game_object
         if self.active_game_object is not None:
             self.set_active()
-
-            # TODO: Move this into it's own KeyEditorBinding component class
-            if KeyListener.is_key_pressed(glfw.KEY_LEFT_CONTROL) and KeyListener.key_begin_press(glfw.KEY_D):
-                new_object = self.active_game_object.copy()
-                Window.get_scene().add_game_object_to_scene(new_object)
-                new_object.transform.position += Vector2([0.1, 0.1])
-                self.properties_window.active_game_object = new_object
-                return
-            elif KeyListener.key_begin_press(glfw.KEY_DELETE):
-                self.active_game_object.destroy()
-                self.set_inactive()
-                self.properties_window.active_game_object = None
         else:
             self.set_inactive()
             return

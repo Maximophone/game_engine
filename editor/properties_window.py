@@ -1,3 +1,4 @@
+from typing import List
 from components.non_pickable import NonPickable
 from mxeng.game_object import GameObject
 from physics2d.components.box_2d_collider import Box2DCollider
@@ -12,16 +13,29 @@ import glfw
 class PropertiesWindow:
     def __init__(self, picking_texture: PickingTexture):
         self._active_game_object: GameObject = None
+        self._active_game_objects: List[GameObject] = []
         self.picking_texture: PickingTexture = picking_texture
         self.debounce: float = 0.2
 
     @property
     def active_game_object(self) -> GameObject:
-        return self._active_game_object
+        return self._active_game_objects[0] if len(self._active_game_objects) == 1 else None
 
     @active_game_object.setter
     def active_game_object(self, value: GameObject):
+        if value is not None:
+            self.clear_selected()
+            self._active_game_objects.append(value)
         self._active_game_object = value
+
+    def get_active_game_objects(self) -> List[GameObject]:
+        return self._active_game_objects
+
+    def add_active_game_object(self, go: GameObject):
+        self._active_game_objects.append(go)
+
+    def clear_selected(self):
+        self._active_game_objects = []
 
     def update(self, dt: float, current_scene: Scene):
         self.debounce -= dt
@@ -33,13 +47,14 @@ class PropertiesWindow:
             game_object_id = self.picking_texture.read_pixel((x+1)/2.*2560, (y+1)/2.*1440) # HACK
             picked_object = current_scene.get_game_object(game_object_id)
             if picked_object is not None and picked_object.get_component(NonPickable) is None:
-                self._active_game_object = picked_object
+                self.active_game_object = picked_object
             elif picked_object is None:
-                self._active_game_object = None
+                self.active_game_object = None
             self.debounce = 0.2
 
     def imgui(self):
-        if self._active_game_object is not None:
+        if len(self._active_game_objects) == 1 and self._active_game_objects[0] is not None:
+            self._active_game_object = self._active_game_objects[0]
             imgui.begin("Properties", True)
 
             if imgui.begin_popup_context_window("ComponentAdder"):

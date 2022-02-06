@@ -1,4 +1,7 @@
+from typing import List
 import OpenGL.GL as gl
+
+from util.vectors import Vector2
 
 class PickingTextureException(Exception):
     pass
@@ -62,3 +65,16 @@ class PickingTexture:
         
         pixels = gl.glReadPixels(x, y, 1, 1, gl.GL_RGB, gl.GL_FLOAT)
         return int(pixels[0][0][0]) - 1
+
+    def read_pixels(self, start: Vector2, end: Vector2) -> List[float]:
+        gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, self._fbo_id)
+        gl.glReadBuffer(gl.GL_COLOR_ATTACHMENT0)
+
+        size = (end - start).abs()
+        num_pixels = size.x * size.y
+        pixels = gl.glReadPixels(start.x, start.y, size.x, size.y, gl.GL_RGB, gl.GL_FLOAT)
+
+        return [p-1 for p in pixels]
+
+
+

@@ -12,6 +12,8 @@ class MouseListener:
         self._scroll_y = _scroll_y
         self._x_pos = _x_pos
         self._y_pos = _y_pos
+        self._last_x = _last_x
+        self._last_y = _last_y
         self._world_x, self._world_y = 0., 0.
         self._mouse_button_pressed = _mouse_button_pressed or [False]*9
         self._is_dragging = _is_dragging
@@ -30,10 +32,13 @@ class MouseListener:
 
     @staticmethod
     def mouse_pos_callback(window: int, xpos: float, ypos: float):
+        #from mxeng.window import Window
+        #if not Window.get_imgui_layer().get_game_view_window().get_want_capture_mouse():
+        #    MouseListener.clear()
         if MouseListener.get()._mouse_button_down > 0:
             MouseListener.get()._is_dragging = True
-        #MouseListener.get()._last_x = MouseListener.get()._x_pos
-        #MouseListener.get()._last_y = MouseListener.get()._y_pos
+        MouseListener.get()._last_x = MouseListener.get()._x_pos
+        MouseListener.get()._last_y = MouseListener.get()._y_pos
         #MouseListener.get()._last_world_x = MouseListener.get()._world_x
         #MouseListener.get()._last_world_y = MouseListener.get()._world_y
         MouseListener.get()._x_pos = xpos
@@ -64,6 +69,18 @@ class MouseListener:
     def end_frame():
         MouseListener.get()._scroll_x = 0
         MouseListener.get()._scroll_y = 0
+
+    @staticmethod
+    def clear():
+        MouseListener.get()._scroll_x = 0
+        MouseListener.get()._scroll_y = 0
+        MouseListener.get()._x_pos = 0
+        MouseListener.get()._y_pos = 0
+        MouseListener.get()._last_x = 0
+        MouseListener.get()._last_y = 0
+        MouseListener.get()._mouse_button_down = 0
+        MouseListener.get()._is_dragging = False
+        MouseListener.get()._mouse_button_pressed = [False]*350
     
     @staticmethod
     def get_x() -> float:

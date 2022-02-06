@@ -15,6 +15,10 @@ from scenes.level_editor_scene_initializer import LevelEditorSceneInitializer
 from scenes.scene_initializer import SceneInitializer
 from util.asset_pool import AssetPool
 from util.timer import Time
+import ctypes
+
+import openal.al as al
+import openal.alc as alc
 
 class Window:
     _window = None
@@ -34,6 +38,13 @@ class Window:
         self.imgui_layer = None
 
         self.runtime_play: bool = False
+        
+        # Initialise audio device
+        default_device_name = alc.alcGetString(0, alc.ALC_DEFAULT_DEVICE_SPECIFIER)
+        self.audio_device = alc.alcOpenDevice(default_device_name)
+        attributes = 0
+        self.audio_context: int = alc.alcCreateContext(self.audio_device, ctypes.c_long(attributes))
+        alc.alcMakeContextCurrent(self.audio_context)
 
         EventSystem.add_observer(self)
 
@@ -89,6 +100,10 @@ class Window:
     def run(self):
         self.init()
         self.loop()
+
+        # Destroy the audio context
+        alc.alcDestroyContext(self.audio_context)
+        alc.alcCloseDevice(self.audio_device)
 
         # Free the memory
         self.imgui_layer.shutdown()

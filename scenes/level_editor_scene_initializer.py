@@ -1,6 +1,8 @@
+from pathlib import Path
 from components.editor_camera import EditorCamera
 from components.gizmo_system import GizmoSystem
 from components.grid_lines import GridLines
+from components.key_controls import KeyControls
 from components.mouse_controls import MouseControls
 from components.sprite_renderer import SpriteRenderer
 
@@ -33,6 +35,7 @@ class LevelEditorSceneInitializer(SceneInitializer):
         self.level_editor_stuff = scene.create_game_object("LevelEditor")
         self.level_editor_stuff.set_no_serialize()
         self.level_editor_stuff.add_component(MouseControls())
+        self.level_editor_stuff.add_component(KeyControls())
         self.level_editor_stuff.add_component(GridLines())
         self.level_editor_stuff.add_component(EditorCamera(scene._camera))
         self.level_editor_stuff.add_component(GizmoSystem(gizmos))
@@ -46,6 +49,7 @@ class LevelEditorSceneInitializer(SceneInitializer):
 
     def load_resources(self, scene: Scene):
         AssetPool.get_shader("assets/shaders/default.glsl")
+
         AssetPool.add_spritesheet(
             "assets/images/spritesheets/decorationsAndBlocks.png",
             Spritesheet(AssetPool.get_texture("assets/images/spritesheets/decorationsAndBlocks.png"), 16, 16, 81, 0)
@@ -62,6 +66,31 @@ class LevelEditorSceneInitializer(SceneInitializer):
             "assets/images/gizmos.png",
             Spritesheet(AssetPool.get_texture("assets/images/gizmos.png"), 24, 48, 3, 0)
         )
+        AssetPool.add_sound("assets/sounds/1-up.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/bowserfalls.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/bowserfire.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/break_block.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/bump.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/coin.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/fireball.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/fireworks.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/flagpole.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/gameover.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/invincible.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/jump-small.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/jump-super.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/kick.ogg", loops=False)        
+        AssetPool.add_sound("assets/sounds/main-theme-overworld.ogg", loops=True)
+        AssetPool.add_sound("assets/sounds/mario_die.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/pipe.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/powerup.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/powerup_appears.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/stage_clear.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/stomp.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/vine.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/warning.ogg", loops=False)
+        AssetPool.add_sound("assets/sounds/world_clear.ogg", loops=False)
+        
 
         for go in scene._game_objects:
 
@@ -75,8 +104,6 @@ class LevelEditorSceneInitializer(SceneInitializer):
                 state_machine.refresh_textures()
 
     def imgui(self):
-        #print("X: ", MouseListener.get_screen_x())
-        #print("Y: ", MouseListener.get_screen_y())
         imgui.begin("Level Editor Stuff")
         self.level_editor_stuff.imgui()
         imgui.end()
@@ -107,6 +134,7 @@ class LevelEditorSceneInitializer(SceneInitializer):
                 last_button_x2 = last_button_pos.x
                 next_button_x2 = last_button_x2 + item_spacing.x + sprite_width
 
+
                 if i + 1 < self.sprites.size() and next_button_x2 < window_x2:
                     imgui.core.same_line()
 
@@ -133,6 +161,20 @@ class LevelEditorSceneInitializer(SceneInitializer):
             if changed:
                 obj = Prefabs.generate_question_block()
                 self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
-            imgui.same_line()
+            #imgui.same_line()
+
+        if imgui.collapsing_header("Sounds", True)[0]:
+            sounds = AssetPool.get_all_sounds()
+
+            for i, sound in enumerate(sounds):
+                sound_path = sound.filepath
+                if imgui.button(Path(sound_path).name):
+                    if not sound.is_playing:
+                        sound.play()
+
+                    else:
+                        sound.stop()
+                if i%5:
+                    imgui.same_line()
 
         imgui.end()

@@ -19,6 +19,11 @@ class ImGUILayer:
     def properties_window(self):
         return self._properties_window
 
+    def get_game_view_window(self):
+        from editor.game_view_window import GameViewWindow
+        # TODO: Shouldn't be static
+        return GameViewWindow
+
     def init_imgui(self, glfw_window):
         imgui.create_context()
         self.impl = GlfwRenderer(glfw_window)
@@ -42,6 +47,7 @@ class ImGUILayer:
         self._menu_bar.imgui()
         # imgui.end()
         
+
         GameViewWindow.imgui()
         self._properties_window.update(dt, scene)
         self._properties_window.imgui()

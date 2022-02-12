@@ -23,6 +23,10 @@ class Scene:
         self._scene_initializer: SceneInitializer = scene_initializer
         self._physics_2d: Physics2D = Physics2D()
 
+    @property
+    def physics(self) -> Physics2D:
+        return self._physics_2d
+
     def editor_update(self, dt: float):
         self._camera.adjust_projection()
 

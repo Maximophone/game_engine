@@ -8,8 +8,6 @@ from components.sprite_renderer import SpriteRenderer
 
 from components.spritesheet import Spritesheet
 from components.state_machine import StateMachine
-from mxeng.game_object import GameObject
-from mxeng.mouse_listener import MouseListener
 from mxeng.prefabs import Prefabs
 from scenes.scene import Scene
 
@@ -17,7 +15,7 @@ import imgui
 
 from scenes.scene_initializer import SceneInitializer
 from util.asset_pool import AssetPool
-from util.vectors import Color3, Vector2, Vector3, Color4
+
 
 class LevelEditorSceneInitializer(SceneInitializer):
     def __init__(self):

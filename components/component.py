@@ -1,9 +1,12 @@
-from abc import abstractmethod
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from mxeng.game_object import GameObject
 from enum import Enum
 import imgui.core
 from pyrr import Vector3, Vector4
-import numpy as np
 from editor.mx_imgui import MXImGUI
+from Box2D import b2Contact
 
 from util.serialization import serializable, sproperty
 from util.vectors import Color3, Color4, Vector2
@@ -13,7 +16,6 @@ class Component:
     ID_COUNTER: int = 0
 
     def __init__(self):
-        from mxeng.game_object import GameObject
         self._uid: int = -1
         self.game_object: GameObject = None
 
@@ -27,6 +29,18 @@ class Component:
         pass
 
     def destroy(self):
+        pass
+
+    def begin_collision(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):
+        pass
+
+    def end_collision(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):
+        pass
+
+    def pre_solve(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):
+        pass
+
+    def post_solve(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):
         pass
 
     def imgui(self):

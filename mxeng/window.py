@@ -7,6 +7,7 @@ from mxeng.mouse_listener import MouseListener
 from observers.event_system import EventSystem
 from observers.events.event import Event
 from observers.events.event_type import EventType
+from physics2d.physics2d import Physics2D
 from renderer.framebuffer import Framebuffer
 from renderer.picking_texture import PickingTexture
 from renderer.renderer import Renderer
@@ -62,6 +63,10 @@ class Window:
     @staticmethod
     def get_scene() -> Scene:
         return Window.get().current_scene
+
+    @staticmethod
+    def get_physics() -> Physics2D:
+        return Window.get_scene().physics
 
     @staticmethod
     def get():

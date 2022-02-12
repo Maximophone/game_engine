@@ -47,7 +47,6 @@ class PropertiesWindow:
         for color, go in zip(self._active_game_objects_original_color, self._active_game_objects):
             spr: SpriteRenderer = go.get_component(SpriteRenderer)
             if spr is not None:
-                print(f"resetting color from {spr.get_color()} to {color}")
                 spr.set_color(color)
         self._active_game_objects_original_color = []
         self._active_game_objects = []

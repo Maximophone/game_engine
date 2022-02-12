@@ -84,6 +84,10 @@ class MouseControls(Component):
                 Window.get_imgui_layer().properties_window.clear_selected()
             self.debounce = 0.2
         elif MouseListener.is_dragging() and MouseListener.mouse_button_down(glfw.MOUSE_BUTTON_LEFT):
+            x = MouseListener.get_screen_x()
+            y = MouseListener.get_screen_y()
+            if x<-1 or x> 1 or y<-1 or y>1:
+                return
             if not self.box_select_set:
                 Window.get_imgui_layer().properties_window.clear_selected()
                 self.box_select_start = MouseListener.get_screen()

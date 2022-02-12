@@ -72,11 +72,13 @@ class PickingTexture:
         gl.glReadBuffer(gl.GL_COLOR_ATTACHMENT0)
 
         size = Vector2(np.abs(end - start)[:2])
-        #print(start, end)
         pixels = gl.glReadPixels(start.x, start.y, size.x, size.y, gl.GL_RGB, gl.GL_FLOAT)
-        #print(pixels)
 
-        return [p[0][0]-1 for p in pixels]
+        if pixels.size:
+            # We need to check for the size because for some reason the array can be empty 
+            # with dimensions like (28, 0, 3)
+            return [p[0][0]-1 for p in pixels]
+        return []
 
 
 

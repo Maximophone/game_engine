@@ -1,18 +1,22 @@
 from typing import List
-from components.non_pickable import NonPickable
+from components.sprite_renderer import SpriteRenderer
+
 from mxeng.game_object import GameObject
 from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.circle_collider import CircleCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
-from scenes.scene import Scene
+
 from renderer.picking_texture import PickingTexture
-from mxeng.mouse_listener import MouseListener
+
+from util.vectors import Color4
 import imgui
-import glfw
+
+HIGHLIGHT_COLOR = (0.5, 0.5, 0.8, 0.8)
 
 class PropertiesWindow:
     def __init__(self, picking_texture: PickingTexture):
         self._active_game_object: GameObject = None
+        self._active_game_objects_original_color: List[Color4] = []
         self._active_game_objects: List[GameObject] = []
         self.picking_texture: PickingTexture = picking_texture
 
@@ -31,9 +35,21 @@ class PropertiesWindow:
         return self._active_game_objects
 
     def add_active_game_object(self, go: GameObject):
+        spr: SpriteRenderer = go.get_component(SpriteRenderer)
         self._active_game_objects.append(go)
+        if spr is not None:
+            self._active_game_objects_original_color.append(spr.get_color().copy())
+            spr.set_color(Color4(HIGHLIGHT_COLOR))
+        else:
+            self._active_game_objects_original_color.append(Color4())
 
     def clear_selected(self):
+        for color, go in zip(self._active_game_objects_original_color, self._active_game_objects):
+            spr: SpriteRenderer = go.get_component(SpriteRenderer)
+            if spr is not None:
+                print(f"resetting color from {spr.get_color()} to {color}")
+                spr.set_color(color)
+        self._active_game_objects_original_color = []
         self._active_game_objects = []
 
     def imgui(self):

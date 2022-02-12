@@ -45,9 +45,14 @@ class Component:
 
     def imgui(self):
         serial = getattr(self, "__serial")
-        for name, value in self.__dict__.items():    
-            if name not in serial:
-                continue
+        for name in serial:
+            # check if this is a property
+            prop = getattr(type(self), name, None)
+            if prop is not None and isinstance(prop, sproperty):
+                # this is a property. If it has not setter, skip it
+                if prop.fset is None:
+                    continue
+            value = getattr(self, name)
             typ = type(value)
 
             if typ == int:

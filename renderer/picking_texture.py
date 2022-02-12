@@ -1,5 +1,6 @@
 from typing import List
 import OpenGL.GL as gl
+import numpy as np
 
 from util.vectors import Vector2
 
@@ -70,11 +71,12 @@ class PickingTexture:
         gl.glBindFramebuffer(gl.GL_READ_FRAMEBUFFER, self._fbo_id)
         gl.glReadBuffer(gl.GL_COLOR_ATTACHMENT0)
 
-        size = (end - start).abs()
-        num_pixels = size.x * size.y
+        size = Vector2(np.abs(end - start)[:2])
+        #print(start, end)
         pixels = gl.glReadPixels(start.x, start.y, size.x, size.y, gl.GL_RGB, gl.GL_FLOAT)
+        #print(pixels)
 
-        return [p-1 for p in pixels]
+        return [p[0][0]-1 for p in pixels]
 
 
 

@@ -32,9 +32,9 @@ class MouseListener:
 
     @staticmethod
     def mouse_pos_callback(window: int, xpos: float, ypos: float):
-        #from mxeng.window import Window
-        #if not Window.get_imgui_layer().get_game_view_window().get_want_capture_mouse():
-        #    MouseListener.clear()
+        from mxeng.window import Window
+        #if not Window.get_imgui_layer().game_view_window.get_want_capture_mouse():
+        #    MouseListener.get().clear()
         if MouseListener.get()._mouse_button_down > 0:
             MouseListener.get()._is_dragging = True
         MouseListener.get()._last_x = MouseListener.get()._x_pos
@@ -93,7 +93,7 @@ class MouseListener:
     @staticmethod
     def get_screen() -> Vector2:
         current_x = MouseListener.get_x() - MouseListener.get()._game_viewport_pos.x
-        current_x = current_x / MouseListener.get()._game_viewport_size.x * 2 - 1
+        current_x = (current_x / MouseListener.get()._game_viewport_size.x) * 2 - 1
         current_y = MouseListener.get_y() - MouseListener.get()._game_viewport_pos.y
         current_y = - (current_y / MouseListener.get()._game_viewport_size.y * 2 - 1)
         return Vector2([current_x, current_y])
@@ -122,6 +122,30 @@ class MouseListener:
     @staticmethod
     def get_world_y() -> float:
         return MouseListener.get_world().y
+
+    @staticmethod
+    def screen_to_world(screen_coords: Vector2, normalize: bool = False) -> Vector2:
+        from mxeng.window import Window
+        if normalize:
+            normalized_screen_coords = Vector2([
+                screen_coords.x / Window.get_width(),
+                screen_coords.y / Window.get_height()
+            ]) * 2. - Vector2([1., 1.])
+        else:
+            normalized_screen_coords = screen_coords
+        camera = Window.get_scene().camera()
+        tmp = camera.get_inverse_view() * camera.get_inverse_projection() * Vector4([normalized_screen_coords.x, normalized_screen_coords.y, 0, 1])
+        return Vector2(tmp.xy)
+
+    @staticmethod
+    def world_to_screen(world_coords: Vector2) -> Vector2:
+        from mxeng.window import Window
+        camera = Window.get_scene().camera()
+        ndc_space_pos = Vector4([*world_coords, 1])
+        tmp = camera.get_projection_matrix() * camera.get_view_matrix() * ndc_space_pos
+        window_space = (Vector2(tmp.xy) / tmp.w + Vector2([1., 1.]))/2.*Vector2([Window.get_width(), Window.get_height()])
+        return window_space
+    
     @staticmethod
     def get_scroll_x() -> float:
         return MouseListener.get()._scroll_x

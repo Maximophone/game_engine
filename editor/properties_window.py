@@ -15,7 +15,6 @@ class PropertiesWindow:
         self._active_game_object: GameObject = None
         self._active_game_objects: List[GameObject] = []
         self.picking_texture: PickingTexture = picking_texture
-        self.debounce: float = 0.2
 
     @property
     def active_game_object(self) -> GameObject:
@@ -36,21 +35,6 @@ class PropertiesWindow:
 
     def clear_selected(self):
         self._active_game_objects = []
-
-    def update(self, dt: float, current_scene: Scene):
-        self.debounce -= dt
-        if not MouseListener.is_dragging() and MouseListener.mouse_button_down(glfw.MOUSE_BUTTON_LEFT) and self.debounce < 0:
-            x = MouseListener.get_screen_x()
-            y = MouseListener.get_screen_y()
-            if x<-1 or x>1 or y<-1 or y>1:
-                return
-            game_object_id = self.picking_texture.read_pixel((x+1)/2.*2560, (y+1)/2.*1440) # HACK
-            picked_object = current_scene.get_game_object(game_object_id)
-            if picked_object is not None and picked_object.get_component(NonPickable) is None:
-                self.active_game_object = picked_object
-            elif picked_object is None:
-                self.active_game_object = None
-            self.debounce = 0.2
 
     def imgui(self):
         if len(self._active_game_objects) == 1 and self._active_game_objects[0] is not None:

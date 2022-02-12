@@ -9,20 +9,21 @@ from scenes.scene import Scene
 
 class ImGUILayer:
     def __init__(self, picking_texture: PickingTexture):
+        from editor.game_view_window import GameViewWindow
         self.impl = None
         self.font = None
         self._properties_window: PropertiesWindow = PropertiesWindow(picking_texture)
         self._scene_hierarchy_window: SceneHierarchyWindow = SceneHierarchyWindow()
         self._menu_bar: MenuBar = MenuBar()
+        self._game_view_window = GameViewWindow()
 
     @property
     def properties_window(self):
         return self._properties_window
 
-    def get_game_view_window(self):
-        from editor.game_view_window import GameViewWindow
-        # TODO: Shouldn't be static
-        return GameViewWindow
+    @property
+    def game_view_window(self):
+        return self._game_view_window
 
     def init_imgui(self, glfw_window):
         imgui.create_context()
@@ -37,7 +38,6 @@ class ImGUILayer:
         self.impl.refresh_font_texture()
 
     def update(self, dt: float, scene: Scene):
-        from editor.game_view_window import GameViewWindow
         self.impl.process_inputs()
 
         imgui.new_frame()
@@ -48,8 +48,7 @@ class ImGUILayer:
         # imgui.end()
         
 
-        GameViewWindow.imgui()
-        self._properties_window.update(dt, scene)
+        self._game_view_window.imgui()
         self._properties_window.imgui()
         self._scene_hierarchy_window.imgui()
         imgui.render()

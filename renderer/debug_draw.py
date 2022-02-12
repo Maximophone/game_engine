@@ -95,7 +95,7 @@ class DebugDraw:
         gl.glEnableVertexAttribArray(1)
 
         # Draw the batch
-        gl.glDrawArrays(gl.GL_LINES, 0, 6*2*len(DebugDraw.lines))
+        gl.glDrawArrays(gl.GL_LINES, 0, 2*len(DebugDraw.lines))
         
         # Disable location
         gl.glDisableVertexAttribArray(0)

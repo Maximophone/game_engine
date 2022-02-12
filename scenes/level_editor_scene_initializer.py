@@ -17,7 +17,7 @@ import imgui
 
 from scenes.scene_initializer import SceneInitializer
 from util.asset_pool import AssetPool
-from util.vectors import Vector2, Vector3, Color4
+from util.vectors import Color3, Vector2, Vector3, Color4
 
 class LevelEditorSceneInitializer(SceneInitializer):
     def __init__(self):

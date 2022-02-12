@@ -203,8 +203,9 @@ class Window:
             self.framebuffer.unbind()
                 
             self.imgui_layer.update(dt, self.current_scene)
-            glfw.swap_buffers(self.glfw_window)
+
             MouseListener.end_frame()
+            glfw.swap_buffers(self.glfw_window)
 
             end_time = Time.get_time()
             dt = end_time - begin_time

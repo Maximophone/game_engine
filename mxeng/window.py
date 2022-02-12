@@ -204,6 +204,7 @@ class Window:
                 
             self.imgui_layer.update(dt, self.current_scene)
 
+            KeyListener.end_frame()
             MouseListener.end_frame()
             glfw.swap_buffers(self.glfw_window)
 

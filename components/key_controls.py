@@ -18,9 +18,10 @@ class KeyControls(Component):
         if KeyListener.is_key_pressed(glfw.KEY_LEFT_CONTROL) and KeyListener.key_begin_press(glfw.KEY_D) and active_game_object is not None:
             new_object = active_game_object.copy()
             Window.get_scene().add_game_object_to_scene(new_object)
+
             new_object.transform.position += Vector2([Settings.GRID_WIDTH, 0.])
             properties_window.active_game_object = new_object
-        elif KeyListener.is_key_pressed(glfw.KEY_LEFT_CONTROL) and KeyListener.key_begin_press(glfw.KEY_D) and len(active_game_object) > 1:
+        elif KeyListener.is_key_pressed(glfw.KEY_LEFT_CONTROL) and KeyListener.key_begin_press(glfw.KEY_D) and len(active_game_objects) > 1:
             game_objects = [x for x in active_game_objects]
             properties_window.clear_selected()
             for go in game_objects:

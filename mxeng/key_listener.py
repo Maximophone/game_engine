@@ -15,6 +15,10 @@ class KeyListener:
         return KeyListener._instance
 
     @staticmethod
+    def end_frame():
+        KeyListener.get()._key_begin_press = [False]*350
+
+    @staticmethod
     def key_callback(window: int, key: int, scancode: int, action: int, mods: int):
         if action == glfw.PRESS:
             KeyListener.get()._key_pressed[key] = True
@@ -30,7 +34,4 @@ class KeyListener:
 
     @staticmethod
     def key_begin_press(key_code: int) -> bool:
-        result = KeyListener.get()._key_begin_press[key_code]
-        if result:
-            KeyListener.get()._key_begin_press[key_code] = False
-        return result
+        return KeyListener.get()._key_begin_press[key_code]

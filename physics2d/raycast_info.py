@@ -1,11 +1,11 @@
 from Box2D import b2RayCastCallback, b2Fixture, b2Vec2
-from numpy import fix
 from mxeng.game_object import GameObject
 
 from util.vectors import Vector2
 
 class RaycastInfo(b2RayCastCallback):
     def __init__(self, requesting_object: GameObject):
+        super().__init__()
         self.fixture: b2Fixture = None
         self.point: Vector2 = Vector2()
         self.normal: Vector2 = Vector2()

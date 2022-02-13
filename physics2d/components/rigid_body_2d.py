@@ -4,7 +4,7 @@ from util.vectors import Vector2
 from components.component import Component
 from physics2d.enums.body_type import BodyType
 
-from Box2D import b2Body
+from Box2D import b2Body, b2Transform
 
 @serializable("angular_damping", "linear_damping", "mass", "body_type", "fixed_rotation", "is_continuous_collision", "friction")
 class RigidBody2D(Component):
@@ -79,6 +79,11 @@ class RigidBody2D(Component):
 
     def update(self, dt: float):
         if self.raw_body is not None:
-            self.game_object.transform.position = Vector2(self.raw_body.position)
-            self.game_object.transform.rotation = self.raw_body.angle/2./pi*360.
-
+            if self.body_type == BodyType.Dynamic or self.body_type == BodyType.Kinematic:
+                self.game_object.transform.position = Vector2(self.raw_body.position)
+                self.game_object.transform.rotation = self.raw_body.angle/2./pi*360.
+                vel = self.raw_body.linearVelocity
+                self.velocity = Vector2([vel.x, vel.y])
+            elif self.body_type == BodyType.Static:
+                self.raw_body.transform.position = self.game_object.transform.position.to_b2vec2()
+                self.raw_body.transform.angle = self.game_object.transform.rotation

@@ -1,10 +1,14 @@
 from components.animation_state import AnimationState
+from components.coin_block import CoinBlock
+from components.ground import Ground
 from components.player_controller import PlayerController
+from components.question_block import QuestionBlock
 from components.sprite import Sprite
 from components.sprite_renderer import SpriteRenderer
 from components.state_machine import StateMachine
 from mxeng.game_object import GameObject
 from components.transform import Transform
+from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.pillbox_collider import PillboxCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.enums.body_type import BodyType
@@ -201,21 +205,56 @@ class Prefabs:
 
     @staticmethod
     def generate_question_block() -> GameObject:
-        from mxeng.window import Window
         items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
         question_block = Prefabs.generate_sprite_object(items_sprites.get_sprite(0), 0.25, 0.25)
         
         flicker = AnimationState("Flicker")
-        default_frame_time = 0.57
+        default_frame_time = 0.23
         flicker.add_frame(items_sprites.get_sprite(0), default_frame_time)
         flicker.add_frame(items_sprites.get_sprite(1), default_frame_time)
         flicker.add_frame(items_sprites.get_sprite(2), default_frame_time)
         flicker.does_loop = True
 
+        inactive = AnimationState("Inactive")
+        inactive.add_frame(items_sprites.get_sprite(3), 0.1)
+        inactive.does_loop = False
+
         state_machine = StateMachine()
         state_machine.add_state(flicker)
+        state_machine.add_state(inactive)
         state_machine.set_default_state(flicker.title)
+
+        state_machine.add_state_trigger(flicker.title, inactive.title, "set_inactive")
         
         question_block.add_component(state_machine)
+        question_block.add_component(QuestionBlock())
+        rb = RigidBody2D()
+        rb.body_type = BodyType.Static
+        question_block.add_component(rb)
+        b2d = Box2DCollider()
+        b2d.half_size = Vector2([0.25, 0.25])
+        question_block.add_component(b2d)
+        question_block.add_component(Ground())
 
         return question_block
+
+    @staticmethod
+    def generate_coin_block() -> GameObject:
+        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        coin = Prefabs.generate_sprite_object(items_sprites.get_sprite(7), 0.25, 0.25)
+        
+        coin_flip = AnimationState("Coin Flip")
+        default_frame_time = 0.23
+        coin_flip.add_frame(items_sprites.get_sprite(7), default_frame_time)
+        coin_flip.add_frame(items_sprites.get_sprite(8), default_frame_time)
+        coin_flip.add_frame(items_sprites.get_sprite(9), default_frame_time)
+        coin_flip.does_loop = True
+
+        state_machine = StateMachine()
+        state_machine.add_state(coin_flip)
+        state_machine.set_default_state(coin_flip.title)
+        
+        coin.add_component(state_machine)
+        coin.add_component(CoinBlock())
+
+        return coin

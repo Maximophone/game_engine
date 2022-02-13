@@ -1,7 +1,9 @@
 from pathlib import Path
+from components.breakable_brick import BreakableBrick
 from components.editor_camera import EditorCamera
 from components.gizmo_system import GizmoSystem
 from components.grid_lines import GridLines
+from components.ground import Ground
 from components.key_controls import KeyControls
 from components.mouse_controls import MouseControls
 from components.sprite_renderer import SpriteRenderer
@@ -140,6 +142,10 @@ class LevelEditorSceneInitializer(SceneInitializer):
                     b2d.half_size = Vector2([0.25, 0.25]
                     )
                     obj.add_component(b2d)
+                    obj.add_component(Ground())
+                    if i == 12:
+                        # Breakable bricks
+                        obj.add_component(BreakableBrick())
                     self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
                 imgui.core.pop_id()
 

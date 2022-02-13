@@ -9,6 +9,9 @@ from util.serialization import serializable
 
 import imgui
 
+class StateMachineException(Exception):
+    pass
+
 @serializable("state", "trigger")
 class StateTrigger:
     def __init__(self, state: str = "", trigger: str = ""):
@@ -57,10 +60,9 @@ class StateMachine(Component):
             try:
                 self.current_state = next(state for state in self.states if state.title == wanted_state)
             except StopIteration as e:
-                print(f"Cannot find state {wanted_state}")
-                raise e
+                raise StateMachineException(f"Cannot find state {wanted_state}") from e
             return
-        print(f"Unable to find trigger {trigger} for state {self.current_state.title}")
+        # print(f"Unable to find trigger {trigger} for state {self.current_state.title}")
 
     def start(self):
         for state in self.states:

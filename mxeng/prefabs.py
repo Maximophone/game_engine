@@ -40,10 +40,26 @@ class Prefabs:
         run.add_frame(player_sprites.get_sprite(2), default_frame_time)
         run.does_loop = True
 
+        switch_direction = AnimationState("Switch Direction")
+        switch_direction.add_frame(player_sprites.get_sprite(4), 0.1)
+        switch_direction.does_loop = False
+
+        idle = AnimationState("Idle")
+        idle.add_frame(player_sprites.get_sprite(0), 0.1)
+        idle.does_loop = False
+
         state_machine = StateMachine()
         state_machine.add_state(run)
-        state_machine.set_default_state(run.title)
-        
+        state_machine.add_state(switch_direction)
+        state_machine.add_state(idle)
+        state_machine.set_default_state(idle.title)
+
+        state_machine.add_state_trigger(run.title, switch_direction.title, "switch_direction")
+        state_machine.add_state_trigger(run.title, idle.title, "stop_running")
+        state_machine.add_state_trigger(switch_direction.title, idle.title, "stop_running")
+        state_machine.add_state_trigger(idle.title, run.title, "start_running")
+        state_machine.add_state_trigger(switch_direction.title, run.title, "start_running")
+
         mario.add_component(state_machine)
 
         pb = PillboxCollider()

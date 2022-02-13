@@ -110,9 +110,9 @@ def serialize(o: object) -> dict:
     elif o is None:
         return {"__type": "None", "val": None}
     elif isinstance(o, dict):
-        ret = {"__type": "dict", "val": {}}
+        ret = {"__type": "dict", "val": []}
         for key, value in o.items():
-            ret["val"][key] = serialize(value)
+            ret["val"].append((serialize(key), serialize(value)))
         return ret
     elif isinstance(o, list):
         ret = {"__type": "list", "val": []}
@@ -142,7 +142,7 @@ def deserialize(d: dict):
     if typ in {"bool", "int", "float", "str", "None"}:
         return val
     elif typ == "dict":
-        return {k: deserialize(v) for k, v in val.items()}
+        return {deserialize(k): deserialize(v) for k, v in val}
     elif typ == "list":
         return [deserialize(v) for v in val]
     elif typ == "set":

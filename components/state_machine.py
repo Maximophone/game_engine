@@ -12,7 +12,7 @@ import imgui
 @serializable("state", "trigger")
 class StateTrigger:
     def __init__(self, state: str = "", trigger: str = ""):
-        self.states = state
+        self.state = state
         self.trigger = trigger
 
     def __eq__(self, o: object) -> bool:
@@ -37,7 +37,7 @@ class StateMachine(Component):
             state.refresh_textures()
 
     def add_state_trigger(self, from_: str, to: str, on_trigger: str):
-        self.state_transfers.put(StateTrigger(from_, on_trigger), to)
+        self.state_transfers[StateTrigger(from_, on_trigger)] = to
 
     def add_state(self, state: AnimationState):
         self.states.append(state)
@@ -52,11 +52,11 @@ class StateMachine(Component):
         print(f"Unable to find state: {animation_title} in set default state")
 
     def trigger(self, trigger: str):
-        wanted_state = self.state_transfers.get(StateTrigger(self.current_state, trigger))
+        wanted_state = self.state_transfers.get(StateTrigger(self.current_state.title, trigger))
         if wanted_state is not None:
-            self.current_state = wanted_state
+            self.current_state = next(state for state in self.states if state.title == wanted_state)
             return
-        print(f"Unable to find trigger {trigger}")
+        print(f"Unable to find trigger {trigger} for state {self.current_state.title}")
 
     def start(self):
         for state in self.states:

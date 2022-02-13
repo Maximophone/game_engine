@@ -9,12 +9,16 @@ from components.sprite_renderer import SpriteRenderer
 from components.spritesheet import Spritesheet
 from components.state_machine import StateMachine
 from mxeng.prefabs import Prefabs
+from physics2d.components.box_2d_collider import Box2DCollider
+from physics2d.components.rigid_body_2d import RigidBody2D
+from physics2d.enums.body_type import BodyType
 from scenes.scene import Scene
 
 import imgui
 
 from scenes.scene_initializer import SceneInitializer
 from util.asset_pool import AssetPool
+from util.vectors import Vector2
 
 
 class LevelEditorSceneInitializer(SceneInitializer):
@@ -125,6 +129,12 @@ class LevelEditorSceneInitializer(SceneInitializer):
                 changed = imgui.core.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
                 if changed:
                     obj = Prefabs.generate_sprite_object(sprite, 0.25, 0.25)
+                    rb = RigidBody2D()
+                    rb.body_type = BodyType.Static
+                    obj.add_component(rb)
+                    b2d = Box2DCollider()
+                    b2d.half_size = Vector2([0.25, 0.25])
+                    obj.add_component(b2d)
                     self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
                 imgui.core.pop_id()
 

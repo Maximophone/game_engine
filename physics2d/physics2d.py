@@ -55,11 +55,14 @@ class Physics2D:
 
             circle_collider: CircleCollider = go.get_component(CircleCollider)
             box_2d_collider: Box2DCollider = go.get_component(Box2DCollider)
+            pillbox_collider: PillboxCollider = go.get_component(PillboxCollider)
 
             if circle_collider is not None:
                 self.add_circle_collider(rb, circle_collider)
             if box_2d_collider is not None:
                 self.add_box2d_collider(rb, box_2d_collider)
+            if pillbox_collider is not None:
+                self.add_pillbox_collider(rb, pillbox_collider)
 
     def destroy_game_object(self, go: GameObject):
         rb: RigidBody2D = go.get_component(RigidBody2D)

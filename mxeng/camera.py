@@ -18,13 +18,12 @@ class Camera:
         self.adjust_projection()
 
     @property
-    def projection_size(self) -> np.ndarray:
+    def projection_size(self) -> Vector2:
         return self._projection_size
 
     def adjust_projection(self):
         self._projection_matrix = Matrix44.orthogonal_projection(0., self._projection_size.x * self.zoom, 0., self._projection_size.y * self.zoom, 0., 100.)
         self._inverse_projection = self._projection_matrix.inverse
-
 
     def get_view_matrix(self) -> Matrix44:
         camera_front = Vector3([0., 0., -1.])

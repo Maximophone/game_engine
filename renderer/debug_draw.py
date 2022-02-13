@@ -13,7 +13,7 @@ import OpenGL.GL as gl
 
 
 class DebugDraw:
-    MAX_LINES: int = 500
+    MAX_LINES: int = 3000
     lines: List[Line2D] = []
     # 6 floats per vertex, 2 vertices per line
     vertex_array: Vector2 = np.zeros(MAX_LINES*6*2, dtype=np.float32)
@@ -117,9 +117,18 @@ class DebugDraw:
     @staticmethod
     def add_line_2D(from_: Vector2, to: Vector2, color: Color3 = None, lifetime: int = 1):
         # TODO: add constants for common colors
-        color = color if color is not None else Color3([0., 1., 0.])
-        if len(DebugDraw.lines) >= DebugDraw.MAX_LINES:
+        from mxeng.window import Window
+        camera = Window.get_scene().camera()
+        camera_left = camera.position + Vector2([-2., -2.])
+        camera_right = camera.position + camera.projection_size * camera.zoom + Vector2([4., 4.])
+
+        line_in_view = (
+            (from_.x >= camera_left.x and from_.x <= camera_right.x and from_.y >= camera_left.y and from_.y <= camera_right.y) or
+            (to.x >= camera_left.x and to.x <= camera_right.x and to.y >= camera_left.y and to.y <= camera_right.y)
+        )
+        if len(DebugDraw.lines) >= DebugDraw.MAX_LINES or not line_in_view:
             return
+        color = color if color is not None else Color3([0., 1., 0.])
         DebugDraw.lines.append(Line2D(from_, to, color, lifetime))
 
     # ===================

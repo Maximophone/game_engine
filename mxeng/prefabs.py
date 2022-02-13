@@ -1,6 +1,8 @@
 from components.animation_state import AnimationState
 from components.coin_block import CoinBlock
+from components.flower import Flower
 from components.ground import Ground
+from components.mushroom_ai import MushroomAI
 from components.player_controller import PlayerController
 from components.question_block import QuestionBlock
 from components.sprite import Sprite
@@ -9,6 +11,7 @@ from components.state_machine import StateMachine
 from mxeng.game_object import GameObject
 from components.transform import Transform
 from physics2d.components.box_2d_collider import Box2DCollider
+from physics2d.components.circle_collider import CircleCollider
 from physics2d.components.pillbox_collider import PillboxCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.enums.body_type import BodyType
@@ -258,3 +261,41 @@ class Prefabs:
         coin.add_component(CoinBlock())
 
         return coin
+
+    @staticmethod
+    def generate_mushroom() -> GameObject:
+        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        mushroom = Prefabs.generate_sprite_object(items_sprites.get_sprite(10), 0.25, 0.25)
+        
+        rb = RigidBody2D()
+        rb.body_type = BodyType.Dynamic
+        rb.fixed_rotation = True
+        rb.is_continuous_collision = False
+        mushroom.add_component(rb)
+
+        circle_collider = CircleCollider()
+        circle_collider.radius = 0.14
+        mushroom.add_component(circle_collider)
+        mushroom.add_component(MushroomAI())
+
+        return mushroom
+
+    @staticmethod
+    def generate_flower() -> GameObject:
+        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        flower = Prefabs.generate_sprite_object(items_sprites.get_sprite(20), 0.25, 0.25)
+        
+        rb = RigidBody2D()
+        rb.body_type = BodyType.Static
+        rb.fixed_rotation = True
+        rb.is_continuous_collision = False
+        flower.add_component(rb)
+
+        circle_collider = CircleCollider()
+        circle_collider.radius = 0.14
+        flower.add_component(circle_collider)
+        flower.add_component(Flower())
+
+        return flower
+
+    

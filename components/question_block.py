@@ -1,7 +1,9 @@
 from enum import Enum, auto
 from components.block import Block
+from components.game_camera import GameCamera
 from components.state_machine import StateMachine
-from components.player_controller import PlayerController
+from components.player_controller import PlayerController, PlayerState
+from mxeng.game_object import GameObject
 from util.serialization import senum, serializable
 
 @senum
@@ -10,7 +12,7 @@ class BlockType(Enum):
     Powerup = auto()
     Invincibility = auto()
 
-@serializable()
+@serializable("block_type")
 class QuestionBlock(Block):
     def __init__(self):
         self.block_type: BlockType = BlockType.Coin
@@ -38,7 +40,27 @@ class QuestionBlock(Block):
         Window.get_scene().add_game_object_to_scene(coin)
 
     def do_powerup(self, player_controller: PlayerController):
-        pass
+        if player_controller.player_state == PlayerState.Small:
+            self.spawn_mushroom()
+        else:
+            self.spawn_flower()
+
 
     def do_invincibility(self, player_controller: PlayerController):
         pass
+
+    def spawn_mushroom(self):
+        from mxeng.window import Window
+        from mxeng.prefabs import Prefabs
+        mushroom: GameObject = Prefabs.generate_mushroom()
+        mushroom.transform.position = self.game_object.transform.position.copy()
+        mushroom.transform.position.y += 0.25
+        Window.get_scene().add_game_object_to_scene(mushroom)
+
+    def spawn_flower(self):
+        from mxeng.window import Window
+        from mxeng.prefabs import Prefabs
+        flower: GameObject = Prefabs.generate_flower()
+        flower.transform.position = self.game_object.transform.position.copy()
+        flower.transform.position.y += 0.25
+        Window.get_scene().add_game_object_to_scene(flower)

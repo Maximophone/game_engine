@@ -3,6 +3,7 @@ from components.component import Component
 from components.ground import Ground
 from components.state_machine import StateMachine
 from mxeng.game_object import GameObject
+from physics2d.components.pillbox_collider import PillboxCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
 from mxeng.key_listener import KeyListener
 from util.asset_pool import AssetPool
@@ -126,7 +127,7 @@ class PlayerController(Component):
 
     def has_won(self) -> bool:
         return False
-        
+
     def check_on_ground(self):
         from mxeng.window import Window
         from renderer.debug_draw import DebugDraw
@@ -148,6 +149,22 @@ class PlayerController(Component):
 
         #DebugDraw.add_line_2D(raycast_begin, raycast_end, Color3([1., 0., 0.]))
         #DebugDraw.add_line_2D(raycast2_begin, raycast2_end, Color3([1., 0., 0.]))
+
+    def powerup(self):
+        if self.player_state == PlayerState.Small:
+            self.player_state = PlayerState.Big
+            AssetPool.get_sound("assets/sounds/powerup.ogg").play()
+            self.game_object.transform.scale.y = 0.42
+            pb: PillboxCollider = self.game_object.get_component(PillboxCollider)
+            if pb is not None:
+                self.jump_boost *= self.big_jump_boost_factor
+                self.walk_speed *= self.big_jump_boost_factor
+                pb.height = 0.63
+        elif self.player_state == PlayerState.Big:
+            self.player_state = PlayerState.Fire
+            AssetPool.get_sound("assets/sounds/powerup.ogg").play()
+        
+        self.state_machine.trigger("powerup")
 
     def begin_collision(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):
         if self.is_dead:

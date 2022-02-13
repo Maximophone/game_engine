@@ -19,6 +19,7 @@ class Scene:
     def __init__(self, scene_initializer: SceneInitializer):
         self._is_running = False
         self._game_objects: List[GameObject] = []
+        self._pending_objects: List[GameObject] = []
         self._camera: Camera = None
         self._scene_initializer: SceneInitializer = scene_initializer
         self._physics_2d: Physics2D = Physics2D()
@@ -41,6 +42,13 @@ class Scene:
             Renderer.destroy_game_object(go)
             self._physics_2d.destroy_game_object(go)
 
+        for go in self._pending_objects:
+            self._game_objects.append(go)
+            go.start()
+            Renderer.add(go)
+            self._physics_2d.add(go)
+        self._pending_objects = []
+
     def update(self, dt: float):
         self._camera.adjust_projection()
         self._physics_2d.update(dt)
@@ -55,6 +63,13 @@ class Scene:
             go = self._game_objects.pop(i)
             Renderer.destroy_game_object(go)
             self._physics_2d.destroy_game_object(go)
+
+        for go in self._pending_objects:
+            self._game_objects.append(go)
+            go.start()
+            Renderer.add(go)
+            self._physics_2d.add(go)
+        self._pending_objects = []
 
     def clean_objects(self):
         objects_to_remove = []
@@ -96,10 +111,8 @@ class Scene:
         if not self._is_running:
             self._game_objects.append(go)
         else:
-            self._game_objects.append(go)
-            go.start()
-            Renderer.add(go)
-            self._physics_2d.add(go)
+            self._pending_objects.append(go)
+
 
     def get_game_object(self, game_object_id: int) -> Optional[GameObject]:
         return next((go for go in self._game_objects if go.uid == game_object_id), None)

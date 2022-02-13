@@ -71,7 +71,7 @@ class RigidBody2D(Component):
 
     def add_velocity(self, force_to_add: Vector2):
         if self.raw_body is not None:
-            self.raw_body.ApplyForceToCenter(force_to_add.to_b2vec2())
+            self.raw_body.ApplyForceToCenter(force_to_add.to_b2vec2(), wake=True)
 
     def add_impulse(self, impulse: Vector2):
         if self.raw_body is not None:

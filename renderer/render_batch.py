@@ -135,9 +135,13 @@ class RenderBatch:
         for i in range(self.num_sprites):
             spr = self.sprites[i]
             if spr.is_dirty():
-                self.load_vertex_properties(i)
-                spr.set_clean()
-                rebuffer_data = True
+                if not self.has_texture(spr.get_texture()):
+                    Renderer.destroy_game_object(spr.game_object)
+                    Renderer.add(spr.game_object)
+                else:
+                    self.load_vertex_properties(i)
+                    spr.set_clean()
+                    rebuffer_data = True
 
             # TODO: get better solution for this
             if spr.game_object.transform.z_index != self.z_index:

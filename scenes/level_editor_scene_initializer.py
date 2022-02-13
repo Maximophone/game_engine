@@ -61,6 +61,10 @@ class LevelEditorSceneInitializer(SceneInitializer):
             Spritesheet(AssetPool.get_texture("assets/images/spritesheet.png"), 16, 16, 26, 0)
         )
         AssetPool.add_spritesheet(
+            "assets/images/bigSpritesheet.png",
+            Spritesheet(AssetPool.get_texture("assets/images/bigSpritesheet.png"), 16, 32, 42, 0)
+        )
+        AssetPool.add_spritesheet(
             "assets/images/items.png",
             Spritesheet(AssetPool.get_texture("assets/images/items.png"), 16, 16, 35, 0)
         )
@@ -133,7 +137,8 @@ class LevelEditorSceneInitializer(SceneInitializer):
                     rb.body_type = BodyType.Static
                     obj.add_component(rb)
                     b2d = Box2DCollider()
-                    b2d.half_size = Vector2([0.25, 0.25])
+                    b2d.half_size = Vector2([0.25, 0.25]
+                    )
                     obj.add_component(b2d)
                     self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
                 imgui.core.pop_id()

@@ -54,7 +54,11 @@ class StateMachine(Component):
     def trigger(self, trigger: str):
         wanted_state = self.state_transfers.get(StateTrigger(self.current_state.title, trigger))
         if wanted_state is not None:
-            self.current_state = next(state for state in self.states if state.title == wanted_state)
+            try:
+                self.current_state = next(state for state in self.states if state.title == wanted_state)
+            except StopIteration as e:
+                print(f"Cannot find state {wanted_state}")
+                raise e
             return
         print(f"Unable to find trigger {trigger} for state {self.current_state.title}")
 

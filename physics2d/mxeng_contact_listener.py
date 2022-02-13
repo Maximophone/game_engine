@@ -6,7 +6,7 @@ from util.vectors import Vector2
 
 class MxEngContactListener(b2ContactListener):
     def __init__(self):
-        super().__init__(self)
+        super().__init__()
 
     def get_objects_and_normals(self, contact: b2Contact) -> Tuple[GameObject, GameObject, Vector2, Vector2]:
         object_a: GameObject = contact.fixtureA.userData

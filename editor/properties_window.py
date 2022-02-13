@@ -4,6 +4,7 @@ from components.sprite_renderer import SpriteRenderer
 from mxeng.game_object import GameObject
 from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.circle_collider import CircleCollider
+from physics2d.components.pillbox_collider import PillboxCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
 
 from renderer.picking_texture import PickingTexture
@@ -66,6 +67,9 @@ class PropertiesWindow:
                 if imgui.menu_item("Add Circle Collider")[0]:
                     if self.active_game_object.get_component(CircleCollider) is None:
                         self.active_game_object.add_component(CircleCollider())
+                if imgui.menu_item("Add Pillbox Collider")[0]:
+                    if self.active_game_object.get_component(PillboxCollider) is None:
+                        self.active_game_object.add_component(PillboxCollider())
                 imgui.end_popup()
             
             self._active_game_object.imgui()

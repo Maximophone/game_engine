@@ -107,7 +107,9 @@ class DebugDraw:
     @staticmethod
     def rotate(v: Vector2, rotation: float, center: Vector2 = None) -> Vector2:
         center = center if center is not None else Vector2([0, 0])
-        return Vector2.from_vector3(Matrix33.from_z_rotation(-rotation/360.*2.*np.pi) * (v - center) + center)
+        rot_mat = Matrix33.from_z_rotation(-rotation/360.*2.*np.pi)
+        rotated = rot_mat * ((v - center) + center).to_vector3()
+        return Vector2.from_vector3(rotated)
 
     # ====================
     # Add line2D methods

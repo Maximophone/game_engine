@@ -3,7 +3,9 @@ import math
 from mxeng.game_object import GameObject
 from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.circle_collider import CircleCollider
+from physics2d.components.pillbox_collider import PillboxCollider
 from physics2d.enums.body_type import BodyType
+from physics2d.mxeng_contact_listener import MxEngContactListener
 from physics2d.raycast_info import RaycastInfo
 from util.vectors import Vector2
 from Box2D import b2World, b2BodyDef, b2_kinematicBody, b2_staticBody, b2_dynamicBody, b2PolygonShape, b2CircleShape, b2Body, b2FixtureDef
@@ -20,6 +22,8 @@ class Physics2D:
         self.physics_time_step: float = 1./60
         self.velocity_iterations: int = 8
         self.position_iterations: int = 3
+
+        self.world.contactListener = MxEngContactListener()
 
     def add(self, go: GameObject):
         rb: RigidBody2D = go.get_component(RigidBody2D)
@@ -121,7 +125,7 @@ class Physics2D:
         body = rb.raw_body
         assert body is not None, "Raw body must not be None"
 
-        shape = b2CircleShape(pos=circle_collider.offset, radius=circle_collider.radius)
+        shape = b2CircleShape(pos=circle_collider.offset.to_b2vec2(), radius=circle_collider.radius)
     
         fixture_def = b2FixtureDef(
             shape = shape,
@@ -145,9 +149,30 @@ class Physics2D:
         self.add_circle_collider(rb, circle_collider)
         body.ResetMassData()
 
+    def add_pillbox_collider(self, rb: RigidBody2D, pillbox_collider: PillboxCollider):
+        body = rb.raw_body
+        assert body is not None, "Raw body must not be None"
+
+        self.add_box2d_collider(rb, pillbox_collider.box)
+        self.add_circle_collider(rb, pillbox_collider.top_circle)
+        self.add_circle_collider(rb, pillbox_collider.bottom_circle)
+
+    def reset_pillbox_collider(self, rb: RigidBody2D, pillbox_collider: PillboxCollider):
+        body = rb.raw_body
+        if body is None:
+            return
+
+        for fixture in body.fixtures:
+            # TODO: is it a problem that we are destroying while iterating?
+            body.DestroyFixture(fixture)
+
+        self.add_pillbox_collider(rb, pillbox_collider)
+        body.ResetMassData()
+
     def raycast(self, requesting_object: GameObject, point1: Vector2, point2: Vector2) -> RaycastInfo:
         callback = RaycastInfo(requesting_object)
         self.world.RayCast(callback, point1.to_b2vec2(), point2.to_b2vec2())
         return callback
 
-
+    def is_locked(self) -> bool:
+        return self.world.locked

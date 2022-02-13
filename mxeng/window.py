@@ -11,6 +11,7 @@ from physics2d.physics2d import Physics2D
 from renderer.framebuffer import Framebuffer
 from renderer.picking_texture import PickingTexture
 from renderer.renderer import Renderer
+from scenes.level_scene_initializer import LevelSceneInitializer
 from scenes.scene import Scene
 from scenes.level_editor_scene_initializer import LevelEditorSceneInitializer
 from scenes.scene_initializer import SceneInitializer
@@ -194,7 +195,7 @@ class Window:
 
             self.framebuffer.bind()
 
-            gl.glClearColor(self.r, self.g, self.b, self.a)
+            gl.glClearColor(*Window.get_scene().camera().clear_color)
             gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
             if dt >= 0:
@@ -224,7 +225,7 @@ class Window:
         if event.type == EventType.GameEngineStartPlay:
             self.runtime_play = True
             self.current_scene.save()
-            Window.change_scene(LevelEditorSceneInitializer())
+            Window.change_scene(LevelSceneInitializer())
         elif event.type == EventType.GameEngineStopPlay:
             self.runtime_play = False
             Window.change_scene(LevelEditorSceneInitializer())

@@ -87,6 +87,11 @@ class Scene:
             go.destroy()
         self.clean_objects()
 
+    def get_game_object_with(self, component_class: type) -> Optional[GameObject]:
+        for go in self._game_objects:
+            if go.get_component(component_class) is not None:
+                return go
+
     def add_game_object_to_scene(self, go: GameObject):
         if not self._is_running:
             self._game_objects.append(go)

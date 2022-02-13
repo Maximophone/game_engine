@@ -124,6 +124,9 @@ class PlayerController(Component):
         else:
             self.state_machine.trigger("stop_jumping")
 
+    def has_won(self) -> bool:
+        return False
+        
     def check_on_ground(self):
         from mxeng.window import Window
         from renderer.debug_draw import DebugDraw

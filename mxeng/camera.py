@@ -1,6 +1,8 @@
 from pyrr import Vector3, Matrix44
 import numpy as np
 
+from util.vectors import Color4, Vector2
+
 class Camera:
     def __init__(self, position: Vector3 = None):
         self._projection_matrix: Matrix44 = Matrix44.identity()
@@ -11,7 +13,8 @@ class Camera:
         self.zoom = 1.
         self._projection_width: float = 6.
         self._projection_height: float = 3.
-        self._projection_size: np.ndarray = np.array([self._projection_width, self._projection_height])
+        self.clear_color: Color4 = Color4([1., 1., 1., 1.])
+        self._projection_size: Vector2 = Vector2([self._projection_width, self._projection_height])
         self.adjust_projection()
 
     @property
@@ -19,7 +22,7 @@ class Camera:
         return self._projection_size
 
     def adjust_projection(self):
-        self._projection_matrix = Matrix44.orthogonal_projection(0., self._projection_size[0] * self.zoom, 0., self._projection_size[1] * self.zoom, 0., 100.)
+        self._projection_matrix = Matrix44.orthogonal_projection(0., self._projection_size.x * self.zoom, 0., self._projection_size.y * self.zoom, 0., 100.)
         self._inverse_projection = self._projection_matrix.inverse
 
 

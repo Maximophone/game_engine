@@ -69,6 +69,10 @@ class RigidBody2D(Component):
             else:
                 Window.get_physics().set_not_sensor(self)
 
+    def set_position(self, new_position: Vector2):
+        if self.raw_body is not None:
+            self.raw_body.position = new_position.to_b2vec2()
+
     def add_velocity(self, force_to_add: Vector2):
         if self.raw_body is not None:
             self.raw_body.ApplyForceToCenter(force_to_add.to_b2vec2(), wake=True)

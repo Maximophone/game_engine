@@ -4,11 +4,13 @@ from components.flower import Flower
 from components.goomba_ai import GoombaAI
 from components.ground import Ground
 from components.mushroom_ai import MushroomAI
+from components.pipe import Pipe
 from components.player_controller import PlayerController
 from components.question_block import QuestionBlock
 from components.sprite import Sprite
 from components.sprite_renderer import SpriteRenderer
 from components.state_machine import StateMachine
+from mxeng.direction import Direction
 from mxeng.game_object import GameObject
 from components.transform import Transform
 from physics2d.components.box_2d_collider import Box2DCollider
@@ -335,3 +337,30 @@ class Prefabs:
         goomba.add_component(GoombaAI())
 
         return goomba
+
+    @staticmethod
+    def generate_pipe(direction: Direction) -> GameObject:
+        pipes = AssetPool.get_spritesheet("assets/images/pipes.png")
+
+        sprite_index = {
+                Direction.Down: 0,
+                Direction.Up: 1,
+                Direction.Right: 2,
+                Direction.Left: 3,
+        }[direction]
+
+        pipe = Prefabs.generate_sprite_object(pipes.get_sprite(sprite_index), 0.5, 0.5)
+        rb = RigidBody2D()
+        rb.body_type = BodyType.Static
+        rb.fixed_rotation = True
+        rb.is_continuous_collision = False
+        pipe.add_component(rb)
+
+        b2d = Box2DCollider()
+        b2d.half_size = Vector2([0.5, 0.5])
+        pipe.add_component(b2d)
+
+        pipe.add_component(Pipe(direction))
+        pipe.add_component(Ground())
+
+        return pipe

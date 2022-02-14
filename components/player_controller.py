@@ -182,6 +182,10 @@ class PlayerController(Component):
 
         self.on_ground = Physics2D.check_on_ground(self.game_object, inner_player_width, y_val)
 
+    def set_position(self, new_position: Vector2):
+        self.game_object.transform.position = new_position.copy()
+        self.rb.set_position(new_position.copy())
+
     def powerup(self):
         if self.player_state == PlayerState.Small:
             self.player_state = PlayerState.Big

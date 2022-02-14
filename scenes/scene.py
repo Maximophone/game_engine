@@ -1,3 +1,4 @@
+from telnetlib import GA
 from typing import List, Optional
 import json
 
@@ -116,6 +117,9 @@ class Scene:
 
     def get_game_object(self, game_object_id: int) -> Optional[GameObject]:
         return next((go for go in self._game_objects if go.uid == game_object_id), None)
+
+    def get_game_object_by_name(self, game_object_name: str) -> Optional[GameObject]:
+        return next((go for go in self._game_objects if go.name == game_object_name), None)
 
     def get_game_objects(self) -> List[GameObject]:
         return self._game_objects

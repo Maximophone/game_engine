@@ -10,6 +10,7 @@ from components.question_block import QuestionBlock
 from components.sprite import Sprite
 from components.sprite_renderer import SpriteRenderer
 from components.state_machine import StateMachine
+from components.turtle_ai import TurtleAI
 from mxeng.direction import Direction
 from mxeng.game_object import GameObject
 from components.transform import Transform
@@ -337,6 +338,44 @@ class Prefabs:
         goomba.add_component(GoombaAI())
 
         return goomba
+
+    @staticmethod
+    def generate_turtle() -> GameObject:
+        turtle_sprites = AssetPool.get_spritesheet("assets/images/turtle.png")
+        turtle = Prefabs.generate_sprite_object(turtle_sprites.get_sprite(0), 0.25, 0.35)
+        
+        walk = AnimationState("Walk")
+        default_frame_time = 0.23
+        walk.add_frame(turtle_sprites.get_sprite(0), default_frame_time)
+        walk.add_frame(turtle_sprites.get_sprite(1), default_frame_time)
+        walk.does_loop = True
+
+        squashed = AnimationState("Turtle Shell Spin")
+        squashed.add_frame(turtle_sprites.get_sprite(2), 0.1)
+        squashed.does_loop = False
+
+        state_machine = StateMachine()
+        state_machine.add_state(walk)
+        state_machine.add_state(squashed)
+        state_machine.set_default_state(walk.title)
+        
+        state_machine.add_state_trigger(walk.title, squashed.title, "squash_me")
+
+        turtle.add_component(state_machine)
+        rb = RigidBody2D()
+        rb.body_type = BodyType.Dynamic
+        rb.mass = 0.1
+        rb.fixed_rotation = True
+        turtle.add_component(rb)
+
+        circle = CircleCollider()
+        circle.radius = 0.13
+        circle.offset = Vector2([0., -0.05])
+        turtle.add_component(circle)
+
+        turtle.add_component(TurtleAI())
+
+        return turtle
 
     @staticmethod
     def generate_pipe(direction: Direction) -> GameObject:

@@ -72,6 +72,10 @@ class LevelEditorSceneInitializer(SceneInitializer):
             Spritesheet(AssetPool.get_texture("assets/images/items.png"), 16, 16, 35, 0)
         )
         AssetPool.add_spritesheet(
+            "assets/images/turtle.png",
+            Spritesheet(AssetPool.get_texture("assets/images/turtle.png"), 16, 24, 4, 0)
+        )
+        AssetPool.add_spritesheet(
             "assets/images/pipes.png",
             Spritesheet(AssetPool.get_texture("assets/images/pipes.png"), 32, 32, 6, 0)
         )
@@ -238,6 +242,22 @@ class LevelEditorSceneInitializer(SceneInitializer):
             changed = imgui.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
             if changed:
                 obj = Prefabs.generate_goomba()
+                self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
+            imgui.pop_id()
+            imgui.same_line()
+
+            # TURTLE
+
+            turtle = AssetPool.get_spritesheet("assets/images/turtle.png")
+            sprite = turtle.get_sprite(0)
+            id = sprite.tex_id
+            tex_coords = sprite.get_tex_coords()
+            imgui.push_id(str(uid))
+            uid+=1
+
+            changed = imgui.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
+            if changed:
+                obj = Prefabs.generate_turtle()
                 self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
             imgui.pop_id()
             imgui.same_line()

@@ -118,13 +118,15 @@ class LevelEditorSceneInitializer(SceneInitializer):
 
         imgui.begin("Objects")
 
-        if imgui.collapsing_header("Blocks", True)[0]:
+        solid_blocks_ids = list(range(34)) + list(range(35, 38)) + list(range(61, self.sprites.size()))
+        if imgui.collapsing_header("Solid Blocks", True)[0]:
             window_pos = imgui.core.get_window_position()
             window_size = imgui.core.get_window_size()
             item_spacing = imgui.core.get_style().item_spacing
 
             window_x2: float = window_pos.x + window_size.x
-            for i in range(self.sprites.size()):
+            for i in solid_blocks_ids:
+    
                 sprite = self.sprites.get_sprite(i)
                 sprite_width = sprite.width * 4
                 sprite_height = sprite.height * 4
@@ -157,7 +159,38 @@ class LevelEditorSceneInitializer(SceneInitializer):
                 if i + 1 < self.sprites.size() and next_button_x2 < window_x2:
                     imgui.core.same_line()
 
+        decoration_blocks_ids = [34] + list(range(38, 42)) + list(range(45, 61))
+        if imgui.collapsing_header("Decoration Blocks", True)[0]:
+            window_pos = imgui.core.get_window_position()
+            window_size = imgui.core.get_window_size()
+            item_spacing = imgui.core.get_style().item_spacing
+
+            window_x2: float = window_pos.x + window_size.x
+            for i in decoration_blocks_ids:
+                sprite = self.sprites.get_sprite(i)
+                sprite_width = sprite.width * 4
+                sprite_height = sprite.height * 4
+                id = sprite.tex_id
+                tex_coords = sprite.get_tex_coords()
+
+                imgui.core.push_id(str(i))
+                changed = imgui.core.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
+                if changed:
+                    obj = Prefabs.generate_sprite_object(sprite, 0.25, 0.25)
+                    self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
+                imgui.core.pop_id()
+
+                last_button_pos = imgui.core.get_item_rect_max()
+                last_button_x2 = last_button_pos.x
+                next_button_x2 = last_button_x2 + item_spacing.x + sprite_width
+
+
+                if i + 1 < self.sprites.size() and next_button_x2 < window_x2:
+                    imgui.core.same_line()
+
         if imgui.collapsing_header("Prefabs", True)[0]:
+            uid = 0
+            # MARIO
             player_sprites = AssetPool.get_spritesheet("assets/images/spritesheet.png")
             sprite = player_sprites.get_sprite(0)
             sprite_width = sprite.width * 4
@@ -165,22 +198,44 @@ class LevelEditorSceneInitializer(SceneInitializer):
             id = sprite.tex_id
             tex_coords = sprite.get_tex_coords()
 
+            imgui.push_id(str(uid))
+            uid+=1
             changed = imgui.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
             if changed:
                 obj = Prefabs.generate_mario()
                 self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
+            imgui.pop_id()
             imgui.same_line()
 
+            # QUESTION BLOCK
             item_sprites = AssetPool.get_spritesheet("assets/images/items.png")
             sprite = item_sprites.get_sprite(0)
             id = sprite.tex_id
             tex_coords = sprite.get_tex_coords()
 
+            imgui.push_id(str(uid))
+            uid+=1
             changed = imgui.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
             if changed:
                 obj = Prefabs.generate_question_block()
                 self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
-            #imgui.same_line()
+            imgui.pop_id()
+            imgui.same_line()
+            
+            # GOOMBA
+            
+            sprite = player_sprites.get_sprite(14)
+            id = sprite.tex_id
+            tex_coords = sprite.get_tex_coords()
+            imgui.push_id(str(uid))
+            uid+=1
+
+            changed = imgui.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
+            if changed:
+                obj = Prefabs.generate_goomba()
+                self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
+            imgui.pop_id()
+
 
         if imgui.collapsing_header("Sounds", True)[0]:
             sounds = AssetPool.get_all_sounds()
@@ -197,3 +252,4 @@ class LevelEditorSceneInitializer(SceneInitializer):
                     imgui.same_line()
 
         imgui.end()
+

@@ -1,6 +1,7 @@
 from components.animation_state import AnimationState
 from components.coin_block import CoinBlock
 from components.flower import Flower
+from components.goomba_ai import GoombaAI
 from components.ground import Ground
 from components.mushroom_ai import MushroomAI
 from components.player_controller import PlayerController
@@ -298,4 +299,39 @@ class Prefabs:
 
         return flower
 
-    
+    @staticmethod
+    def generate_goomba() -> GameObject:
+        sprites = AssetPool.get_spritesheet("assets/images/spritesheet.png")
+        goomba = Prefabs.generate_sprite_object(sprites.get_sprite(14), 0.25, 0.25)
+        
+        walk = AnimationState("Walk")
+        default_frame_time = 0.23
+        walk.add_frame(sprites.get_sprite(14), default_frame_time)
+        walk.add_frame(sprites.get_sprite(15), default_frame_time)
+        walk.does_loop = True
+
+        squashed = AnimationState("Squashed")
+        squashed.add_frame(sprites.get_sprite(16), 0.1)
+        squashed.does_loop = False
+
+        state_machine = StateMachine()
+        state_machine.add_state(walk)
+        state_machine.add_state(squashed)
+        state_machine.set_default_state(walk.title)
+        
+        state_machine.add_state_trigger(walk.title, squashed.title, "squash_me")
+
+        goomba.add_component(state_machine)
+        rb = RigidBody2D()
+        rb.body_type = BodyType.Dynamic
+        rb.mass = 0.1
+        rb.fixed_rotation = True
+        goomba.add_component(rb)
+
+        circle = CircleCollider()
+        circle.radius = 0.12
+        goomba.add_component(circle)
+
+        goomba.add_component(GoombaAI())
+
+        return goomba

@@ -37,6 +37,7 @@ class Window:
         self.a = 1
 
         self.current_scene: Scene = None
+        self._queued_scene: SceneInitializer = None
         self.imgui_layer = None
 
         self.runtime_play: bool = False
@@ -60,6 +61,10 @@ class Window:
         Window.get().current_scene.load()
         Window.get().current_scene.init()
         Window.get().current_scene.start()
+
+    @staticmethod
+    def queue_change_scene(scene_initializer: SceneInitializer):
+        Window.get()._queued_scene = scene_initializer
 
     @staticmethod
     def get_scene() -> Scene:
@@ -210,6 +215,10 @@ class Window:
                 
             self.imgui_layer.update(dt, self.current_scene)
 
+            if self._queued_scene is not None:
+                self.change_scene(self._queued_scene)
+                self._queued_scene = None
+                
             KeyListener.end_frame()
             MouseListener.end_frame()
             glfw.swap_buffers(self.glfw_window)

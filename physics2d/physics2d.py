@@ -1,4 +1,5 @@
 import math
+from components.ground import Ground
 
 from mxeng.game_object import GameObject
 from physics2d.components.box_2d_collider import Box2DCollider
@@ -179,3 +180,28 @@ class Physics2D:
 
     def is_locked(self) -> bool:
         return self.world.locked
+
+    @staticmethod
+    def check_on_ground(game_object: GameObject, inner_player_width: float, height: float) -> bool:
+        from mxeng.window import Window
+        from renderer.debug_draw import DebugDraw
+        raycast_begin = game_object.transform.position.copy()
+
+        raycast_begin = raycast_begin - Vector2([inner_player_width/2., 0.])
+        y_val = height
+        raycast_end = raycast_begin + Vector2([0., y_val])
+        info = Window.get_physics().raycast(game_object, raycast_begin, raycast_end)
+
+        raycast2_begin = raycast_begin + Vector2([inner_player_width, 0.])
+        raycast2_end = raycast_end + Vector2([inner_player_width, 0.])
+        info2 = Window.get_physics().raycast(game_object, raycast2_begin, raycast2_end)
+
+        on_ground = (
+            (info.hit and info.hit_object is not None and info.hit_object.get_component(Ground) is not None) or
+            (info2.hit and info2.hit_object is not None and info2.hit_object.get_component(Ground) is not None)
+        )
+
+        #DebugDraw.add_line_2D(raycast_begin, raycast_end, Color3([1., 0., 0.]))
+        #DebugDraw.add_line_2D(raycast2_begin, raycast2_end, Color3([1., 0., 0.]))
+        
+        return  on_ground

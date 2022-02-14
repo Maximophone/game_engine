@@ -1,14 +1,18 @@
 from enum import Enum, auto
+from this import d
 from components.component import Component
 from components.ground import Ground
+from components.sprite_renderer import SpriteRenderer
 from components.state_machine import StateMachine
 from mxeng.game_object import GameObject
 from physics2d.components.pillbox_collider import PillboxCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
 from mxeng.key_listener import KeyListener
+from physics2d.enums.body_type import BodyType
+from physics2d.physics2d import Physics2D
 from util.asset_pool import AssetPool
 from util.serialization import senum, serializable
-from util.vectors import Color3, Vector2
+from util.vectors import Color3, Color4, Vector2
 
 import glfw
 from Box2D import b2Contact
@@ -43,6 +47,15 @@ class PlayerController(Component):
         self.is_dead: bool = False
         self.enemy_bounce: int = 0
 
+        self.hurt_invincibility_time_left: float = 0.
+        self.hurt_invincibility_time: float = 1.4
+
+        self.dead_min_height: float = 0.
+        self.dead_max_height: float = 0.
+        self.dead_going_up: bool = True
+        self.blink_time: float = 0.
+        self.spr: SpriteRenderer = None
+
         self.player_state: PlayerState = PlayerState.Small
         super().__init__()
 
@@ -50,9 +63,41 @@ class PlayerController(Component):
         self.rb: RigidBody2D = self.game_object.get_component(RigidBody2D)
         self.state_machine: StateMachine = self.game_object.get_component(StateMachine)
         self.rb.gravity_scale = 0.
+        self.spr: SpriteRenderer = self.game_object.get_component(SpriteRenderer)
 
     def update(self, dt: float):
         from mxeng.window import Window
+        if self.is_dead:
+            if self.game_object.transform.position.y < self.dead_max_height and self.dead_going_up:
+                self.game_object.transform.position.y += dt * self.walk_speed / 2.
+            elif self.game_object.transform.position.y >= self.dead_max_height and self.dead_going_up:
+                self.dead_going_up = False
+            elif self.game_object.transform.position.y > self.dead_min_height and not self.dead_going_up:
+                self.rb.body_type = BodyType.Kinematic
+                self.acceleration.y = Window.get_physics().gravity.y * 0.7
+                self.velocity.y += self.acceleration.y * dt
+                self.velocity.y = max(min(self.velocity.y, self.terminal_velocity.y), -self.terminal_velocity.y)
+                self.rb.velocity = self.velocity
+                self.rb.angular_velocity = 0.
+            elif self.game_object.transform.position.y <= self.dead_min_height:
+                from scenes.level_scene_initializer import LevelSceneInitializer
+                Window.queue_change_scene(LevelSceneInitializer())
+            return
+
+        if self.hurt_invincibility_time_left > 0:
+            self.hurt_invincibility_time_left -= dt
+            self.blink_time -= dt
+
+            if self.blink_time <= 0:
+                self.blink_time = 0.2
+                if self.spr.get_color().w == 1:
+                    self.spr.set_color(Color4([1., 1., 1., 0.]))
+                else:
+                    self.spr.set_color(Color4([1., 1., 1., 1.]))
+            else:
+                if self.spr.get_color().w == 0:
+                    self.spr.set_color(Color4([1., 1., 1., 1.]))
+
         if KeyListener.is_key_pressed(glfw.KEY_RIGHT) or KeyListener.is_key_pressed(glfw.KEY_D):
             self.game_object.transform.scale.x = self.player_width
             self.acceleration.x = self.walk_speed
@@ -99,6 +144,9 @@ class PlayerController(Component):
             else:
                 self.velocity.y = 0
             self.ground_debounce = 0
+        elif self.enemy_bounce > 0:
+            self.enemy_bounce -= 1
+            self.velocity.y = self.enemy_bounce / 2.2 * self.jump_boost
         elif not self.on_ground:
             # we are in the air
             if self.jump_time > 0:
@@ -129,26 +177,10 @@ class PlayerController(Component):
         return False
 
     def check_on_ground(self):
-        from mxeng.window import Window
-        from renderer.debug_draw import DebugDraw
-        raycast_begin = self.game_object.transform.position.copy()
         inner_player_width = self.player_width * 0.6
-        raycast_begin = raycast_begin - Vector2([inner_player_width/2., 0.])
         y_val = -0.14 if self.player_state == PlayerState.Small else -0.24
-        raycast_end = raycast_begin + Vector2([0., y_val])
-        info = Window.get_physics().raycast(self.game_object, raycast_begin, raycast_end)
 
-        raycast2_begin = raycast_begin + Vector2([inner_player_width, 0.])
-        raycast2_end = raycast_end + Vector2([inner_player_width, 0.])
-        info2 = Window.get_physics().raycast(self.game_object, raycast2_begin, raycast2_end)
-
-        self.on_ground = (
-            (info.hit and info.hit_object is not None and info.hit_object.get_component(Ground) is not None) or
-            (info2.hit and info2.hit_object is not None and info2.hit_object.get_component(Ground) is not None)
-        )
-
-        #DebugDraw.add_line_2D(raycast_begin, raycast_end, Color3([1., 0., 0.]))
-        #DebugDraw.add_line_2D(raycast2_begin, raycast2_end, Color3([1., 0., 0.]))
+        self.on_ground = Physics2D.check_on_ground(self.game_object, inner_player_width, y_val)
 
     def powerup(self):
         if self.player_state == PlayerState.Small:
@@ -179,6 +211,43 @@ class PlayerController(Component):
                 self.velocity.y = 0
                 self.acceleration.y = 0
                 self.jump_time = 0
+
+    def is_hurt_invincible(self) -> bool:
+        return self.hurt_invincibility_time_left > 0
+
+    def is_invincible(self) -> bool:
+        return self.player_state == PlayerState.Invincible or self.is_hurt_invincible()
+
+    def bounce_on_enemy(self):
+        self.enemy_bounce = 8
+
+    def die(self):
+        self.state_machine.trigger("die")
+        if self.player_state == PlayerState.Small:
+            self.velocity = Vector2([0., 0.])
+            self.acceleration = Vector2([0., 0.])
+            self.rb.velocity = Vector2([0., 0.])
+            self.is_dead = True
+            self.rb.is_sensor = True
+            AssetPool.get_sound("assets/sounds/mario_die.ogg").play()
+            self.dead_max_height = self.game_object.transform.position.y + 0.3
+            self.rb.body_type = BodyType.Static
+            if self.game_object.transform.position.y > 0:
+                self.dead_min_height = -0.25
+        elif self.player_state == PlayerState.Big:
+            self.player_state = PlayerState.Small
+            self.game_object.transform.scale.y = 0.25
+            pb: PillboxCollider = self.game_object.get_component(PillboxCollider)
+            if pb is not None:
+                self.jump_boost /= self.big_jump_boost_factor
+                self.walk_speed /= self.big_jump_boost_factor
+                pb.height = 0.31
+            self.hurt_invincibility_time_left = self.hurt_invincibility_time
+            AssetPool.get_sound("assets/sounds/pipe.ogg").play()
+        elif self.player_state == PlayerState.Fire:
+            self.player_state = PlayerState.Big
+            self.hurt_invincibility_time_left = self.hurt_invincibility_time
+            AssetPool.get_sound("assets/sounds/pipe.ogg").play()
 
 
     

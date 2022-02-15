@@ -1,5 +1,6 @@
 from components.animation_state import AnimationState
 from components.coin_block import CoinBlock
+from components.flagpole import Flagpole
 from components.flower import Flower
 from components.goomba_ai import GoombaAI
 from components.ground import Ground
@@ -376,6 +377,44 @@ class Prefabs:
         turtle.add_component(TurtleAI())
 
         return turtle
+
+    @staticmethod
+    def generate_flag_top() -> GameObject:
+        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        flagtop = Prefabs.generate_sprite_object(items_sprites.get_sprite(6), 0.25, 0.25)
+        
+        rb = RigidBody2D()
+        rb.body_type = BodyType.Dynamic
+        rb.fixed_rotation = True
+        rb.is_continuous_collision = False
+        flagtop.add_component(rb)
+
+        box_collider = Box2DCollider()
+        box_collider.half_size = Vector2([0.1, 0.25])
+        box_collider.offset = Vector2([-0.075, 0.0])
+        flagtop.add_component(box_collider)
+        flagtop.add_component(Flagpole(True))
+
+        return flagtop
+
+    @staticmethod
+    def generate_flag_pole() -> GameObject:
+        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        flagpole = Prefabs.generate_sprite_object(items_sprites.get_sprite(33), 0.25, 0.25)
+        
+        rb = RigidBody2D()
+        rb.body_type = BodyType.Dynamic
+        rb.fixed_rotation = True
+        rb.is_continuous_collision = False
+        flagpole.add_component(rb)
+
+        box_collider = Box2DCollider()
+        box_collider.half_size = Vector2([0.1, 0.25])
+        box_collider.offset = Vector2([-0.075, 0.0])
+        flagpole.add_component(box_collider)
+        flagpole.add_component(Flagpole(False))
+
+        return flagpole
 
     @staticmethod
     def generate_pipe(direction: Direction) -> GameObject:

@@ -56,6 +56,11 @@ class PlayerController(Component):
         self.blink_time: float = 0.
         self.spr: SpriteRenderer = None
 
+        self.playing_win_animation: bool = False
+        self.time_to_castle: float = 4.5
+        self.walk_time: float = 2.2
+        self.sent_event: bool = False
+
         self.player_state: PlayerState = PlayerState.Small
         super().__init__()
 
@@ -67,6 +72,29 @@ class PlayerController(Component):
 
     def update(self, dt: float):
         from mxeng.window import Window
+        from scenes.level_scene_initializer import LevelSceneInitializer
+        if self.playing_win_animation:
+            self.check_on_ground()
+            if not self.on_ground:
+                self.game_object.transform.scale.x = -0.25
+                self.game_object.transform.position.y -= dt
+                self.state_machine.trigger("stop_running")
+                self.state_machine.trigger("stop_jumping")
+            else:
+                if self.walk_time > 0:
+                    self.game_object.transform.scale.x = 0.25
+                    self.game_object.transform.position.x += dt
+                    self.state_machine.trigger("start_running")
+                if not AssetPool.get_sound("assets/sounds/stage_clear.ogg").is_playing:
+                    AssetPool.get_sound("assets/sounds/stage_clear.ogg").play()
+                self.time_to_castle -= dt
+                self.walk_time -= dt
+
+                if self.time_to_castle < 0:
+                    Window.queue_change_scene(LevelSceneInitializer())
+            return
+
+
         if self.is_dead:
             if self.game_object.transform.position.y < self.dead_max_height and self.dead_going_up:
                 self.game_object.transform.position.y += dt * self.walk_speed / 2.
@@ -80,7 +108,6 @@ class PlayerController(Component):
                 self.rb.velocity = self.velocity
                 self.rb.angular_velocity = 0.
             elif self.game_object.transform.position.y <= self.dead_min_height:
-                from scenes.level_scene_initializer import LevelSceneInitializer
                 Window.queue_change_scene(LevelSceneInitializer())
             return
 
@@ -202,6 +229,17 @@ class PlayerController(Component):
         
         self.state_machine.trigger("powerup")
 
+    def play_win_animation(self, flagpole: GameObject):
+        if not self.playing_win_animation:
+            self.playing_win_animation = True
+            self.velocity = Vector2([0., 0.])
+            self.acceleration = Vector2([0., 0.])
+            self.rb.velocity = Vector2([0., 0.])
+            self.rb.is_sensor = True
+            self.rb.body_type = BodyType.Static
+            self.game_object.transform.position.x = flagpole.transform.position.x
+            AssetPool.get_sound("assets/sounds/flagpole.ogg").play()
+
     def begin_collision(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):
         if self.is_dead:
             return
@@ -217,10 +255,10 @@ class PlayerController(Component):
                 self.jump_time = 0
 
     def is_hurt_invincible(self) -> bool:
-        return self.hurt_invincibility_time_left > 0
+        return self.hurt_invincibility_time_left > 0 or self.playing_win_animation
 
     def is_invincible(self) -> bool:
-        return self.player_state == PlayerState.Invincible or self.is_hurt_invincible()
+        return self.player_state == PlayerState.Invincible or self.is_hurt_invincible() or self.playing_win_animation
 
     def bounce_on_enemy(self):
         self.enemy_bounce = 8

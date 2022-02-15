@@ -262,6 +262,36 @@ class LevelEditorSceneInitializer(SceneInitializer):
             imgui.pop_id()
             imgui.same_line()
 
+            # FLAGTOP
+
+            sprite = item_sprites.get_sprite(6)
+            id = sprite.tex_id
+            tex_coords = sprite.get_tex_coords()
+            imgui.push_id(str(uid))
+            uid+=1
+
+            changed = imgui.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
+            if changed:
+                obj = Prefabs.generate_flag_top()
+                self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
+            imgui.pop_id()
+            imgui.same_line()
+
+            # FLAGPOLE
+
+            sprite = item_sprites.get_sprite(33)
+            id = sprite.tex_id
+            tex_coords = sprite.get_tex_coords()
+            imgui.push_id(str(uid))
+            uid+=1
+
+            changed = imgui.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
+            if changed:
+                obj = Prefabs.generate_flag_pole()
+                self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
+            imgui.pop_id()
+            imgui.same_line()
+
             # PIPES
 
             pipes = AssetPool.get_spritesheet("assets/images/pipes.png")

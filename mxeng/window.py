@@ -247,7 +247,7 @@ class Window:
             begin_time = end_time
 
             fps = 1/dt
-            print(f"Running at {fps:.2f} FPS")
+            #print(f"Running at {fps:.2f} FPS")
 
     def on_notify(self, go: GameObject, event: Event):
         if event.type == EventType.GameEngineStartPlay:

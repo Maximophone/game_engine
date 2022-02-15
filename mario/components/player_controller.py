@@ -24,11 +24,11 @@ class PlayerState(Enum):
     Fire = auto()
     Invincible = auto()
 
-@serializable("walk_speed", "jump_boost", "jump_impulse", "slow_down_force", "terminal_velocity", "player_state")
+@serializable("walk_speed", "jump_boost", "total_jump_time", "jump_impulse", "slow_down_force", "terminal_velocity", "player_state")
 class PlayerController(Component):
     def __init__(self):
         self.walk_speed: float = 1.9
-        self.jump_boost: float = 1.0
+        self.jump_boost: float = 80.
         self.jump_impulse: float = 3.0
         self.slow_down_force: float = 0.05
         self.terminal_velocity: Vector2 = Vector2([2.1, 3.1])
@@ -41,7 +41,8 @@ class PlayerController(Component):
         self.state_machine: StateMachine = None
         self.big_jump_boost_factor: float = 1.05
         self.player_width: float = 0.25
-        self.jump_time: int = 0
+        self.jump_time: float = 0.
+        self.total_jump_time: float = 0.4
         self.acceleration: Vector2 = Vector2([0., 0.])
         self.velocity: Vector2 = Vector2([0., 0.])
         self.is_dead: bool = False
@@ -170,21 +171,27 @@ class PlayerController(Component):
             self.on_ground or
             self.ground_debounce > 0
         ):
-            if (self.on_ground or self.ground_debounce > 0) and self.jump_time == 0:
+            # jump key is being pressed and we are on the ground or jumping
+            if (self.on_ground or self.ground_debounce > 0) and self.jump_time <= 0:
                 # just pressed the jump key
                 AssetPool.get_sound("assets/sounds/jump-small.ogg").play()
-                self.jump_time = 28
+                self.jump_time = self.total_jump_time
                 self.velocity.y = self.jump_impulse
+                print(f"starting jump. total jump time: {self.total_jump_time}. jump impulse: {self.jump_impulse}. jump boost: {self.jump_boost}")
             elif self.jump_time > 0:
-                self.jump_time -= 1
+                # already jumping
+                self.jump_time -= dt
                 self.velocity.y = self.jump_time / 2.2 * self.jump_boost
+                print(f"jump time: {self.jump_time}. dt: {dt:.03f}")
             else:
+                print(self.on_ground, self.ground_debounce, self.jump_time)
                 self.velocity.y = 0
             self.ground_debounce = 0
         elif self.enemy_bounce > 0:
             self.enemy_bounce -= 1
             self.velocity.y = self.enemy_bounce / 2.2 * self.jump_boost
         elif not self.on_ground:
+            #print("in the air")
             # we are in the air
             if self.jump_time > 0:
                 self.velocity.y *= 0.35

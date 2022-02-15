@@ -1,5 +1,6 @@
 from components.component import Component
-from components.player_controller import PlayerController
+from mario.components.ground import Ground
+from mario.components.player_controller import PlayerController
 from mxeng.game_object import GameObject
 from physics2d.components.rigid_body_2d import RigidBody2D
 from util.serialization import serializable
@@ -37,6 +38,10 @@ class MushroomAI(Component):
                 player_controller.powerup()
                 self.game_object.destroy()
                 self.hit_player = True
+            return
+        elif colliding_object.get_component(Ground) is None:
+            # only colliding with the ground
+            contact.enabled = False
             return
         if abs(hit_normal.y) < 0.1:
             self.going_right = hit_normal.x < 0

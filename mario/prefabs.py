@@ -1,17 +1,19 @@
 from components.animation_state import AnimationState
-from components.coin_block import CoinBlock
-from components.flagpole import Flagpole
-from components.flower import Flower
-from components.goomba_ai import GoombaAI
-from components.ground import Ground
-from components.mushroom_ai import MushroomAI
-from components.pipe import Pipe
-from components.player_controller import PlayerController
-from components.question_block import QuestionBlock
+from mario.components.coin import Coin
+from mario.components.coin_block import CoinBlock
+from mario.components.fireball import Fireball
+from mario.components.flagpole import Flagpole
+from mario.components.flower import Flower
+from mario.components.goomba_ai import GoombaAI
+from mario.components.ground import Ground
+from mario.components.mushroom_ai import MushroomAI
+from mario.components.pipe import Pipe
+from mario.components.player_controller import PlayerController
+from mario.components.question_block import QuestionBlock
 from components.sprite import Sprite
 from components.sprite_renderer import SpriteRenderer
 from components.state_machine import StateMachine
-from components.turtle_ai import TurtleAI
+from mario.components.turtle_ai import TurtleAI
 from mxeng.direction import Direction
 from mxeng.game_object import GameObject
 from components.transform import Transform
@@ -209,6 +211,8 @@ class Prefabs:
         mario.add_component(pb)
         mario.add_component(PlayerController())
 
+        mario.transform.z_index = 10
+
         return mario
 
     @staticmethod
@@ -264,6 +268,34 @@ class Prefabs:
         
         coin.add_component(state_machine)
         coin.add_component(CoinBlock())
+
+        return coin
+
+    @staticmethod
+    def generate_coin() -> GameObject:
+        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        coin = Prefabs.generate_sprite_object(items_sprites.get_sprite(7), 0.25, 0.25)
+        
+        coin_flip = AnimationState("Coin Flip")
+        default_frame_time = 0.23
+        coin_flip.add_frame(items_sprites.get_sprite(7), default_frame_time)
+        coin_flip.add_frame(items_sprites.get_sprite(8), default_frame_time)
+        coin_flip.add_frame(items_sprites.get_sprite(9), default_frame_time)
+        coin_flip.does_loop = True
+
+        state_machine = StateMachine()
+        state_machine.add_state(coin_flip)
+        state_machine.set_default_state(coin_flip.title)
+        
+        coin.add_component(state_machine)
+        coin.add_component(Coin())
+
+        circle_collider = CircleCollider()
+        circle_collider.radius = 0.12
+        coin.add_component(circle_collider)
+        rb = RigidBody2D()
+        rb.body_type = BodyType.Static
+        coin.add_component(rb)
 
         return coin
 
@@ -379,13 +411,31 @@ class Prefabs:
         return turtle
 
     @staticmethod
+    def generate_fireball(position: Vector2) -> GameObject:
+        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        fireball = Prefabs.generate_sprite_object(items_sprites.get_sprite(32), 0.18, 0.18)
+        fireball.transform.position = position
+        
+        rb = RigidBody2D()
+        rb.body_type = BodyType.Dynamic
+        rb.fixed_rotation = True
+        rb.is_continuous_collision = False
+        fireball.add_component(rb)
+
+        circle_collider = CircleCollider()
+        circle_collider.radius = 0.08
+        fireball.add_component(circle_collider)
+        fireball.add_component(Fireball())
+
+        return fireball
+
+    @staticmethod
     def generate_flag_top() -> GameObject:
         items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
         flagtop = Prefabs.generate_sprite_object(items_sprites.get_sprite(6), 0.25, 0.25)
         
         rb = RigidBody2D()
-        rb.body_type = BodyType.Dynamic
-        rb.fixed_rotation = True
+        rb.body_type = BodyType.Static
         rb.is_continuous_collision = False
         flagtop.add_component(rb)
 
@@ -403,8 +453,7 @@ class Prefabs:
         flagpole = Prefabs.generate_sprite_object(items_sprites.get_sprite(33), 0.25, 0.25)
         
         rb = RigidBody2D()
-        rb.body_type = BodyType.Dynamic
-        rb.fixed_rotation = True
+        rb.body_type = BodyType.Static
         rb.is_continuous_collision = False
         flagpole.add_component(rb)
 

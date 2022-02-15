@@ -1,5 +1,5 @@
 import math
-from components.ground import Ground
+from mario.components.ground import Ground
 
 from mxeng.game_object import GameObject
 from physics2d.components.box_2d_collider import Box2DCollider

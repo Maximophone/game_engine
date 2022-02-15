@@ -1,16 +1,16 @@
 from pathlib import Path
-from components.breakable_brick import BreakableBrick
+from mario.components.breakable_brick import BreakableBrick
 from components.editor_camera import EditorCamera
 from components.gizmo_system import GizmoSystem
 from components.grid_lines import GridLines
-from components.ground import Ground
+from mario.components.ground import Ground
 from components.key_controls import KeyControls
 from components.mouse_controls import MouseControls
 from components.sprite_renderer import SpriteRenderer
 
 from components.spritesheet import Spritesheet
 from components.state_machine import StateMachine
-from mxeng.prefabs import Prefabs
+from mario.prefabs import Prefabs
 from physics2d.components.box_2d_collider import Box2DCollider
 from physics2d.components.rigid_body_2d import RigidBody2D
 from physics2d.enums.body_type import BodyType
@@ -227,6 +227,20 @@ class LevelEditorSceneInitializer(SceneInitializer):
             changed = imgui.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
             if changed:
                 obj = Prefabs.generate_question_block()
+                self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
+            imgui.pop_id()
+            imgui.same_line()
+
+            # COIN
+            sprite = item_sprites.get_sprite(7)
+            id = sprite.tex_id
+            tex_coords = sprite.get_tex_coords()
+
+            imgui.push_id(str(uid))
+            uid+=1
+            changed = imgui.image_button(id, sprite_width, sprite_height, (tex_coords[2][0], tex_coords[0][1]), (tex_coords[0][0], tex_coords[2][1]))
+            if changed:
+                obj = Prefabs.generate_coin()
                 self.level_editor_stuff.get_component(MouseControls).pickup_object(obj)
             imgui.pop_id()
             imgui.same_line()

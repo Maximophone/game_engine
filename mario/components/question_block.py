@@ -1,8 +1,8 @@
 from enum import Enum, auto
-from components.block import Block
-from components.game_camera import GameCamera
+from mario.components.block import Block
+from mario.components.game_camera import GameCamera
 from components.state_machine import StateMachine
-from components.player_controller import PlayerController, PlayerState
+from mario.components.player_controller import PlayerController, PlayerState
 from mxeng.game_object import GameObject
 from util.serialization import senum, serializable
 
@@ -33,7 +33,7 @@ class QuestionBlock(Block):
 
     def do_coin(self, player_controller: PlayerController):
         from mxeng.window import Window
-        from mxeng.prefabs import Prefabs
+        from mario.prefabs import Prefabs
         coin = Prefabs.generate_coin_block()
         coin.transform.position = self.game_object.transform.position.copy()
         coin.transform.position.y += 0.25
@@ -51,7 +51,7 @@ class QuestionBlock(Block):
 
     def spawn_mushroom(self):
         from mxeng.window import Window
-        from mxeng.prefabs import Prefabs
+        from mario.prefabs import Prefabs
         mushroom: GameObject = Prefabs.generate_mushroom()
         mushroom.transform.position = self.game_object.transform.position.copy()
         mushroom.transform.position.y += 0.25
@@ -59,7 +59,7 @@ class QuestionBlock(Block):
 
     def spawn_flower(self):
         from mxeng.window import Window
-        from mxeng.prefabs import Prefabs
+        from mario.prefabs import Prefabs
         flower: GameObject = Prefabs.generate_flower()
         flower.transform.position = self.game_object.transform.position.copy()
         flower.transform.position.y += 0.25

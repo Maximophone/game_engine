@@ -1,5 +1,5 @@
 from components.component import Component
-from components.player_controller import PlayerController
+from mario.components.player_controller import PlayerController
 from components.state_machine import StateMachine
 from mxeng.game_object import GameObject
 from physics2d.components.rigid_body_2d import RigidBody2D
@@ -66,7 +66,7 @@ class GoombaAI(Component):
         y_val = -0.14
         self.on_ground = Physics2D.check_on_ground(self.game_object, inner_player_width, y_val)
 
-    def begin_collision(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):
+    def pre_solve(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):
         if self.is_dead:
             return
         player_controler: PlayerController = colliding_object.get_component(PlayerController)
@@ -80,6 +80,10 @@ class GoombaAI(Component):
             elif not player_controler.is_dead and not player_controler.is_invincible():
                 # player takes damage
                 player_controler.die()
+                if not player_controler.is_dead:
+                    contact.enabled = False
+            elif not player_controler.is_dead and player_controler.is_invincible():
+                contact.enabled = False
         elif abs(hit_normal.y) < 0.1:
             # we hit an object
             self.going_right = hit_normal.x < 0

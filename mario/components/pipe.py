@@ -1,5 +1,5 @@
 from components.component import Component
-from components.player_controller import PlayerController
+from mario.components.player_controller import PlayerController
 from mxeng.direction import Direction
 from mxeng.game_object import GameObject
 from mxeng.key_listener import KeyListener
@@ -44,34 +44,43 @@ class Pipe(Component):
         if self.colliding_player is not None:
             player_entering = False
             if self.direction == Direction.Up:
-                if (KeyListener.is_key_pressed(glfw.KEY_DOWN) or KeyListener.is_key_pressed(glfw.KEY_S)) and self.is_entrance:
+                if (KeyListener.is_key_pressed(glfw.KEY_DOWN) or KeyListener.is_key_pressed(glfw.KEY_S)) and self.is_entrance and self.player_at_entrance():
                     player_entering = True    
             elif self.direction == Direction.Left:
-                if (KeyListener.is_key_pressed(glfw.KEY_RIGHT) or KeyListener.is_key_pressed(glfw.KEY_D)) and self.is_entrance:
+                if (KeyListener.is_key_pressed(glfw.KEY_RIGHT) or KeyListener.is_key_pressed(glfw.KEY_D)) and self.is_entrance and self.player_at_entrance():
                     player_entering = True
             elif self.direction == Direction.Right:
-                if (KeyListener.is_key_pressed(glfw.KEY_LEFT) or KeyListener.is_key_pressed(glfw.KEY_A)) and self.is_entrance:
+                if (KeyListener.is_key_pressed(glfw.KEY_LEFT) or KeyListener.is_key_pressed(glfw.KEY_A)) and self.is_entrance and self.player_at_entrance():
                     player_entering = True
             elif self.direction == Direction.Down:
-                if (KeyListener.is_key_pressed(glfw.KEY_UP) or KeyListener.is_key_pressed(glfw.KEY_W)) and self.is_entrance:
+                if (KeyListener.is_key_pressed(glfw.KEY_UP) or KeyListener.is_key_pressed(glfw.KEY_W)) and self.is_entrance and self.player_at_entrance():
                     player_entering = True
 
             if player_entering:
-                print(f"entering {self.game_object.name}, going to {self.connecting_pipe.name}")
                 self.colliding_player.set_position(self.get_player_position(self.connecting_pipe))
                 AssetPool.get_sound("assets/sounds/pipe.ogg").play()
+
+    def player_at_entrance(self) -> bool:
+        if self.colliding_player is None:
+            return False
+        
+        min_ = self.game_object.transform.position - self.game_object.transform.scale * 0.5
+        max_ = self.game_object.transform.position + self.game_object.transform.scale * 0.5
+        player_min = self.colliding_player.game_object.transform.position - self.colliding_player.game_object.transform.scale * 0.5
+        player_max = self.colliding_player.game_object.transform.position + self.colliding_player.game_object.transform.scale * 0.5
+
+        ret = {
+            Direction.Up: player_min.y >= max_.y and player_max.x > min_.x and player_min.x < max_.x,
+            Direction.Down: player_max.y <= min_.y and player_max.x > min_.x and player_min.x < max_.x,
+            Direction.Right: player_min.x >= max_.x and player_max.y > min_.y and player_min.y < max_.y,
+            Direction.Left: player_min.x <= min_.x and player_max.y > min_.y and player_min.y < max_.y,
+        }[self.direction]
+
+        return ret
 
     def begin_collision(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):
         player_controller: PlayerController = colliding_object.get_component(PlayerController)
         if player_controller is not None:
-            no_contact = {
-                Direction.Up: hit_normal.y < self.entrance_vector_tolerance,
-                Direction.Right: hit_normal.x < self.entrance_vector_tolerance,
-                Direction.Down: hit_normal.y > -self.entrance_vector_tolerance,
-                Direction.Left: hit_normal.x > -self.entrance_vector_tolerance,
-            }[self.direction]
-            if no_contact:
-                return
             self.colliding_player = player_controller
 
     def end_collision(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):

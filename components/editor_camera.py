@@ -2,18 +2,20 @@ from numpy import sign
 from components.component import Component
 from mxeng.camera import Camera
 from mxeng.key_listener import KeyListener
+from util.serialization import serializable
 from util.vectors import Vector2
 from mxeng.mouse_listener import MouseListener
 from pyrr import vector3
 
 import glfw
 
+@serializable("drag_sensitivity")
 class EditorCamera(Component):
     def __init__(self, level_editor_camera: Camera):
         self.level_editor_camera = level_editor_camera
-        self.click_origin: Vector2 = Vector2([0, 0])
+        self.click_origin: Vector2 = Vector2([0., 0.])
         self.drag_debounce: float = 0.032 # Should be 2 frames at 60 FPS
-        self.drag_sensitivity: float = 30.
+        self.drag_sensitivity: float = 10.
         self.scroll_sensitivity: float = 0.1
         self.lerp_time: float = 0.
         self.reset: bool = False
@@ -28,8 +30,8 @@ class EditorCamera(Component):
         elif MouseListener.mouse_button_down(glfw.MOUSE_BUTTON_MIDDLE):
             mouse_pos = MouseListener.get_world()#Vector2([MouseListener.get_ortho_x(), MouseListener.get_ortho_y()])
             delta = mouse_pos - self.click_origin
-            self.level_editor_camera.position -= delta * dt * self.drag_sensitivity
-            self.click_origin = self.click_origin*(1-dt) + mouse_pos*dt
+            self.level_editor_camera.position = self.level_editor_camera.position - delta * dt * self.drag_sensitivity
+            self.click_origin = self.click_origin*(1.-dt) + mouse_pos*dt
 
         if not MouseListener.mouse_button_down(glfw.MOUSE_BUTTON_MIDDLE) and self.drag_debounce <= 0:
             self.drag_debounce = 0.032

@@ -1,5 +1,5 @@
-from components.block import Block
-from components.player_controller import PlayerController, PlayerState
+from mario.components.block import Block
+from mario.components.player_controller import PlayerController, PlayerState
 from util.asset_pool import AssetPool
 from util.serialization import serializable
 

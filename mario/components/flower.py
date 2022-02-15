@@ -1,5 +1,5 @@
 from components.component import Component
-from components.player_controller import PlayerController
+from mario.components.player_controller import PlayerController
 from mxeng.game_object import GameObject
 from physics2d.components.rigid_body_2d import RigidBody2D
 from util.serialization import serializable

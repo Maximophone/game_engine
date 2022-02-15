@@ -11,9 +11,9 @@ from physics2d.physics2d import Physics2D
 from renderer.framebuffer import Framebuffer
 from renderer.picking_texture import PickingTexture
 from renderer.renderer import Renderer
-from scenes.level_scene_initializer import LevelSceneInitializer
+from mario.scenes.level_scene_initializer import LevelSceneInitializer
 from scenes.scene import Scene
-from scenes.level_editor_scene_initializer import LevelEditorSceneInitializer
+from mario.scenes.level_editor_scene_initializer import LevelEditorSceneInitializer
 from scenes.scene_initializer import SceneInitializer
 from util.asset_pool import AssetPool
 from util.timer import Time
@@ -40,6 +40,9 @@ class Window:
         self._queued_scene: SceneInitializer = None
         self.imgui_layer = None
 
+        self._level_editor_initializer: type = None
+        self._level_initializer: type = None
+
         self.runtime_play: bool = False
         
         # Initialise audio device
@@ -50,6 +53,10 @@ class Window:
         alc.alcMakeContextCurrent(self.audio_context)
 
         EventSystem.add_observer(self)
+
+    @property
+    def editor_mode(self) -> bool:
+        return self._level_editor_initializer is not None
 
     @staticmethod
     def change_scene(scene_initializer: SceneInitializer):
@@ -108,7 +115,9 @@ class Window:
         Window.get()._width = w
         Window.get()._height = h
 
-    def run(self):
+    def run(self, level_initializer: type, level_editor_initalizer: type = None):
+        self._level_initializer = level_initializer
+        self._level_editor_initializer = level_editor_initalizer
         self.init()
         self.loop()
 
@@ -164,7 +173,7 @@ class Window:
         
         gl.glViewport(0, 0, 2560, 1440)
 
-        Window.change_scene(LevelEditorSceneInitializer())
+        Window.change_scene(self._level_editor_initializer() if self.editor_mode else self._level_initializer())
 
     def loop(self):
         from renderer.debug_draw import DebugDraw
@@ -178,47 +187,57 @@ class Window:
         while not glfw.window_should_close(self.glfw_window):
             glfw.poll_events()
 
-            # Render pass 1: render to picking texture
-            gl.glDisable(gl.GL_BLEND)
-            self.picking_texture.enable_writing()
+            if self.editor_mode:
+                # Render pass 1: render to picking texture
+                gl.glDisable(gl.GL_BLEND)
+                self.picking_texture.enable_writing()
 
-            gl.glViewport(0, 0, 2560, 1440)
-            gl.glClearColor(0., 0., 0., 0.)
-            gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
+                gl.glViewport(0, 0, 2560, 1440)
+                gl.glClearColor(0., 0., 0., 0.)
+                gl.glClear(gl.GL_COLOR_BUFFER_BIT | gl.GL_DEPTH_BUFFER_BIT)
 
-            Renderer.bind_shader(picking_shader)
-            self.current_scene.render()
-
-            self.picking_texture.disable_writing()
-            gl.glEnable(gl.GL_BLEND)
-
-            # Render pass 2: render actual game
-            DebugDraw.begin_frame()
-
-            gl.glClearColor(self.r, self.g, self.b, self.a)
-            gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-
-            self.framebuffer.bind()
-
-            gl.glClearColor(*Window.get_scene().camera().clear_color)
-            gl.glClear(gl.GL_COLOR_BUFFER_BIT)
-
-            if dt >= 0:
-                DebugDraw.draw()
-                Renderer.bind_shader(default_shader)
-                if self.runtime_play:
-                    self.current_scene.update(dt)
-                else:
-                    self.current_scene.editor_update(dt)
+                Renderer.bind_shader(picking_shader)
                 self.current_scene.render()
-            self.framebuffer.unbind()
-                
-            self.imgui_layer.update(dt, self.current_scene)
+
+                self.picking_texture.disable_writing()
+                gl.glEnable(gl.GL_BLEND)
+
+                # Render pass 2: render actual game
+                DebugDraw.begin_frame()
+
+                gl.glClearColor(self.r, self.g, self.b, self.a)
+                gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+
+                self.framebuffer.bind()
+
+                gl.glClearColor(*Window.get_scene().camera().clear_color)
+                gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+
+                if dt >= 0:
+                    DebugDraw.draw()
+                    Renderer.bind_shader(default_shader)
+                    if self.runtime_play:
+                        self.current_scene.update(dt)
+                    else:
+                        self.current_scene.editor_update(dt)
+                    self.current_scene.render()
+                self.framebuffer.unbind()
+                    
+                self.imgui_layer.update(dt, self.current_scene)
+            else:
+
+                gl.glClearColor(*Window.get_scene().camera().clear_color)
+                gl.glClear(gl.GL_COLOR_BUFFER_BIT)
+
+                if dt >= 0:
+                    Renderer.bind_shader(default_shader)
+                    self.current_scene.update(dt)
+                    self.current_scene.render()
 
             if self._queued_scene is not None:
                 self.change_scene(self._queued_scene)
                 self._queued_scene = None
-                
+
             KeyListener.end_frame()
             MouseListener.end_frame()
             glfw.swap_buffers(self.glfw_window)
@@ -228,17 +247,17 @@ class Window:
             begin_time = end_time
 
             fps = 1/dt
-            # print(f"Running at {fps:.2f} FPS")
+            print(f"Running at {fps:.2f} FPS")
 
     def on_notify(self, go: GameObject, event: Event):
         if event.type == EventType.GameEngineStartPlay:
             self.runtime_play = True
             self.current_scene.save()
-            Window.change_scene(LevelSceneInitializer())
+            Window.change_scene(self._level_initializer())
         elif event.type == EventType.GameEngineStopPlay:
             self.runtime_play = False
-            Window.change_scene(LevelEditorSceneInitializer())
+            Window.change_scene(self._level_editor_initializer())
         elif event.type == EventType.LoadLevel:
-            Window.change_scene(LevelEditorSceneInitializer())
+            Window.change_scene(self._level_editor_initializer())
         elif event.type == EventType.SaveLevel:
             self.current_scene.save()

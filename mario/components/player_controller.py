@@ -1,7 +1,7 @@
 from enum import Enum, auto
 from this import d
 from components.component import Component
-from components.ground import Ground
+from mario.components.ground import Ground
 from components.sprite_renderer import SpriteRenderer
 from components.state_machine import StateMachine
 from mxeng.game_object import GameObject
@@ -12,7 +12,7 @@ from physics2d.enums.body_type import BodyType
 from physics2d.physics2d import Physics2D
 from util.asset_pool import AssetPool
 from util.serialization import senum, serializable
-from util.vectors import Color3, Color4, Vector2
+from util.vectors import Color4, Vector2
 
 import glfw
 from Box2D import b2Contact
@@ -72,7 +72,9 @@ class PlayerController(Component):
 
     def update(self, dt: float):
         from mxeng.window import Window
-        from scenes.level_scene_initializer import LevelSceneInitializer
+        from mario.prefabs import Prefabs
+        from mario.components.fireball import Fireball
+        from mario.scenes.level_scene_initializer import LevelSceneInitializer
         if self.playing_win_animation:
             self.check_on_ground()
             if not self.on_ground:
@@ -152,6 +154,14 @@ class PlayerController(Component):
 
             if self.velocity.x == 0:
                 self.state_machine.trigger("stop_running")
+
+        # FIREBALLS
+        if KeyListener.key_begin_press(glfw.KEY_E) and self.player_state == PlayerState.Fire and Fireball.can_spawn():
+            position = self.game_object.transform.position + (Vector2([0.26, 0.]) if self.game_object.transform.scale.x > 0 else Vector2([-0.26, 0.]))
+            fireball = Prefabs.generate_fireball(position)
+            fireball.get_component(Fireball).going_right = self.game_object.transform.scale.x > 0
+            Window.get_scene().add_game_object_to_scene(fireball)
+
 
         self.check_on_ground()
         jump_key_pressed = KeyListener.is_key_pressed(glfw.KEY_SPACE) or KeyListener.is_key_pressed(glfw.KEY_UP)

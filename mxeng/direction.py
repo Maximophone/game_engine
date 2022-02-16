@@ -5,5 +5,5 @@ from util.serialization import senum
 class Direction(Enum):
     Down = auto()
     Up = auto()
-    Right = auto()
     Left = auto()
+    Right = auto()

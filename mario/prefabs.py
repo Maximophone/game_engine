@@ -140,68 +140,68 @@ class MarioPrefabs(Prefabs):
         state_machine.add_state(fire_switch_direction)
         state_machine.add_state(fire_jump)
 
-        state_machine.set_default_state(idle.title)
+        state_machine.set_default_state(idle)
 
-        state_machine.add_state_trigger(run.title, switch_direction.title, "switch_direction");
-        state_machine.add_state_trigger(run.title, idle.title, "stop_running");
-        state_machine.add_state_trigger(run.title, jump.title, "jump");
-        state_machine.add_state_trigger(switch_direction.title, idle.title, "stop_running");
-        state_machine.add_state_trigger(switch_direction.title, run.title, "start_running");
-        state_machine.add_state_trigger(switch_direction.title, jump.title, "jump");
-        state_machine.add_state_trigger(idle.title, run.title, "start_running");
-        state_machine.add_state_trigger(idle.title, jump.title, "jump");
-        state_machine.add_state_trigger(jump.title, idle.title, "stop_jumping");
+        state_machine.add_state_trigger(run, switch_direction, "switch_direction");
+        state_machine.add_state_trigger(run, idle, "stop_running");
+        state_machine.add_state_trigger(run, jump, "jump");
+        state_machine.add_state_trigger(switch_direction, idle, "stop_running");
+        state_machine.add_state_trigger(switch_direction, run, "start_running");
+        state_machine.add_state_trigger(switch_direction, jump, "jump");
+        state_machine.add_state_trigger(idle, run, "start_running");
+        state_machine.add_state_trigger(idle, jump, "jump");
+        state_machine.add_state_trigger(jump, idle, "stop_jumping");
 
-        state_machine.add_state_trigger(big_run.title, big_switch_direction.title, "switch_direction");
-        state_machine.add_state_trigger(big_run.title, big_idle.title, "stop_running");
-        state_machine.add_state_trigger(big_run.title, big_jump.title, "jump");
-        state_machine.add_state_trigger(big_switch_direction.title, big_idle.title, "stop_running");
-        state_machine.add_state_trigger(big_switch_direction.title, big_run.title, "start_running");
-        state_machine.add_state_trigger(big_switch_direction.title, big_jump.title, "jump");
-        state_machine.add_state_trigger(big_idle.title, big_run.title, "start_running");
-        state_machine.add_state_trigger(big_idle.title, big_jump.title, "jump");
-        state_machine.add_state_trigger(big_jump.title, big_idle.title, "stop_jumping");
+        state_machine.add_state_trigger(big_run, big_switch_direction, "switch_direction");
+        state_machine.add_state_trigger(big_run, big_idle, "stop_running");
+        state_machine.add_state_trigger(big_run, big_jump, "jump");
+        state_machine.add_state_trigger(big_switch_direction, big_idle, "stop_running");
+        state_machine.add_state_trigger(big_switch_direction, big_run, "start_running");
+        state_machine.add_state_trigger(big_switch_direction, big_jump, "jump");
+        state_machine.add_state_trigger(big_idle, big_run, "start_running");
+        state_machine.add_state_trigger(big_idle, big_jump, "jump");
+        state_machine.add_state_trigger(big_jump, big_idle, "stop_jumping");
 
-        state_machine.add_state_trigger(fire_run.title, fire_switch_direction.title, "switch_direction");
-        state_machine.add_state_trigger(fire_run.title, fire_idle.title, "stop_running");
-        state_machine.add_state_trigger(fire_run.title, fire_jump.title, "jump");
-        state_machine.add_state_trigger(fire_switch_direction.title, fire_idle.title, "stop_running");
-        state_machine.add_state_trigger(fire_switch_direction.title, fire_run.title, "start_running");
-        state_machine.add_state_trigger(fire_switch_direction.title, fire_jump.title, "jump");
-        state_machine.add_state_trigger(fire_idle.title, fire_run.title, "start_running");
-        state_machine.add_state_trigger(fire_idle.title, fire_jump.title, "jump");
-        state_machine.add_state_trigger(fire_jump.title, fire_idle.title, "stop_jumping");
+        state_machine.add_state_trigger(fire_run, fire_switch_direction, "switch_direction");
+        state_machine.add_state_trigger(fire_run, fire_idle, "stop_running");
+        state_machine.add_state_trigger(fire_run, fire_jump, "jump");
+        state_machine.add_state_trigger(fire_switch_direction, fire_idle, "stop_running");
+        state_machine.add_state_trigger(fire_switch_direction, fire_run, "start_running");
+        state_machine.add_state_trigger(fire_switch_direction, fire_jump, "jump");
+        state_machine.add_state_trigger(fire_idle, fire_run, "start_running");
+        state_machine.add_state_trigger(fire_idle, fire_jump, "jump");
+        state_machine.add_state_trigger(fire_jump, fire_idle, "stop_jumping");
 
-        state_machine.add_state_trigger(run.title, big_run.title, "powerup");
-        state_machine.add_state_trigger(idle.title, big_idle.title, "powerup");
-        state_machine.add_state_trigger(switch_direction.title, big_switch_direction.title, "powerup");
-        state_machine.add_state_trigger(jump.title, big_jump.title, "powerup");
-        state_machine.add_state_trigger(big_run.title, fire_run.title, "powerup");
-        state_machine.add_state_trigger(big_idle.title, fire_idle.title, "powerup");
-        state_machine.add_state_trigger(big_switch_direction.title, fire_switch_direction.title, "powerup");
-        state_machine.add_state_trigger(big_jump.title, fire_jump.title, "powerup");
+        state_machine.add_state_trigger(run, big_run, "powerup");
+        state_machine.add_state_trigger(idle, big_idle, "powerup");
+        state_machine.add_state_trigger(switch_direction, big_switch_direction, "powerup");
+        state_machine.add_state_trigger(jump, big_jump, "powerup");
+        state_machine.add_state_trigger(big_run, fire_run, "powerup");
+        state_machine.add_state_trigger(big_idle, fire_idle, "powerup");
+        state_machine.add_state_trigger(big_switch_direction, fire_switch_direction, "powerup");
+        state_machine.add_state_trigger(big_jump, fire_jump, "powerup");
 
-        state_machine.add_state_trigger(big_run.title, run.title, "damage");
-        state_machine.add_state_trigger(big_idle.title, idle.title, "damage");
-        state_machine.add_state_trigger(big_switch_direction.title, switch_direction.title, "damage");
-        state_machine.add_state_trigger(big_jump.title, jump.title, "damage");
-        state_machine.add_state_trigger(fire_run.title, big_run.title, "damage");
-        state_machine.add_state_trigger(fire_idle.title, big_idle.title, "damage");
-        state_machine.add_state_trigger(fire_switch_direction.title, big_switch_direction.title, "damage");
-        state_machine.add_state_trigger(fire_jump.title, big_jump.title, "damage");
+        state_machine.add_state_trigger(big_run, run, "damage");
+        state_machine.add_state_trigger(big_idle, idle, "damage");
+        state_machine.add_state_trigger(big_switch_direction, switch_direction, "damage");
+        state_machine.add_state_trigger(big_jump, jump, "damage");
+        state_machine.add_state_trigger(fire_run, big_run, "damage");
+        state_machine.add_state_trigger(fire_idle, big_idle, "damage");
+        state_machine.add_state_trigger(fire_switch_direction, big_switch_direction, "damage");
+        state_machine.add_state_trigger(fire_jump, big_jump, "damage");
 
-        state_machine.add_state_trigger(run.title, die.title, "die");
-        state_machine.add_state_trigger(switch_direction.title, die.title, "die");
-        state_machine.add_state_trigger(idle.title, die.title, "die");
-        state_machine.add_state_trigger(jump.title, die.title, "die");
-        state_machine.add_state_trigger(big_run.title, run.title, "die");
-        state_machine.add_state_trigger(big_switch_direction.title, switch_direction.title, "die");
-        state_machine.add_state_trigger(big_idle.title, idle.title, "die");
-        state_machine.add_state_trigger(big_jump.title, jump.title, "die");
-        state_machine.add_state_trigger(fire_run.title, big_run.title, "die");
-        state_machine.add_state_trigger(fire_switch_direction.title, big_switch_direction.title, "die");
-        state_machine.add_state_trigger(fire_idle.title, big_idle.title, "die");
-        state_machine.add_state_trigger(fire_jump.title, big_jump.title, "die");
+        state_machine.add_state_trigger(run, die, "die");
+        state_machine.add_state_trigger(switch_direction, die, "die");
+        state_machine.add_state_trigger(idle, die, "die");
+        state_machine.add_state_trigger(jump, die, "die");
+        state_machine.add_state_trigger(big_run, run, "die");
+        state_machine.add_state_trigger(big_switch_direction, switch_direction, "die");
+        state_machine.add_state_trigger(big_idle, idle, "die");
+        state_machine.add_state_trigger(big_jump, jump, "die");
+        state_machine.add_state_trigger(fire_run, big_run, "die");
+        state_machine.add_state_trigger(fire_switch_direction, big_switch_direction, "die");
+        state_machine.add_state_trigger(fire_idle, big_idle, "die");
+        state_machine.add_state_trigger(fire_jump, big_jump, "die");
 
         mario.add_component(state_machine)
 
@@ -241,9 +241,9 @@ class MarioPrefabs(Prefabs):
         state_machine = StateMachine()
         state_machine.add_state(flicker)
         state_machine.add_state(inactive)
-        state_machine.set_default_state(flicker.title)
+        state_machine.set_default_state(flicker)
 
-        state_machine.add_state_trigger(flicker.title, inactive.title, "set_inactive")
+        state_machine.add_state_trigger(flicker, inactive, "set_inactive")
         
         question_block.add_component(state_machine)
         question_block.add_component(QuestionBlock())
@@ -271,7 +271,7 @@ class MarioPrefabs(Prefabs):
 
         state_machine = StateMachine()
         state_machine.add_state(coin_flip)
-        state_machine.set_default_state(coin_flip.title)
+        state_machine.set_default_state(coin_flip)
         
         coin.add_component(state_machine)
         coin.add_component(CoinBlock())
@@ -292,7 +292,7 @@ class MarioPrefabs(Prefabs):
 
         state_machine = StateMachine()
         state_machine.add_state(coin_flip)
-        state_machine.set_default_state(coin_flip.title)
+        state_machine.set_default_state(coin_flip)
         
         coin.add_component(state_machine)
         coin.add_component(Coin())
@@ -360,9 +360,9 @@ class MarioPrefabs(Prefabs):
         state_machine = StateMachine()
         state_machine.add_state(walk)
         state_machine.add_state(squashed)
-        state_machine.set_default_state(walk.title)
+        state_machine.set_default_state(walk)
         
-        state_machine.add_state_trigger(walk.title, squashed.title, "squash_me")
+        state_machine.add_state_trigger(walk, squashed, "squash_me")
 
         goomba.add_component(state_machine)
         rb = RigidBody2D()
@@ -397,9 +397,9 @@ class MarioPrefabs(Prefabs):
         state_machine = StateMachine()
         state_machine.add_state(walk)
         state_machine.add_state(squashed)
-        state_machine.set_default_state(walk.title)
+        state_machine.set_default_state(walk)
         
-        state_machine.add_state_trigger(walk.title, squashed.title, "squash_me")
+        state_machine.add_state_trigger(walk, squashed, "squash_me")
 
         turtle.add_component(state_machine)
         rb = RigidBody2D()

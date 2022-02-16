@@ -39,13 +39,14 @@ class StateMachine(Component):
         for state in self.states:
             state.refresh_textures()
 
-    def add_state_trigger(self, from_: str, to: str, on_trigger: str):
-        self.state_transfers[StateTrigger(from_, on_trigger)] = to
+    def add_state_trigger(self, from_: AnimationState, to: AnimationState, on_trigger: str):
+        self.state_transfers[StateTrigger(from_.title, on_trigger)] = to.title
 
     def add_state(self, state: AnimationState):
         self.states.append(state)
 
-    def set_default_state(self, animation_title: str):
+    def set_default_state(self, animation: AnimationState):
+        animation_title = animation.title
         for state in self.states:
             if state.title == animation_title:
                 self.default_state_title = animation_title

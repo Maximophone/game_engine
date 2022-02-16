@@ -214,12 +214,12 @@ class Window:
                 gl.glClear(gl.GL_COLOR_BUFFER_BIT)
 
                 if dt >= 0:
-                    DebugDraw.draw()
                     Renderer.bind_shader(default_shader)
                     if self.runtime_play:
                         self.current_scene.update(dt)
                     else:
                         self.current_scene.editor_update(dt)
+                    DebugDraw.draw()
                     self.current_scene.render()
                 self.framebuffer.unbind()
                     

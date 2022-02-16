@@ -4,6 +4,8 @@ if TYPE_CHECKING:
     from scenes.scene import Scene
 
 class SceneInitializer:
+    save_path: str = "level.txt"
+    
     def init(self, scene: Scene):
         pass
 

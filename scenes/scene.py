@@ -27,6 +27,7 @@ class Scene:
         self._camera: Camera = None
         self._scene_initializer: SceneInitializer = scene_initializer
         self._physics_2d: Physics2D = Physics2D()
+        self._save_path: str = scene_initializer.save_path
 
     @property
     def physics(self) -> Physics2D:
@@ -154,7 +155,7 @@ class Scene:
         self._scene_initializer.imgui()
     
     def save(self):
-        with open("level.txt", "w") as f:
+        with open(self._save_path, "w") as f:
             json.dump(serialize([go for go in self._game_objects if go.do_serialize]), f, indent=4)
 
     def load(self):
@@ -162,7 +163,7 @@ class Scene:
             max_go_id = -1
             max_comp_id = -1
 
-            with open("level.txt", "r") as f:
+            with open(self._save_path, "r") as f:
                 game_objects: List[GameObject] = deserialize(json.load(f))
                 for go in game_objects:
                     self.add_game_object_to_scene(go)

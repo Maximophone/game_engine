@@ -17,6 +17,7 @@ from mxeng.direction import Direction
 
 
 class LevelEditorSceneInitializer(SceneInitializer):
+    save_path: str = "mario/level.txt"
     def __init__(self):
         super().__init__()
         self.sprites = None

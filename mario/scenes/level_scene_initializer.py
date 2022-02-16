@@ -5,6 +5,7 @@ from scenes.scene_initializer import SceneInitializer
 
 
 class LevelSceneInitializer(SceneInitializer):
+    save_path: str = "mario/level.txt"
     def __init__(self):
         super().__init__()
         self.camera_object = None

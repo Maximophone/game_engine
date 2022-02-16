@@ -5,7 +5,7 @@ from components.grid_lines import GridLines
 from components.key_controls import KeyControls
 from components.mouse_controls import MouseControls
 from components.spritesheet import Spritesheet
-from mario.prefabs import Prefabs
+from mario.prefabs import MarioPrefabs
 from scenes.scene_initializer import SceneInitializer
 from scenes.scene import Scene
 from editor.prefabs_window import Prefab, PrefabsWindow, Tab
@@ -35,7 +35,7 @@ class LevelEditorSceneInitializer(SceneInitializer):
                 [
                     Prefab(
                         tiles_sprites.get_sprite(i),
-                        lambda sprite: Prefabs.generate_sprite_object(sprite, 0.25, 0.25)
+                        lambda sprite: MarioPrefabs.generate_sprite_object(sprite, 0.25, 0.25)
                         )
                     for i in range(tiles_sprites.size())]
             )

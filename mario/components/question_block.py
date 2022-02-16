@@ -33,8 +33,8 @@ class QuestionBlock(Block):
 
     def do_coin(self, player_controller: PlayerController):
         from mxeng.window import Window
-        from mario.prefabs import Prefabs
-        coin = Prefabs.generate_coin_block()
+        from mario.prefabs import MarioPrefabs
+        coin = MarioPrefabs.generate_coin_block()
         coin.transform.position = self.game_object.transform.position.copy()
         coin.transform.position.y += 0.25
         Window.get_scene().add_game_object_to_scene(coin)
@@ -51,16 +51,16 @@ class QuestionBlock(Block):
 
     def spawn_mushroom(self):
         from mxeng.window import Window
-        from mario.prefabs import Prefabs
-        mushroom: GameObject = Prefabs.generate_mushroom()
+        from mario.prefabs import MarioPrefabs
+        mushroom: GameObject = MarioPrefabs.generate_mushroom()
         mushroom.transform.position = self.game_object.transform.position.copy()
         mushroom.transform.position.y += 0.25
         Window.get_scene().add_game_object_to_scene(mushroom)
 
     def spawn_flower(self):
         from mxeng.window import Window
-        from mario.prefabs import Prefabs
-        flower: GameObject = Prefabs.generate_flower()
+        from mario.prefabs import MarioPrefabs
+        flower: GameObject = MarioPrefabs.generate_flower()
         flower.transform.position = self.game_object.transform.position.copy()
         flower.transform.position.y += 0.25
         Window.get_scene().add_game_object_to_scene(flower)

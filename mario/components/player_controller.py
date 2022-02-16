@@ -73,7 +73,7 @@ class PlayerController(Component):
 
     def update(self, dt: float):
         from mxeng.window import Window
-        from mario.prefabs import Prefabs
+        from mario.prefabs import MarioPrefabs
         from mario.components.fireball import Fireball
         from mario.scenes.level_scene_initializer import LevelSceneInitializer
         if self.playing_win_animation:
@@ -159,7 +159,7 @@ class PlayerController(Component):
         # FIREBALLS
         if KeyListener.key_begin_press(glfw.KEY_E) and self.player_state == PlayerState.Fire and Fireball.can_spawn():
             position = self.game_object.transform.position + (Vector2([0.26, 0.]) if self.game_object.transform.scale.x > 0 else Vector2([-0.26, 0.]))
-            fireball = Prefabs.generate_fireball(position)
+            fireball = MarioPrefabs.generate_fireball(position)
             fireball.get_component(Fireball).going_right = self.game_object.transform.scale.x > 0
             Window.get_scene().add_game_object_to_scene(fireball)
 

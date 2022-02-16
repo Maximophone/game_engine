@@ -5,7 +5,7 @@ from components.gizmo_system import GizmoSystem
 from components.grid_lines import GridLines
 from components.key_controls import KeyControls
 from components.mouse_controls import MouseControls
-from mario.prefabs import Prefabs
+from mario.prefabs import MarioPrefabs
 from mario.scenes.load_resources import load_resources
 from scenes.scene import Scene
 
@@ -50,7 +50,7 @@ class LevelEditorSceneInitializer(SceneInitializer):
                 [
                     Prefab(
                         sprites.get_sprite(i),
-                        Prefabs.generate_ground_block,
+                        MarioPrefabs.generate_ground_block,
                     )
                     for i in solid_blocks_ids
                 ]
@@ -64,7 +64,7 @@ class LevelEditorSceneInitializer(SceneInitializer):
                 [
                     Prefab(
                         sprites.get_sprite(i),
-                        lambda sprite: Prefabs.generate_sprite_object(sprite, 0.25, 0.25)
+                        lambda sprite: MarioPrefabs.generate_sprite_object(sprite, 0.25, 0.25)
                     )
                     for i in decoration_blocks_ids
                 ]
@@ -77,51 +77,51 @@ class LevelEditorSceneInitializer(SceneInitializer):
                 [
                     Prefab(
                         player_sprites.get_sprite(0),
-                        lambda sprite: Prefabs.generate_mario()
+                        lambda sprite: MarioPrefabs.generate_mario()
                     ),
                     Prefab(
                         item_sprites.get_sprite(0),
-                        lambda sprite: Prefabs.generate_question_block()
+                        lambda sprite: MarioPrefabs.generate_question_block()
                     ),
                     Prefab(
                         sprites.get_sprite(12),
-                        Prefabs.generate_breakable_block
+                        MarioPrefabs.generate_breakable_block
                     ),
                     Prefab(
                         item_sprites.get_sprite(7),
-                        lambda sprite: Prefabs.generate_coin()
+                        lambda sprite: MarioPrefabs.generate_coin()
                     ),
                     Prefab(
                         player_sprites.get_sprite(14),
-                        lambda sprite: Prefabs.generate_goomba()
+                        lambda sprite: MarioPrefabs.generate_goomba()
                     ),
                     Prefab(
                         turtle_sprites.get_sprite(0),
-                        lambda sprite: Prefabs.generate_turtle()
+                        lambda sprite: MarioPrefabs.generate_turtle()
                     ),
                     Prefab(
                         item_sprites.get_sprite(6),
-                        lambda sprite: Prefabs.generate_flag_top()
+                        lambda sprite: MarioPrefabs.generate_flag_top()
                     ),
                     Prefab(
                         item_sprites.get_sprite(33),
-                        lambda sprite: Prefabs.generate_flag_pole()
+                        lambda sprite: MarioPrefabs.generate_flag_pole()
                     ),
                     Prefab(
                         pipe_sprites.get_sprite(0),
-                        lambda sprite: Prefabs.generate_pipe(Direction.Down)
+                        lambda sprite: MarioPrefabs.generate_pipe(Direction.Down)
                     ),
                     Prefab(
                         pipe_sprites.get_sprite(1),
-                        lambda sprite: Prefabs.generate_pipe(Direction.Up)
+                        lambda sprite: MarioPrefabs.generate_pipe(Direction.Up)
                     ),
                     Prefab(
                         pipe_sprites.get_sprite(2),
-                        lambda sprite: Prefabs.generate_pipe(Direction.Right)
+                        lambda sprite: MarioPrefabs.generate_pipe(Direction.Right)
                     ),
                     Prefab(
                         pipe_sprites.get_sprite(3),
-                        lambda sprite: Prefabs.generate_pipe(Direction.Left)
+                        lambda sprite: MarioPrefabs.generate_pipe(Direction.Left)
                     ),
                 ]
             )

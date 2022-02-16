@@ -7,7 +7,7 @@ from mxeng.mouse_listener import MouseListener
 from util.serialization import serializable
 from util.vectors import Color4, Vector2
 from mxeng.game_object import GameObject
-from mario.prefabs import Prefabs
+from mxeng.prefabs import Prefabs
 from mxeng.key_listener import KeyListener
 
 import glfw

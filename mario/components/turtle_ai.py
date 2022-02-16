@@ -78,7 +78,7 @@ class TurtleAI(Component):
         self.rb.angular_velocity = 0.
         self.rb.gravity_scale = 0.
         self.state_machine.trigger("squash_me")
-        AssetPool.get_sound("assets/sounds/bump.ogg").play()
+        AssetPool.get_sound("mario/assets/sounds/bump.ogg").play()
         
     def begin_collision(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):
         player_controller: PlayerController = colliding_object.get_component(PlayerController)
@@ -104,7 +104,7 @@ class TurtleAI(Component):
         elif abs(hit_normal.y) < 0.1 and not colliding_object.is_dead:
             self.going_right = hit_normal.x < 0
             if self.is_moving and self.is_dead:
-                AssetPool.get_sound("assets/sounds/bump.ogg").play()
+                AssetPool.get_sound("mario/assets/sounds/bump.ogg").play()
 
 
     def pre_solve(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):
@@ -112,4 +112,4 @@ class TurtleAI(Component):
         if self.is_dead and self.is_moving and goomba is not None:
             goomba.stomp()
             contact.enabled = False
-            AssetPool.get_sound("assets/sounds/kick.ogg").play()
+            AssetPool.get_sound("mario/assets/sounds/kick.ogg").play()

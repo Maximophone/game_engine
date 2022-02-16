@@ -17,7 +17,7 @@ class Flower(Component):
     
     def start(self):
         self.rb: RigidBody2D = self.game_object.get_component(RigidBody2D)
-        AssetPool.get_sound("assets/sounds/powerup_appears.ogg").play()
+        AssetPool.get_sound("mario/assets/sounds/powerup_appears.ogg").play()
         self.rb.is_sensor = True
 
     def begin_collision(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):

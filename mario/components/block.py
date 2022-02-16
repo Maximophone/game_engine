@@ -42,7 +42,7 @@ class Block(Component):
         if self.active and player_controller is not None and hit_normal.y < -0.8:
             # player hit the bottom of the block
             self.do_bop_animation = True
-            AssetPool.get_sound("assets/sounds/bump.ogg").play()
+            AssetPool.get_sound("mario/assets/sounds/bump.ogg").play()
             self.player_hit(player_controller)
 
     def player_hit(self, player_controller: PlayerController):

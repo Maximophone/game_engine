@@ -31,6 +31,6 @@ class Coin(Component):
     def pre_solve(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):
         if colliding_object.get_component(PlayerController) is not None:
             # colliding with the player
-            AssetPool.get_sound("assets/sounds/coin.ogg").play()
+            AssetPool.get_sound("mario/assets/sounds/coin.ogg").play()
             self.play_anim = True
             contact.enabled = False

@@ -12,7 +12,7 @@ class CoinBlock(Component):
 
     def start(self):
         self.top_y = self.game_object.transform.position + Vector2([0., 0.5])
-        AssetPool.get_sound("assets/sounds/coin.ogg").play()
+        AssetPool.get_sound("mario/assets/sounds/coin.ogg").play()
 
     def update(self, dt: float):
         if self.game_object.transform.position.y < self.top_y.y:

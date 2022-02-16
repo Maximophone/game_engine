@@ -97,4 +97,4 @@ class GoombaAI(Component):
         self.state_machine.trigger("squash_me")
         self.rb.is_sensor = True
         if play_sound:
-            AssetPool.get_sound("assets/sounds/bump.ogg").play()
+            AssetPool.get_sound("mario/assets/sounds/bump.ogg").play()

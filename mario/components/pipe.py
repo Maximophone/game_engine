@@ -58,7 +58,7 @@ class Pipe(Component):
 
             if player_entering:
                 self.colliding_player.set_position(self.get_player_position(self.connecting_pipe))
-                AssetPool.get_sound("assets/sounds/pipe.ogg").play()
+                AssetPool.get_sound("mario/assets/sounds/pipe.ogg").play()
 
     def player_at_entrance(self) -> bool:
         if self.colliding_player is None:

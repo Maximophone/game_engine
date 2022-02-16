@@ -1,6 +1,9 @@
 from telnetlib import GA
 from typing import List, Optional
 import json
+from components.sprite_renderer import SpriteRenderer
+from components.state_machine import StateMachine
+from util.asset_pool import AssetPool
 
 from util.vectors import Vector3
 from components.component import Component
@@ -86,9 +89,22 @@ class Scene:
     def render(self):
         Renderer.render()
 
+    def refresh_textures(self):
+        for go in self._game_objects:
+
+            if go.get_component(SpriteRenderer) is not None:
+                spr: SpriteRenderer = go.get_component(SpriteRenderer)
+                if spr.get_texture() is not None:
+                    spr.set_texture(AssetPool.get_texture(spr.get_texture().filepath))
+
+            if go.get_component(StateMachine) is not None:
+                state_machine: StateMachine = go.get_component(StateMachine)
+                state_machine.refresh_textures()
+
     def init(self):
         self._camera = Camera(Vector3())
         self._scene_initializer.load_resources(self)
+        self.refresh_textures()
         self._scene_initializer.init(self)
 
     def start(self):

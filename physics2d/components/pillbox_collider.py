@@ -61,7 +61,7 @@ class PillboxCollider(Collider):
         self.bottom_circle.radius = circle_radius
         self.top_circle.offset = self.offset + Vector2([0., box_height / 4.])
         self.bottom_circle.offset = self.offset - Vector2([0., box_height / 4.])
-        self.box.half_size = Vector2([self.width / 2., box_height / 2.])
+        self.box.half_size = Vector2([self.width / 2. - 0.01, box_height / 2.])
         self.box.offset = self.offset
 
     def editor_update(self, dt: float):

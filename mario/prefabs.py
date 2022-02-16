@@ -1,4 +1,5 @@
 from components.animation_state import AnimationState
+from mario.components.breakable_brick import BreakableBrick
 from mario.components.coin import Coin
 from mario.components.coin_block import CoinBlock
 from mario.components.fireball import Fireball
@@ -41,10 +42,28 @@ class Prefabs:
         return block
 
     @staticmethod
+    def generate_ground_block(sprite: Sprite) -> GameObject:
+        block = Prefabs.generate_sprite_object(sprite, 0.25, 0.25)
+        rb = RigidBody2D()
+        rb.body_type = BodyType.Static
+        block.add_component(rb)
+        b2d = Box2DCollider()
+        b2d.half_size = Vector2([0.25, 0.25]
+        )
+        block.add_component(b2d)
+        block.add_component(Ground())
+        return block
+
+    @staticmethod
+    def generate_breakable_block(sprite: Sprite) -> GameObject:
+        block = Prefabs.generate_ground_block(sprite)
+        block.add_component(BreakableBrick())
+        return block
+
+    @staticmethod
     def generate_mario() -> GameObject:
-        from mxeng.window import Window
-        player_sprites = AssetPool.get_spritesheet("assets/images/spritesheet.png")
-        big_player_sprites = AssetPool.get_spritesheet("assets/images/bigSpritesheet.png")
+        player_sprites = AssetPool.get_spritesheet("mario/assets/images/spritesheet.png")
+        big_player_sprites = AssetPool.get_spritesheet("mario/assets/images/bigSpritesheet.png")
         mario = Prefabs.generate_sprite_object(player_sprites.get_sprite(0), 0.25, 0.25)
         
         run = AnimationState("Run")
@@ -217,7 +236,7 @@ class Prefabs:
 
     @staticmethod
     def generate_question_block() -> GameObject:
-        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        items_sprites = AssetPool.get_spritesheet("mario/assets/images/items.png")
         question_block = Prefabs.generate_sprite_object(items_sprites.get_sprite(0), 0.25, 0.25)
         
         flicker = AnimationState("Flicker")
@@ -252,7 +271,7 @@ class Prefabs:
 
     @staticmethod
     def generate_coin_block() -> GameObject:
-        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        items_sprites = AssetPool.get_spritesheet("mario/assets/images/items.png")
         coin = Prefabs.generate_sprite_object(items_sprites.get_sprite(7), 0.25, 0.25)
         
         coin_flip = AnimationState("Coin Flip")
@@ -273,7 +292,7 @@ class Prefabs:
 
     @staticmethod
     def generate_coin() -> GameObject:
-        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        items_sprites = AssetPool.get_spritesheet("mario/assets/images/items.png")
         coin = Prefabs.generate_sprite_object(items_sprites.get_sprite(7), 0.25, 0.25)
         
         coin_flip = AnimationState("Coin Flip")
@@ -301,7 +320,7 @@ class Prefabs:
 
     @staticmethod
     def generate_mushroom() -> GameObject:
-        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        items_sprites = AssetPool.get_spritesheet("mario/assets/images/items.png")
         mushroom = Prefabs.generate_sprite_object(items_sprites.get_sprite(10), 0.25, 0.25)
         
         rb = RigidBody2D()
@@ -319,7 +338,7 @@ class Prefabs:
 
     @staticmethod
     def generate_flower() -> GameObject:
-        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        items_sprites = AssetPool.get_spritesheet("mario/assets/images/items.png")
         flower = Prefabs.generate_sprite_object(items_sprites.get_sprite(20), 0.25, 0.25)
         
         rb = RigidBody2D()
@@ -337,7 +356,7 @@ class Prefabs:
 
     @staticmethod
     def generate_goomba() -> GameObject:
-        sprites = AssetPool.get_spritesheet("assets/images/spritesheet.png")
+        sprites = AssetPool.get_spritesheet("mario/assets/images/spritesheet.png")
         goomba = Prefabs.generate_sprite_object(sprites.get_sprite(14), 0.25, 0.25)
         
         walk = AnimationState("Walk")
@@ -374,7 +393,7 @@ class Prefabs:
 
     @staticmethod
     def generate_turtle() -> GameObject:
-        turtle_sprites = AssetPool.get_spritesheet("assets/images/turtle.png")
+        turtle_sprites = AssetPool.get_spritesheet("mario/assets/images/turtle.png")
         turtle = Prefabs.generate_sprite_object(turtle_sprites.get_sprite(0), 0.25, 0.35)
         
         walk = AnimationState("Walk")
@@ -412,7 +431,7 @@ class Prefabs:
 
     @staticmethod
     def generate_fireball(position: Vector2) -> GameObject:
-        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        items_sprites = AssetPool.get_spritesheet("mario/assets/images/items.png")
         fireball = Prefabs.generate_sprite_object(items_sprites.get_sprite(32), 0.18, 0.18)
         fireball.transform.position = position
         
@@ -431,7 +450,7 @@ class Prefabs:
 
     @staticmethod
     def generate_flag_top() -> GameObject:
-        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        items_sprites = AssetPool.get_spritesheet("mario/assets/images/items.png")
         flagtop = Prefabs.generate_sprite_object(items_sprites.get_sprite(6), 0.25, 0.25)
         
         rb = RigidBody2D()
@@ -449,7 +468,7 @@ class Prefabs:
 
     @staticmethod
     def generate_flag_pole() -> GameObject:
-        items_sprites = AssetPool.get_spritesheet("assets/images/items.png")
+        items_sprites = AssetPool.get_spritesheet("mario/assets/images/items.png")
         flagpole = Prefabs.generate_sprite_object(items_sprites.get_sprite(33), 0.25, 0.25)
         
         rb = RigidBody2D()
@@ -467,7 +486,8 @@ class Prefabs:
 
     @staticmethod
     def generate_pipe(direction: Direction) -> GameObject:
-        pipes = AssetPool.get_spritesheet("assets/images/pipes.png")
+        print(direction)
+        pipes = AssetPool.get_spritesheet("mario/assets/images/pipes.png")
 
         sprite_index = {
                 Direction.Down: 0,

@@ -21,7 +21,7 @@ class MushroomAI(Component):
 
     def start(self):
         self.rb = self.game_object.get_component(RigidBody2D)
-        AssetPool.get_sound("assets/sounds/powerup_appears.ogg").play()
+        AssetPool.get_sound("mario/assets/sounds/powerup_appears.ogg").play()
 
     def update(self, dt: float):
         if self.going_right and abs(self.rb.velocity.x) < self.max_speed:

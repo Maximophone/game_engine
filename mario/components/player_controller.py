@@ -88,8 +88,8 @@ class PlayerController(Component):
                     self.game_object.transform.scale.x = 0.25
                     self.game_object.transform.position.x += dt
                     self.state_machine.trigger("start_running")
-                if not AssetPool.get_sound("assets/sounds/stage_clear.ogg").is_playing:
-                    AssetPool.get_sound("assets/sounds/stage_clear.ogg").play()
+                if not AssetPool.get_sound("mario/assets/sounds/stage_clear.ogg").is_playing:
+                    AssetPool.get_sound("mario/assets/sounds/stage_clear.ogg").play()
                 self.time_to_castle -= dt
                 self.walk_time -= dt
 
@@ -174,7 +174,7 @@ class PlayerController(Component):
             # jump key is being pressed and we are on the ground or jumping
             if (self.on_ground or self.ground_debounce > 0) and self.jump_time <= 0:
                 # just pressed the jump key
-                AssetPool.get_sound("assets/sounds/jump-small.ogg").play()
+                AssetPool.get_sound("mario/assets/sounds/jump-small.ogg").play()
                 self.jump_time = self.total_jump_time
                 self.velocity.y = self.jump_impulse
                 print(f"starting jump. total jump time: {self.total_jump_time}. jump impulse: {self.jump_impulse}. jump boost: {self.jump_boost}")
@@ -233,7 +233,7 @@ class PlayerController(Component):
     def powerup(self):
         if self.player_state == PlayerState.Small:
             self.player_state = PlayerState.Big
-            AssetPool.get_sound("assets/sounds/powerup.ogg").play()
+            AssetPool.get_sound("mario/assets/sounds/powerup.ogg").play()
             self.game_object.transform.scale.y = 0.42
             pb: PillboxCollider = self.game_object.get_component(PillboxCollider)
             if pb is not None:
@@ -242,7 +242,7 @@ class PlayerController(Component):
                 pb.height = 0.63
         elif self.player_state == PlayerState.Big:
             self.player_state = PlayerState.Fire
-            AssetPool.get_sound("assets/sounds/powerup.ogg").play()
+            AssetPool.get_sound("mario/assets/sounds/powerup.ogg").play()
         
         self.state_machine.trigger("powerup")
 
@@ -255,7 +255,7 @@ class PlayerController(Component):
             self.rb.is_sensor = True
             self.rb.body_type = BodyType.Static
             self.game_object.transform.position.x = flagpole.transform.position.x
-            AssetPool.get_sound("assets/sounds/flagpole.ogg").play()
+            AssetPool.get_sound("mario/assets/sounds/flagpole.ogg").play()
 
     def begin_collision(self, colliding_object: GameObject, contact: b2Contact, hit_normal: Vector2):
         if self.is_dead:
@@ -288,7 +288,7 @@ class PlayerController(Component):
             self.rb.velocity = Vector2([0., 0.])
             self.is_dead = True
             self.rb.is_sensor = True
-            AssetPool.get_sound("assets/sounds/mario_die.ogg").play()
+            AssetPool.get_sound("mario/assets/sounds/mario_die.ogg").play()
             self.dead_max_height = self.game_object.transform.position.y + 0.3
             self.rb.body_type = BodyType.Static
             if self.game_object.transform.position.y > 0:
@@ -302,11 +302,11 @@ class PlayerController(Component):
                 self.walk_speed /= self.big_jump_boost_factor
                 pb.height = 0.31
             self.hurt_invincibility_time_left = self.hurt_invincibility_time
-            AssetPool.get_sound("assets/sounds/pipe.ogg").play()
+            AssetPool.get_sound("mario/assets/sounds/pipe.ogg").play()
         elif self.player_state == PlayerState.Fire:
             self.player_state = PlayerState.Big
             self.hurt_invincibility_time_left = self.hurt_invincibility_time
-            AssetPool.get_sound("assets/sounds/pipe.ogg").play()
+            AssetPool.get_sound("mario/assets/sounds/pipe.ogg").play()
 
 
     

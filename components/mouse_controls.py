@@ -30,6 +30,7 @@ class MouseControls(Component):
         self.holding_object = go
         self.holding_object.get_component(SpriteRenderer).set_color(Color4([0.8, 0.8, 0.8, 0.5]))
         self.holding_object.add_component(NonPickable())
+        self.holding_object._do_serialize = False
         Window.get_scene().add_game_object_to_scene(go)
 
     def place(self):

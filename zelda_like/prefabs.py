@@ -13,7 +13,6 @@ class ZeldaPrefabs(Prefabs):
     def generate_character(character_sprites: Spritesheet):
         character = Prefabs.generate_sprite_object(character_sprites.get_sprite(0), 0.25, 0.25)
 
-
         default_frame_time = 0.2
 
         state_machine = StateMachine()

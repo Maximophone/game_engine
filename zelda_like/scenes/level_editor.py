@@ -13,6 +13,10 @@ from editor.prefabs_window import Prefab, PrefabsWindow, Tab
 from util.asset_pool import AssetPool
 from zelda_like.prefabs import ZeldaPrefabs
 
+import os
+
+CHARACTERS = [dname for dname in os.listdir("assets/NinjaAdventure/Actor/Characters") if "." not in dname]
+
 class LevelEditorSceneInitializer(SceneInitializer):
     save_path: str = "zelda_like/level.txt"
 
@@ -30,8 +34,11 @@ class LevelEditorSceneInitializer(SceneInitializer):
         self.prefabs_window = PrefabsWindow(self.level_editor.get_component(MouseControls))
 
         tiles_sprites = AssetPool.get_spritesheet("assets/NinjaAdventure/Backgrounds/Tilesets/TilesetFloor.png")
-        boy_sprites = AssetPool.get_spritesheet("assets/NinjaAdventure/Actor/Characters/Boy/SpriteSheet.png")
-        self.prefabs_window.tabs = [
+        character_spritesheets = [
+            AssetPool.get_spritesheet(f"assets/NinjaAdventure/Actor/Characters/{character}/SpriteSheet.png")
+            for character in CHARACTERS
+        ]
+        self.prefabs_window.tabs.append(
             Tab(
                 "Tiles",
                 [
@@ -40,17 +47,24 @@ class LevelEditorSceneInitializer(SceneInitializer):
                         lambda sprite: MarioPrefabs.generate_sprite_object(sprite, 0.25, 0.25)
                         )
                     for i in range(tiles_sprites.size())]
-            ),
+            )
+        )
+        prefabs = []
+        def gen_prefab(spritesheet):
+            def inner(_):
+                return ZeldaPrefabs.generate_character(spritesheet)
+            return inner
+        for spritesheet in character_spritesheets:
+            prefabs.append(Prefab(
+                spritesheet.get_sprite(0),
+                gen_prefab(spritesheet)
+            ))
+        self.prefabs_window.tabs.append(
             Tab(
                 "Characters",
-                [
-                    Prefab(
-                        boy_sprites.get_sprite(0),
-                        lambda sprite: ZeldaPrefabs.generate_character(boy_sprites)
-                    )
-                ]
+                prefabs
             )
-        ]
+        )
 
     def load_resources(self, scene: Scene):
         AssetPool.add_spritesheet(
@@ -61,10 +75,11 @@ class LevelEditorSceneInitializer(SceneInitializer):
             "assets/NinjaAdventure/Backgrounds/Tilesets/TilesetFloor.png",
             Spritesheet(AssetPool.get_texture("assets/NinjaAdventure/Backgrounds/Tilesets/TilesetFloor.png"), 16, 16, 22*22, 0)
         )
-        AssetPool.add_spritesheet(
-            "assets/NinjaAdventure/Actor/Characters/Boy/SpriteSheet.png",
-            Spritesheet(AssetPool.get_texture("assets/NinjaAdventure/Actor/Characters/Boy/SpriteSheet.png"), 16, 16, 28, 0)
-        )
+        for character in CHARACTERS:
+            AssetPool.add_spritesheet(
+                f"assets/NinjaAdventure/Actor/Characters/{character}/SpriteSheet.png",
+                Spritesheet(AssetPool.get_texture(f"assets/NinjaAdventure/Actor/Characters/{character}/SpriteSheet.png"), 16, 16, 28, 0)
+            )
 
     def imgui(self):
         self.prefabs_window.imgui()

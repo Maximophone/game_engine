@@ -5,6 +5,7 @@ from components.grid_lines import GridLines
 from components.key_controls import KeyControls
 from components.mouse_controls import MouseControls
 from components.spritesheet import Spritesheet
+from zelda_like.components.player_controller import PlayerController
 from mario.prefabs import MarioPrefabs
 from scenes.scene_initializer import SceneInitializer
 from scenes.scene import Scene
@@ -21,6 +22,8 @@ class LevelEditorSceneInitializer(SceneInitializer):
     save_path: str = "zelda_like/level.txt"
 
     def init(self, scene: Scene):
+        from mxeng.window import Window
+        Window.get_imgui_layer().properties_window.custom_components = [PlayerController]
         gizmos = AssetPool.get_spritesheet("assets/images/gizmos.png")
         self.level_editor = scene.create_game_object("LevelEditor")
         self.level_editor.set_no_serialize()

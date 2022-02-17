@@ -16,6 +16,7 @@ HIGHLIGHT_COLOR = (0.5, 0.5, 0.8, 0.8)
 
 class PropertiesWindow:
     def __init__(self, picking_texture: PickingTexture):
+        self.custom_components: List[type] = []
         self._active_game_object: GameObject = None
         self._active_game_objects_original_color: List[Color4] = []
         self._active_game_objects: List[GameObject] = []
@@ -70,6 +71,10 @@ class PropertiesWindow:
                 if imgui.menu_item("Add Pillbox Collider")[0]:
                     if self.active_game_object.get_component(PillboxCollider) is None:
                         self.active_game_object.add_component(PillboxCollider())
+                for component_class in self.custom_components:
+                    if imgui.menu_item(f"Add {component_class.__name__}")[0]:
+                        if self.active_game_object.get_component(component_class) is None:
+                            self.active_game_object.add_component(component_class())
                 imgui.end_popup()
             
             self._active_game_object.imgui()

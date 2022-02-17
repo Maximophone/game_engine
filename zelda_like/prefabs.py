@@ -87,7 +87,6 @@ class ZeldaPrefabs(Prefabs):
         character.add_component(circle)
         character.add_component(rb)
 
-        character.add_component(PlayerController())
         character.transform.z_index = 5
 
         return character
